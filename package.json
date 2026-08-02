@@ -1,0 +1,9 @@
+{
+  "name": "new-level-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "New Level — property demo site with shared image uploads (Netlify Blobs).",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

@@ -1,0 +1,10 @@
+# installed by Netlify at build time — never commit
+node_modules/
+
+# Netlify CLI local state
+.netlify/
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store

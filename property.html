@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>1331 NW 87th Street · New Level</title>
+  <meta name="description" content="1331 NW 87th Street, Miami — availability, amenities, live quote and inquiry. Presented by New Level.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="property">
+
+  <div class="demo-banner">
+    <b>DEMO BUILD</b> — this is an inquiry, not a booking. Availability &amp; rates are illustrative placeholders.
+  </div>
+
+  <!-- top nav: visible back arrow (to previous screen) + About link -->
+  <div class="nav">
+    <div class="wrap nav__inner">
+      <div class="nav__left">
+        <!-- menu button injected here by app.js -->
+        <a class="nav__back" id="navBack" href="properties.html">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <span id="navBackLabel">Properties</span>
+        </a>
+      </div>
+      <a class="brand nav__brand" href="index.html" aria-label="New Level — home">
+        <span class="brand__logo-slot" id="navMark"></span>
+      </a>
+      <div class="nav__right">
+        <a class="nav__about" href="index.html">About New Level</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- short brand intro (for direct-entry visitors) + About Us (one-way forward) -->
+  <div class="brand-strip">
+    <div class="wrap brand-strip__inner">
+      <p class="brand-strip__text" id="brandIntro"></p>
+      <a class="brand-strip__about" href="index.html" id="aboutUsLink">About New Level &rsaquo;</a>
+    </div>
+  </div>
+
+  <!-- 1. PROPERTY HERO with embedded photo tour -->
+  <header class="a-hero">
+    <div class="a-hero__bg"><img id="aHeroImg" alt="1331 NW 87th Street — photo tour"></div>
+    <button class="hero-exit" id="heroExit" type="button" aria-label="Back to overview" hidden>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Back
+    </button>
+    <button class="hero-arrow hero-arrow--prev" id="heroPrev" type="button" aria-label="Previous photo">&lsaquo;</button>
+    <button class="hero-arrow hero-arrow--next" id="heroNext" type="button" aria-label="Next photo">&rsaquo;</button>
+    <div class="a-hero__inner wrap">
+      <span class="eyebrow" id="aHeroEyebrow">New Level Executive House</span>
+      <h1 class="display a-hero__title" id="propTitle">1331 NW 87th Street, Miami.</h1>
+      <p class="a-hero__sub" id="propSub">A full private residence in Miami-Dade — set up for the way you actually want to use it.</p>
+      <div class="a-hero__actions">
+        <a class="btn btn--green" href="#purpose" id="heroCta">Start here</a>
+        <button type="button" class="btn btn--ghost hero-tool" id="shareBtn" style="color:#fff;border-color:#fff">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+          Share
+        </button>
+        <button type="button" class="btn btn--ghost hero-tool" id="saveBtn" style="color:#fff;border-color:#fff">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <span id="saveLabel">Save</span>
+        </button>
+      </div>
+    </div>
+    <!-- photo-tour controls embedded in the hero -->
+    <div class="hero-tour-bar">
+      <span class="hero-count" id="heroCount">1 / 39</span>
+      <button class="hero-tour-btn" id="heroViewAll" type="button" aria-label="View all photos full screen">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        View all photos
+      </button>
+      <a class="hero-tour-link" id="galleryLink" target="_blank" rel="noopener">Full album &rsaquo;</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- IN-PAGE PURPOSE SELECTOR (shown when no audience is known) -->
+    <section class="section" id="purpose">
+      <div class="wrap">
+        <div class="section__head" style="text-align:center;margin-inline:auto">
+          <span class="eyebrow" style="justify-content:center">Tell us your purpose</span>
+          <h2 class="h-lg" style="margin-top:14px" id="purposeHeading">What brings you here?</h2>
+          <p class="muted" style="margin-top:8px">Pick one and the page fills in with what this home offers for it.</p>
+        </div>
+        <nav class="audience-grid" id="purposeGrid" aria-label="What brings you here?"></nav>
+
+        <!-- compact switcher shown once a purpose is chosen -->
+        <div class="purpose-switch" id="audienceSwitch" hidden>
+          <span class="purpose-switch__label">Viewing this home for <strong id="switchLabel">—</strong></span>
+          <button type="button" class="purpose-switch__btn" id="changePurpose">Change purpose</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUDIENCE-AWARE CONTENT (revealed once a purpose is chosen) -->
+    <div id="audienceContent" hidden>
+
+      <!-- 2. OVERVIEW -->
+      <section class="section" id="overview">
+        <div class="wrap">
+          <div class="overview-grid">
+            <div>
+              <div class="section__head">
+                <span class="eyebrow">Overview</span>
+                <h2 class="h-lg" style="margin-top:14px" id="ovHeadline">Built for this kind of stay.</h2>
+              </div>
+              <p class="lede" id="ovText"></p>
+            </div>
+            <div class="overview-side">
+              <img id="ovPhoto" class="ov-photo" alt="Interior of 1331 NW 87th Street">
+              <div class="facts" id="ovFacts" aria-label="Property facts"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HIGHLIGHTS — scannable standouts (separate from full amenities) -->
+      <section class="section section--alt" id="highlights">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">Highlights</span>
+            <h2 class="h-lg" style="margin-top:14px">Why this home stands out.</h2>
+          </div>
+          <ul class="highlights-list" id="highlightsList"></ul>
+        </div>
+      </section>
+
+      <!-- 3. WHAT'S INCLUDED -->
+      <section class="section" id="included-sec">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">What's included</span>
+            <h2 class="h-lg" style="margin-top:14px">Amenities that matter for your purpose.</h2>
+          </div>
+          <div class="amenities" id="included"></div>
+        </div>
+      </section>
+
+      <!-- 4. HOW IT WORKS -->
+      <section class="section" id="how">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">How it works</span>
+            <h2 class="h-lg" style="margin-top:14px">From dates to confirmation, plainly.</h2>
+          </div>
+          <div class="steps" id="steps"></div>
+        </div>
+      </section>
+
+      <!-- 5 + 6. AVAILABILITY + RATE TIER + QUOTE (moved up, where the photo tour was) -->
+      <section class="section" id="booking">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">Availability &amp; quote</span>
+            <h2 class="h-lg" style="margin-top:14px">Pick your rate type and dates.</h2>
+            <p class="muted" style="margin-top:8px">Availability shown here is <strong>illustrative for this demo</strong> — not a live calendar.</p>
+          </div>
+
+          <!-- rate-tier question (independent of purpose) -->
+          <div class="tier-select" role="radiogroup" aria-label="Rate type">
+            <p class="tier-select__q">Is this a single day/night rental, or a multi-night stay?</p>
+            <div class="tier-options" id="tierOptions"></div>
+          </div>
+
+          <div class="booking-grid">
+            <div class="booking-left">
+              <!-- event-tier times: 24-hour minimum rental -->
+              <div class="time-select" id="timeSelect" hidden>
+                <p class="time-select__note"><strong>Event rentals are a full 24-hour minimum.</strong> You have the space for a complete 24 hours — for example 3:00 PM check-in to 3:00 PM the next day. Pick your check-in and check-out dates on the calendar, then set the times.</p>
+                <div class="time-fields">
+                  <label class="time-field"><span>Check-in time</span><select id="checkinTime"></select></label>
+                  <label class="time-field"><span>Check-out time</span><select id="checkoutTime"></select></label>
+                </div>
+              </div>
+
+              <!-- calendar -->
+              <div class="cal" aria-label="Availability calendar">
+                <div class="cal__head">
+                  <button class="cal__nav" id="calPrev" type="button" aria-label="Previous month">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  </button>
+                  <span class="h-md" id="calTitle">Select your dates</span>
+                  <button class="cal__nav" id="calNext" type="button" aria-label="Next month">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </button>
+                </div>
+                <div class="cal__months" id="calMonths"></div>
+                <div class="cal__legend">
+                  <span class="legdot"><i style="background:var(--ink)"></i> Selected</span>
+                  <span class="legdot"><i style="background:var(--green-tint)"></i> In range</span>
+                  <span class="legdot"><i style="background:#fff;border:1px solid var(--line)"></i> Available</span>
+                  <span class="legdot"><i style="background:#EDEDED"></i> Unavailable</span>
+                </div>
+                <p class="cal__note" id="calNote">Pick a check-in date, then a check-out date. Ranges can't span an unavailable night.</p>
+              </div>
+
+              <!-- event-tier service add-ons (shown only for event tier) -->
+              <div class="addons" id="eventAddons" hidden>
+                <h3 class="addons__title">Services</h3>
+                <p class="addons__lead">The $1,000 rate covers the space when you bring your own services. For anything you'd rather we handle, switch it to <strong>New Level provides</strong> — pricing is being finalized.</p>
+                <div class="addon-list" id="addonList"></div>
+              </div>
+            </div>
+
+            <!-- quote -->
+            <aside class="quote" aria-label="Quote and tax breakdown">
+              <div class="quote__head">
+                <div class="quote__rate" id="quoteRate">Select a rate type to begin</div>
+              </div>
+              <div class="quote__body">
+                <div class="quote__dates">
+                  <div class="quote__date"><div class="k" id="qDateInLabel">Check-in</div><div class="v" id="qDateIn">—</div></div>
+                  <div class="quote__date"><div class="k" id="qDateOutLabel">Check-out</div><div class="v" id="qDateOut">—</div></div>
+                </div>
+
+                <p class="quote__empty" id="quoteEmpty">Choose a rate type and your date(s) to see a live quote.</p>
+
+                <div id="quoteCalc" style="display:none">
+                  <div class="qline"><span class="muted" id="qSubLabel"></span><span id="qSubtotal"></span></div>
+
+                  <!-- selected add-ons (event tier) -->
+                  <div id="qAddons"></div>
+
+                  <div class="qtaxes">
+                    <button class="tax-toggle" id="taxToggle" type="button" aria-expanded="false" aria-controls="taxDetail">
+                      <span><span id="taxSummary">Taxes</span> <span class="muted">— what's this?</span></span>
+                      <span style="display:flex;align-items:center;gap:10px"><span id="taxSummaryAmt"></span><span class="chev"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></span>
+                    </button>
+                    <div class="tax-detail" id="taxDetail">
+                      <div id="taxLines"></div>
+                      <p class="tax-note">Real Miami-Dade lodging taxes (public tax law) for a property outside Miami Beach: 6% FL sales + 1% county surtax + 6% Tourist Development Tax = <strong>13%</strong>, applied to the rental base.</p>
+                      <div class="qline" id="cdtLine" style="opacity:.75"></div>
+                      <p class="tax-note warn"><strong>Unresolved:</strong> a 3% Convention Development Tax <em>may</em> also apply countywide to stays of 182 nights or fewer — sources disagree. It is <strong>not</strong> included above. Confirm with the Miami-Dade Tax Collector or a CPA before launch.</p>
+                    </div>
+                  </div>
+
+                  <div class="qtotal">
+                    <span class="lbl">Estimated total</span>
+                    <span class="amt" id="qTotal"></span>
+                  </div>
+                  <p class="muted" id="qFootnote" style="font-size:.8rem;margin-top:10px">Estimate only. Rates are placeholder; total excludes the unresolved 3% CDT.</p>
+                  <p class="quote-deposit" id="quoteDeposit" hidden></p>
+                </div>
+
+                <div class="quote-disclosure" id="quoteDisclosure">
+                  <span class="quote-disclosure__zero">$0 due today</span>
+                  <span id="quoteCancel">You won't be charged to inquire. Free cancellation until 1 day before check-in.</span>
+                </div>
+
+                <div class="quote__cta">
+                  <a class="btn btn--solid btn--full" href="#floorplan" id="quoteContinue">Continue — floor plan, area &amp; fees</a>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- FLOOR PLAN (placeholder — not available yet) -->
+      <section class="section section--alt" id="floorplan">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">Floor plan <span class="ph-token">placeholder</span></span>
+            <h2 class="h-lg" style="margin-top:14px">How the space is laid out.</h2>
+          </div>
+          <div class="ph-block ph-block--floorplan" data-img-key="floorplan">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 10h9M12 3v18M12 14h9"/></svg>
+            <span class="ph-block__label">Floor plan — coming soon</span>
+            <p class="muted">Reserved space for the property floor plan.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEIGHBORHOOD / AREA — map placeholder + audience-relevant what's nearby -->
+      <section class="section" id="neighborhood">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">Neighborhood</span>
+            <h2 class="h-lg" style="margin-top:14px">What's nearby.</h2>
+            <p class="muted" style="margin-top:8px" id="neighborhoodBlurb"></p>
+          </div>
+          <div class="neighborhood-grid">
+            <div class="map-embed">
+              <iframe id="mapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen title="Map showing 1331 NW 87th Street, Miami"></iframe>
+              <div class="map-embed__bar">
+                <span class="map-embed__pin"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg> <span id="mapAddr">1331 NW 87th Street, Miami</span></span>
+                <a class="link-arrow" id="mapLink" target="_blank" rel="noopener">Open in Google Maps &rsaquo;</a>
+              </div>
+            </div>
+            <div class="nearby">
+              <h3 class="nearby__title">Close to this stay</h3>
+              <ul class="nearby__list" id="nearbyList"></ul>
+              <p class="ph-caption">Location pin is live; nearby spots are demo examples.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REVIEWS -->
+      <section class="section" id="reviews">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">Reviews</span>
+            <h2 class="h-lg" style="margin-top:14px"><span id="revStars">★★★★★</span> <span id="revRating">4.9</span> · <span id="revCount">27</span> guest reviews</h2>
+            <p class="muted" style="margin-top:8px" id="revHow"></p>
+          </div>
+          <div class="reviews-grid" id="reviewsGrid"></div>
+        </div>
+      </section>
+
+      <!-- FEES & POLICIES — builds on the tax breakdown + deposit -->
+      <section class="section section--alt" id="fees">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">Fees &amp; policies</span>
+            <h2 class="h-lg" style="margin-top:14px">Good to know before you book.</h2>
+            <p class="muted" style="margin-top:8px">The essentials on what's covered, what's extra, and how the home is run. Dollar specifics are placeholders for this demo; taxes are shown live in the quote above.</p>
+          </div>
+          <div class="fees-grid fees-grid--2">
+            <div class="fees-col">
+              <h3 class="fees-col__title">In your rate</h3>
+              <ul class="fees-list fees-list--in" id="feesIncluded"></ul>
+            </div>
+            <div class="fees-col">
+              <h3 class="fees-col__title">Add-ons &amp; extras</h3>
+              <ul class="fees-list fees-list--extra" id="feesExtra"></ul>
+            </div>
+          </div>
+          <div class="fees-rules">
+            <h3 class="fees-col__title">House rules</h3>
+            <ul class="rules-list" id="feesRules"></ul>
+            <p class="ph-caption" id="feesRulesNote"></p>
+          </div>
+          <div class="policy-note">
+            <h3 class="fees-col__title">Security deposit</h3>
+            <p class="muted" id="feesDeposit"></p>
+          </div>
+          <div class="policy-note">
+            <h3 class="fees-col__title">Cancellation</h3>
+            <p class="muted" id="feesCancellation"></p>
+          </div>
+          <a class="btn btn--solid" href="#inquiry" style="margin-top:26px">Continue to inquiry ›</a>
+        </div>
+      </section>
+
+      <!-- 7. INQUIRY FORM -->
+      <section class="section" id="inquiry">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">Inquiry</span>
+            <h2 class="h-lg" style="margin-top:14px">Send your details — we'll follow up to confirm.</h2>
+            <p class="muted" style="margin-top:8px">This is an <strong>inquiry, not a booking</strong>. No payment is collected and nothing is auto-confirmed.</p>
+          </div>
+
+          <form class="form-grid" id="inquiryForm" autocomplete="on" novalidate>
+            <div class="carried">
+              <div class="carried__t">Attached to your inquiry <span class="chip">auto-filled</span></div>
+              <div class="carried__list" id="carriedList"></div>
+            </div>
+
+            <div class="field">
+              <label for="f_name">Name <span class="req">*</span></label>
+              <input id="f_name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="f_email">Email <span class="req">*</span></label>
+              <input id="f_email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="f_phone">Phone <span class="req">*</span></label>
+              <input id="f_phone" name="phone" type="tel" autocomplete="tel" required>
+            </div>
+            <div class="field">
+              <label for="f_contact">Preferred contact method <span class="req">*</span></label>
+              <select id="f_contact" name="contact_method" required>
+                <option value="" disabled selected>Choose one…</option>
+                <option>Email</option>
+                <option>Phone call</option>
+                <option>Text message</option>
+                <option>WhatsApp</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f_group">Group size <span class="req">*</span></label>
+              <input id="f_group" name="group_size" type="number" min="1" inputmode="numeric" required>
+            </div>
+            <div class="field field--full">
+              <label for="f_notes">Anything else you want us to know <span class="muted">(optional)</span></label>
+              <textarea id="f_notes" name="notes" placeholder="Dates flexible? Special requests? Tell us here."></textarea>
+            </div>
+
+            <p class="form-consent">By submitting, you agree we may contact you about this property. Your inquiry — including purpose, rate type, dates and quote above — is sent straight to our team. No other apps, no extra steps.</p>
+            <div class="field--full"><button class="btn btn--solid btn--full" id="submitInquiry" type="submit" disabled>Send inquiry</button></div>
+            <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          </form>
+
+          <div id="formDone" hidden>
+            <div class="carried" style="border-style:solid;border-color:var(--green);background:var(--green-tint)">
+              <h3 class="h-md" style="margin-bottom:8px">Thanks — your inquiry is on its way.</h3>
+              <p style="margin:0 0 6px">Your inquiry has been sent straight to our team. <strong>We'll follow up to confirm availability</strong> — no booking is made and no payment is taken.</p>
+              <p class="form-demo-note" id="demoDeliveryNote" hidden>Demo note: no delivery endpoint is connected yet, so nothing was actually sent. Set <code>INQUIRY_ENDPOINT</code> (Formspree / CRM webhook) to receive these live.</p>
+              <button class="btn btn--ghost" id="formEditAgain" type="button" style="margin-top:8px">Send another</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. FAQ -->
+      <section class="section">
+        <div class="wrap">
+          <div class="section__head">
+            <span class="eyebrow">FAQ</span>
+            <h2 class="h-lg" style="margin-top:14px">Good questions, answered.</h2>
+          </div>
+          <div class="faq" id="faq"></div>
+        </div>
+      </section>
+    </div><!-- /#audienceContent -->
+
+    <!-- ABOUT NEW LEVEL (anchor target for the About link) -->
+    <section class="section section--alt" id="about">
+      <div class="wrap about-nl">
+        <span class="eyebrow">About</span>
+        <div class="wordmark" style="margin-top:14px">
+          <span class="wordmark__name">New Level</span>
+          <span class="wordmark__tag">Real Estate. Redefined.</span>
+        </div>
+        <p class="lede" id="aboutText" style="margin-top:18px"></p>
+        <a class="btn btn--solid" href="index.html" style="margin-top:8px">Explore New Level ›</a>
+      </div>
+    </section>
+
+    <!-- OTHER PROPERTIES (placeholder — no second listing yet) -->
+    <section class="section" id="other-properties">
+      <div class="wrap">
+        <div class="section__head">
+          <span class="eyebrow">More New Level homes</span>
+          <h2 class="h-lg" style="margin-top:14px" id="otherHeading">Other properties for your purpose.</h2>
+          <p class="muted" style="margin-top:8px">Placeholder for the demo — as New Level adds properties, ones matching your purpose and dates will show here (the property list already filters by purpose).</p>
+        </div>
+        <div class="other-grid" id="otherGrid"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PERSISTENT: point of contact + WhatsApp -->
+  <section class="agentbar">
+    <div class="wrap agentbar__inner">
+      <div class="agentbar__who">
+        <div class="agentbar__avatar" data-agent-initials>SL</div>
+        <div>
+          <div class="agentbar__name" data-agent-name>Point of Contact</div>
+          <div class="agentbar__role" data-agent-role>New Level</div>
+          <div class="agentbar__role"><a data-agent-phone href="#" style="color:#fff;text-decoration:none">Phone</a></div>
+        </div>
+      </div>
+      <div class="agentbar__actions">
+        <a class="btn btn--wa" data-wa href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.004c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.42 1.32-1.95 1.36-.5.04-.98.22-3.3-.69-2.78-1.1-4.56-3.94-4.7-4.12-.14-.18-1.13-1.5-1.13-2.87 0-1.36.72-2.03.97-2.31.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17.01.4-.06.62.48.24.55.8 1.9.87 2.04.07.14.11.3.02.48-.09.18-.14.29-.27.45-.14.16-.29.36-.41.48-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.18-.2.69-.8.87-1.08.18-.28.36-.23.6-.14.25.09 1.57.74 1.84.87.27.14.45.2.51.32.07.11.07.66-.17 1.34Z"/></svg>
+          WhatsApp Shelley
+        </a>
+        <a class="btn btn--onwhite" data-agent-phone href="#">Call Shelley</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <!-- slim sticky booking bar (slides up while scrolling the content) -->
+  <div class="sticky-book" id="stickyBook" hidden>
+    <div class="sticky-book__info">
+      <span class="sticky-book__title" id="sbTitle">Availability &amp; quote</span>
+      <span class="sticky-book__sub" id="sbSub">Select your dates to begin</span>
+    </div>
+    <button class="btn btn--green sticky-book__cta" id="sbContinue" type="button">Choose your dates</button>
+  </div>
+
+  <!-- floating persistent elements -->
+  <div class="floaters">
+    <a class="float-btn float-wa" data-wa href="#" target="_blank" rel="noopener" aria-label="Message us on WhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.004c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.42 1.32-1.95 1.36-.5.04-.98.22-3.3-.69-2.78-1.1-4.56-3.94-4.7-4.12-.14-.18-1.13-1.5-1.13-2.87 0-1.36.72-2.03.97-2.31.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17.01.4-.06.62.48.24.55.8 1.9.87 2.04.07.14.11.3.02.48-.09.18-.14.29-.27.45-.14.16-.29.36-.41.48-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.18-.2.69-.8.87-1.08.18-.28.36-.23.6-.14.25.09 1.57.74 1.84.87.27.14.45.2.51.32.07.11.07.66-.17 1.34Z"/></svg>
+    </a>
+    <a class="float-btn float-connect" id="floatConnect" href="#inquiry" aria-label="Let's connect">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="float-btn__label">Let's connect</span>
+    </a>
+  </div>
+
+  <!-- photo-tour lightbox -->
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Photo tour">
+    <button class="lightbox__close" id="lbClose" type="button" aria-label="Close tour">&times;</button>
+    <button class="lightbox__nav lightbox__prev" id="lbPrev" type="button" aria-label="Previous photo">&lsaquo;</button>
+    <figure class="lightbox__stage"><img class="lightbox__img" id="lbImg" alt="1331 NW 87th Street — photo"></figure>
+    <button class="lightbox__nav lightbox__next" id="lbNext" type="button" aria-label="Next photo">&rsaquo;</button>
+    <div class="lightbox__count" id="lbCount"></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="content.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
