@@ -32,6 +32,10 @@
       </a>
       <div class="nav__right">
         <a class="nav__about" href="index.html">About New Level</a>
+        <label class="nav__lang" aria-label="Language">
+          <span class="nav__lang-ic" aria-hidden="true"></span>
+          <select class="lang-select" aria-label="Language"></select>
+        </label>
       </div>
     </div>
   </div>
@@ -95,6 +99,20 @@
         <div class="purpose-switch" id="audienceSwitch" hidden>
           <span class="purpose-switch__label">Viewing this home for <strong id="switchLabel">—</strong></span>
           <button type="button" class="purpose-switch__btn" id="changePurpose">Change purpose</button>
+        </div>
+
+        <!-- event-type picker — shown once "Private Events" is the chosen purpose -->
+        <div class="event-type" id="eventTypePicker" hidden>
+          <div class="section__head" style="text-align:center;margin-inline:auto;max-width:640px">
+            <span class="eyebrow" style="justify-content:center">Type of event</span>
+            <h3 class="h-md" style="margin-top:10px">What kind of event is it?</h3>
+            <p class="muted" style="margin-top:6px">Pick a preset, or describe it in your own words.</p>
+          </div>
+          <div class="event-type__chips" id="eventTypeChips" role="group" aria-label="Type of event"></div>
+          <div class="event-type__other">
+            <label for="eventTypeOther">Describe your event</label>
+            <input type="text" id="eventTypeOther" maxlength="140" placeholder="Tell us a bit more — birthday, baby shower, retreat, whatever it is.">
+          </div>
         </div>
       </div>
     </section>
@@ -201,11 +219,11 @@
                 <p class="cal__note" id="calNote">Pick a check-in date, then a check-out date. Ranges can't span an unavailable night.</p>
               </div>
 
-              <!-- event-tier service add-ons (shown only for event tier) -->
-              <div class="addons" id="eventAddons" hidden>
-                <h3 class="addons__title">Services</h3>
-                <p class="addons__lead">The $1,000 rate covers the space when you bring your own services. For anything you'd rather we handle, switch it to <strong>New Level provides</strong> — pricing is being finalized.</p>
-                <div class="addon-list" id="addonList"></div>
+              <!-- event-tier packages (shown only for event tier) -->
+              <div class="packages" id="eventPackages" hidden>
+                <h3 class="packages__title">Choose your event package</h3>
+                <p class="packages__lead">The $1,000 rate covers the space when you bring your own services. Pick a package if you'd rather New Level coordinate it for you — pricing is being finalized.</p>
+                <div class="package-list" id="packageList" role="radiogroup" aria-label="Event package"></div>
               </div>
             </div>
 
@@ -213,6 +231,7 @@
             <aside class="quote" aria-label="Quote and tax breakdown">
               <div class="quote__head">
                 <div class="quote__rate" id="quoteRate">Select a rate type to begin</div>
+                <label class="quote__currency"><span>View quote in</span><select class="currency-select" aria-label="Currency"></select></label>
               </div>
               <div class="quote__body">
                 <div class="quote__dates">

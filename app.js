@@ -36,7 +36,7 @@
   function translatePage(lang) {
     if (typeof I18N === "undefined") return;
     currentLang = lang;
-    document.querySelectorAll(".nav__links a,.nav__about,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn")
+    document.querySelectorAll(".nav__links a,.nav__about,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab")
       .forEach((e) => { if (e.childElementCount === 0) translateEl(e, lang); });
     document.querySelectorAll(".eyebrow,.field label,.btn,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit").forEach((e) => translateEl(e, lang));
     document.documentElement.lang = lang;
@@ -250,6 +250,8 @@
     buildTeam();
     buildServices();
     buildTestimonials();
+    initCarousel("#teamGrid", "#teamPrev", "#teamNext");
+    initCarousel("#testimonialsGrid", "#testimonialsPrev", "#testimonialsNext");
     translatePage(currentLang);
   }
 
@@ -257,11 +259,96 @@
     const t = $("#aboutLongText");
     if (t) t.textContent = NLG_BRAND.aboutLong;
     buildServices();
+    buildCrossNav("#crossNavLinks", "about");
     translatePage(currentLang);
   }
 
-  function buildTeam() {
-    const grid = $("#teamGrid");
+  /* Pill links to the other dedicated pages — lets a visitor keep exploring
+     from any landing page without backing out to the homepage first. */
+  function buildCrossNav(sel, currentKey) {
+    const box = $(sel);
+    if (!box || typeof SITE_PAGES === "undefined") return;
+    box.innerHTML = SITE_PAGES.filter((p) => p.key !== currentKey)
+      .map((p) => `<a class="cross-nav__link" href="${p.href}">${p.label} &rsaquo;</a>`).join("");
+  }
+
+  /* ================================================================
+     Dedicated landing pages: team / services / testimonials / events / contact
+     ================================================================ */
+  function renderTeamPage() {
+    if (typeof PAGES !== "undefined") {
+      $("#pageEyebrow").textContent = PAGES.team.eyebrow;
+      $("#pageHeading").textContent = PAGES.team.heading;
+      $("#pageSub").textContent = PAGES.team.sub;
+      $("#pageIntro").textContent = PAGES.team.intro;
+    }
+    buildTeam("#teamGrid");
+    initCarousel("#teamGrid", "#teamPrev", "#teamNext");
+    buildCrossNav("#crossNavLinks", "team");
+    translatePage(currentLang);
+  }
+
+  function renderServicesPage() {
+    if (typeof PAGES !== "undefined") {
+      $("#pageEyebrow").textContent = PAGES.services.eyebrow;
+      $("#pageHeading").textContent = PAGES.services.heading;
+      $("#pageSub").textContent = PAGES.services.sub;
+      $("#pageIntro").textContent = PAGES.services.intro;
+    }
+    const grid = $("#servicesGrid");
+    if (grid && typeof SERVICES !== "undefined") {
+      grid.innerHTML = "";
+      const idFor = (t) => /brokerage/i.test(t) ? "brokerage" : /management/i.test(t) ? "management" : /investment/i.test(t) ? "investment" : /events/i.test(t) ? "events-service" : "";
+      SERVICES.forEach((s) => {
+        const card = el("div", "service-card");
+        const id = idFor(s.t);
+        if (id) card.id = id;
+        card.innerHTML = `<div class="service-card__t">${s.t}</div><p class="service-card__d">${s.d}</p>`;
+        grid.appendChild(card);
+      });
+    }
+    buildCrossNav("#crossNavLinks", "services");
+    translatePage(currentLang);
+  }
+
+  function renderTestimonialsPage() {
+    if (typeof PAGES !== "undefined") {
+      $("#pageEyebrow").textContent = PAGES.testimonials.eyebrow;
+      $("#pageHeading").textContent = PAGES.testimonials.heading;
+      $("#pageSub").textContent = PAGES.testimonials.sub;
+    }
+    buildTestimonials("#testimonialsGrid");
+    initCarousel("#testimonialsGrid", "#testimonialsPrev", "#testimonialsNext");
+    buildCrossNav("#crossNavLinks", "testimonials");
+    translatePage(currentLang);
+  }
+
+  function renderEventsPage() {
+    if (typeof PAGES !== "undefined") {
+      $("#pageEyebrow").textContent = PAGES.events.eyebrow;
+      $("#pageHeading").textContent = PAGES.events.heading;
+      $("#pageSub").textContent = PAGES.events.sub;
+    }
+    buildCrossNav("#crossNavLinks", "events");
+    translatePage(currentLang);
+  }
+
+  function renderContactPage() {
+    if (typeof PAGES !== "undefined") {
+      $("#pageEyebrow").textContent = PAGES.contact.eyebrow;
+      $("#pageHeading").textContent = PAGES.contact.heading;
+      $("#pageSub").textContent = PAGES.contact.sub;
+      $("#pageIntro").textContent = PAGES.contact.intro;
+    }
+    wirePersistent();
+    const mail = $("#contactEmail");
+    if (mail) { mail.textContent = PROPERTY.inquiryEmail; mail.href = "mailto:" + PROPERTY.inquiryEmail; }
+    buildCrossNav("#crossNavLinks", "contact");
+    translatePage(currentLang);
+  }
+
+  function buildTeam(gridSel) {
+    const grid = $(gridSel || "#teamGrid");
     if (!grid || typeof TEAM === "undefined") return;
     grid.innerHTML = "";
     TEAM.forEach((m, i) => {
@@ -270,21 +357,40 @@
       card.innerHTML = `
         <div class="team-card__photo${m.placeholder ? " is-ph" : ""}" data-img-key="team:${i}"><span>${m.placeholder ? "Photo" : initials}</span></div>
         <div class="team-card__name">${m.name}</div>
-        <div class="team-card__role">${m.role}</div>`;
+        <div class="team-card__role">${m.role}</div>
+        ${m.motto ? `<p class="team-card__motto">“${m.motto}”</p>` : ""}`;
       grid.appendChild(card);
     });
   }
 
-  function buildServices() {
-    const grid = $("#servicesGrid");
+  /* Generic bounded left/right carousel — arrows scroll the track, disabling
+     at each end. No infinite loop; scrolling left always lets you scroll
+     back right. Used for Team + Testimonials on the landing and dedicated pages. */
+  function initCarousel(trackSel, prevSel, nextSel) {
+    const track = $(trackSel), prev = $(prevSel), next = $(nextSel);
+    if (!track || !prev || !next) return;
+    const step = () => Math.min(track.clientWidth * 0.9, 640);
+    prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
+    next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
+    const update = () => {
+      prev.disabled = track.scrollLeft <= 4;
+      next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
+    };
+    track.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    setTimeout(update, 0);
+  }
+
+  function buildServices(gridSel) {
+    const grid = $(gridSel || "#servicesGrid");
     if (!grid || typeof SERVICES === "undefined") return;
     grid.innerHTML = "";
     SERVICES.forEach((s) => grid.appendChild(el("div", "service-card",
       `<div class="service-card__t">${s.t}</div><p class="service-card__d">${s.d}</p>`)));
   }
 
-  function buildTestimonials() {
-    const grid = $("#testimonialsGrid");
+  function buildTestimonials(gridSel) {
+    const grid = $(gridSel || "#testimonialsGrid");
     if (!grid || typeof TESTIMONIALS === "undefined") return;
     grid.innerHTML = "";
     TESTIMONIALS.forEach((tm) => {
@@ -301,20 +407,8 @@
   /* ================================================================
      PROPERTY LIST (properties.html) — filtered by purpose
      ================================================================ */
-  function renderPropertyList() {
-    const params = new URLSearchParams(location.search);
-    let id = params.get("a");
-    if (!AUDIENCES[id]) id = null;
-    const a = id ? AUDIENCES[id] : null;
-
-    if (a) {
-      $("#plEyebrow").textContent = a.navLabel;
-      $("#plTitle").textContent = `New Level homes for ${a.cardLabel}`;
-      $("#plSub").textContent = `One property matches right now. Select it to see availability, amenities and to send an inquiry.`;
-    }
-
-    const href = id ? `property.html?a=${id}` : "property.html";
-    const list = $("#propertyList");
+  function realPropertyCard(hrefId) {
+    const href = hrefId ? `property.html?a=${hrefId}` : "property.html";
     const card = el("a", "prop-card");
     card.href = href;
     card.innerHTML = `
@@ -327,7 +421,50 @@
         </div>
         <span class="prop-card__cta">View property &rsaquo;</span>
       </div>`;
-    list.appendChild(card);
+    return card;
+  }
+  function otherPropertyCard(p, i) {
+    return el("div", "other-card",
+      `<div class="other-card__media" data-img-key="other:${i}">${p.soon ? '<span class="other-card__soon">Coming soon</span>' : ""}</div>
+       <div class="other-card__body">
+         <div class="other-card__title">${p.title}</div>
+         <div class="other-card__meta">${p.meta}</div>
+         <div class="other-card__rate">${p.rate}</div>
+       </div>`);
+  }
+
+  function renderPropertyList() {
+    const params = new URLSearchParams(location.search);
+    let id = params.get("a");
+    if (!AUDIENCES[id]) id = null;
+    const a = id ? AUDIENCES[id] : null;
+    const list = $("#propertyList"), catsBox = $("#propertyCategories");
+
+    if (a) {
+      // purpose-filtered view: the one real property, no category browsing
+      $("#plEyebrow").textContent = a.navLabel;
+      $("#plTitle").textContent = `New Level homes for ${a.cardLabel}`;
+      $("#plSub").textContent = `One property matches right now. Select it to see availability, amenities and to send an inquiry.`;
+      list.hidden = false; list.innerHTML = "";
+      list.appendChild(realPropertyCard(id));
+      if (catsBox) catsBox.innerHTML = "";
+    } else if (catsBox && typeof PROPERTY_CATEGORIES !== "undefined") {
+      // default view: properties grouped by category
+      list.hidden = true;
+      catsBox.innerHTML = "";
+      PROPERTY_CATEGORIES.forEach((cat) => {
+        const cards = [];
+        if (PROPERTY.categories && PROPERTY.categories.includes(cat.id)) cards.push(realPropertyCard(null));
+        OTHER_PROPERTIES.forEach((p, i) => { if (p.categories && p.categories.includes(cat.id)) cards.push(otherPropertyCard(p, i)); });
+        if (!cards.length) return;
+        const block = el("div", "category-block");
+        block.innerHTML = `<div class="category-block__head"><h2 class="h-lg category-tab">${cat.label}</h2><p class="muted">${cat.blurb}</p></div>`;
+        const grid = el("div", "property-list");
+        cards.forEach((c) => grid.appendChild(c));
+        block.appendChild(grid);
+        catsBox.appendChild(block);
+      });
+    }
     translatePage(currentLang);
   }
 
@@ -341,9 +478,11 @@
     checkinTime: EVENT_DEFAULT_CHECKIN_MIN,
     checkoutTime: EVENT_DEFAULT_CHECKOUT_MIN,
     availability: null,
-    addons: {},
+    package: "self",
     quote: null,
     audience: null,
+    eventType: null,
+    eventTypeOther: "",
   };
 
   const nextDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
@@ -377,6 +516,7 @@
     if (changeBtn) changeBtn.addEventListener("click", () => {
       $("#purposeGrid").hidden = false;
       $("#audienceSwitch").hidden = true;
+      const etPicker = $("#eventTypePicker"); if (etPicker) etPicker.hidden = true;
       $("#purpose").scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
@@ -403,6 +543,7 @@
     $("#purposeGrid").hidden = false;
     $("#audienceSwitch").hidden = true;
     $("#audienceContent").hidden = true;
+    const etPicker = $("#eventTypePicker"); if (etPicker) etPicker.hidden = true;
     const cta = $("#heroCta");
     if (cta) { cta.textContent = "Choose your purpose"; cta.setAttribute("href", "#purpose"); }
   }
@@ -460,6 +601,10 @@
     $("#switchLabel").textContent = a.cardLabel;
     updateWhatsApp(a.navLabel);
 
+    // type-of-event picker — only relevant once "Private Events" is chosen
+    const etPicker = $("#eventTypePicker");
+    if (etPicker) etPicker.hidden = id !== "events";
+
     const cta = $("#heroCta");
     if (cta) { cta.textContent = "Check availability"; cta.setAttribute("href", "#booking"); }
 
@@ -473,6 +618,29 @@
     if (userInitiated) {
       $("#overview").scrollIntoView({ behavior: "smooth", block: "start" });
     }
+  }
+
+  /* Preset chips + free-text field for "what kind of event is it" — only
+     shown once the guest has chosen the Private Events purpose. */
+  function buildEventTypePicker() {
+    const chips = $("#eventTypeChips"), other = $("#eventTypeOther");
+    if (!chips || typeof EVENT_TYPES === "undefined") return;
+    if (chips.childElementCount) return; // build once
+    const s = bookingState;
+    EVENT_TYPES.forEach((t) => {
+      const btn = el("button", "event-type__chip", t);
+      btn.type = "button";
+      btn.setAttribute("data-en", t);
+      btn.addEventListener("click", () => {
+        const active = s.eventType === t;
+        chips.querySelectorAll(".event-type__chip").forEach((c) => c.classList.remove("is-active"));
+        s.eventType = active ? null : t;
+        if (s.eventType) btn.classList.add("is-active");
+        updateCarried();
+      });
+      chips.appendChild(btn);
+    });
+    if (other) other.addEventListener("input", () => { s.eventTypeOther = other.value.trim(); updateCarried(); });
   }
 
   function plusIcon() {
@@ -515,7 +683,7 @@
     s.view0 = new Date(today.getFullYear(), today.getMonth(), 1);
     s.view = new Date(s.view0);
     s.availability = buildAvailability();
-    EVENT_ADDONS.forEach((ad) => (s.addons[ad.id] = "self"));
+    s.package = "self";
 
     // tier options
     const opts = $("#tierOptions");
@@ -534,23 +702,27 @@
       opts.appendChild(label);
     });
 
-    // add-ons
-    const addonList = $("#addonList");
-    addonList.innerHTML = "";
-    EVENT_ADDONS.forEach((ad) => {
-      const row = el("div", "addon");
-      row.innerHTML = `
-        <div class="addon__label"><span class="addon__t">${ad.label}</span><span class="addon__d">${ad.desc}</span></div>
-        <div class="addon__toggle" role="radiogroup" aria-label="${ad.label}">
-          <label class="addon__opt"><input type="radio" name="addon-${ad.id}" value="self" checked> I'll provide this</label>
-          <label class="addon__opt"><input type="radio" name="addon-${ad.id}" value="nl"> New Level provides <span class="addon__up" data-usd="${ad.price}">+${money(ad.price)}</span></label>
-        </div>`;
-      row.querySelectorAll("input").forEach((inp) => inp.addEventListener("change", () => {
-        s.addons[ad.id] = row.querySelector("input:checked").value;
-        updateQuote();
-      }));
-      addonList.appendChild(row);
+    // event packages (replaces the old per-service self/New-Level toggle)
+    const packageList = $("#packageList");
+    packageList.innerHTML = "";
+    EVENT_PACKAGES.forEach((p) => {
+      const incLabels = p.includes.map((sid) => { const svc = EVENT_ADDONS.find((a) => a.id === sid); return svc ? svc.label : null; }).filter(Boolean);
+      const card = el("label", "package-card" + (p.popular ? " is-popular" : ""));
+      card.innerHTML = `
+        <input type="radio" name="eventPackage" value="${p.id}" ${p.id === s.package ? "checked" : ""}>
+        ${p.popular ? `<span class="package-card__badge">Most popular</span>` : ""}
+        <span class="package-card__t">${p.label}</span>
+        <span class="package-card__price">${p.price ? `+${money(p.price)}` : "Included"}</span>
+        <span class="package-card__tagline">${p.tagline}</span>
+        ${incLabels.length ? `<span class="package-card__inc">Includes: ${incLabels.join(", ")}</span>` : ""}`;
+      const priceEl = card.querySelector(".package-card__price");
+      if (p.price) { priceEl.setAttribute("data-usd", p.price); priceEl.setAttribute("data-pre", "+"); }
+      card.querySelector("input").addEventListener("change", () => { s.package = p.id; updateQuote(); });
+      packageList.appendChild(card);
     });
+
+    // type-of-event chips (Private Events purpose only)
+    buildEventTypePicker();
 
     // calendar nav
     $("#calPrev").addEventListener("click", () => { s.view = addMonths(s.view, -1); drawCal(); });
@@ -583,8 +755,8 @@
     const s = bookingState;
     s.tier = tier;
     s.start = null; s.end = null;
-    // event add-ons + times visibility
-    $("#eventAddons").hidden = tier !== "event";
+    // event packages + times visibility
+    $("#eventPackages").hidden = tier !== "event";
     $("#timeSelect").hidden = tier !== "event";
     // labels
     if (tier === "event") {
@@ -723,21 +895,25 @@
     const taxTotal = taxLines.reduce((a, t) => a + t.amount, 0);
     const cdtAmount = rentalBase * TAX.cdt.rate;
 
-    // selected event add-ons (with demo prices) fold into the total
-    const chosen = s.tier === "event"
-      ? EVENT_ADDONS.filter((ad) => s.addons[ad.id] === "nl").map((ad) => ({ label: ad.label, price: ad.price }))
-      : [];
-    const addonsTotal = chosen.reduce((a, c) => a + c.price, 0);
+    // selected event package (with demo price) folds into the total
+    const pkg = s.tier === "event" ? EVENT_PACKAGES.find((p) => p.id === s.package) : null;
+    const pkgIncludes = pkg ? pkg.includes.map((sid) => { const svc = EVENT_ADDONS.find((a) => a.id === sid); return svc ? svc.label : null; }).filter(Boolean) : [];
+    const chosen = pkg && pkg.price ? [{ label: `${pkg.label} package`, price: pkg.price, includes: pkgIncludes }] : [];
+    const addonsTotal = pkg ? pkg.price : 0;
     const totalNumeric = rentalBase + taxTotal + addonsTotal;
 
     empty.style.display = "none"; body.style.display = "block";
     $("#qSubLabel").textContent = subLabel;
     $("#qSubtotal").textContent = money2(rentalBase);
 
-    // add-on lines (real demo amounts)
+    // package line (real demo amount) + what it includes
     const qAddons = $("#qAddons"); qAddons.innerHTML = "";
-    chosen.forEach((c) => qAddons.appendChild(el("div", "qline",
-      `<span class="muted">${c.label} <span class="ph-token">New Level</span></span><span>+${money2(c.price)}</span>`)));
+    chosen.forEach((c) => {
+      qAddons.appendChild(el("div", "qline",
+        `<span class="muted">${c.label} <span class="ph-token">New Level</span></span><span>+${money2(c.price)}</span>`));
+      if (c.includes && c.includes.length) qAddons.appendChild(el("div", "qline qline--sub",
+        `<span class="muted">Includes: ${c.includes.join(", ")}</span><span></span>`));
+    });
 
     $("#taxSummary").textContent = "Taxes (13%)";
     $("#taxSummaryAmt").textContent = money2(taxTotal);
@@ -805,6 +981,7 @@
       const payload = {
         property: "1331 NW 87th Street (New Level Executive House)",
         purpose: s.audience.cardLabel,
+        event_type: s.audience.id === "events" ? (s.eventTypeOther || s.eventType || "not specified") : "n/a",
         rate_type: q.tierLabel,
         check_in: q.checkIn,
         check_out: q.checkOut,
@@ -869,6 +1046,8 @@
       [q && q.tier === "event" ? "Event date" : "Check-in", q ? q.checkIn : "—"],
       ["Check-out", q ? q.checkOut : "—"],
     ];
+    const eventTypeVal = s.eventTypeOther || s.eventType;
+    if (s.audience && s.audience.id === "events" && eventTypeVal) rows.splice(1, 0, ["Type of event", eventTypeVal]);
     if (q && q.addons.length) rows.push(["Services", q.addons.join(", ") + " (TBD)"]);
     rows.push(["Est. total", q ? (q.addons.length ? money2(q.totalNumeric) + " + services (TBD)" : money2(q.totalNumeric)) : "—"]);
     box.innerHTML = rows.map((r) => `<div><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join("");
@@ -1165,6 +1344,7 @@
   function injectNavLogo() {
     const slot = $("#navMark");
     if (slot) slot.innerHTML = `<img class="brand__logo" data-img-key="logo" src="${overrideFor("logo") || LOGO_SRC}" alt="New Level">`;
+    document.querySelectorAll(".nav__lang-ic").forEach((n) => (n.innerHTML = GLYPH.globe));
   }
 
   function ehoIcon() {
@@ -1183,7 +1363,7 @@
       `<a class="soc" href="${s.href}" target="_blank" rel="noopener" aria-label="${s.name}">${s.icon}</a>`).join("");
     const cols = FOOTER_NAV.map((c) => `
       <div class="foot-col"><h4>${c.title}</h4>
-        ${c.links.map((l) => `<a href="${PROPERTY.parentUrl}" target="_blank" rel="noopener">${l}</a>`).join("")}
+        ${c.links.map((l) => `<a href="${l.href}"${l.external ? ' target="_blank" rel="noopener"' : ""}>${l.label}</a>`).join("")}
       </div>`).join("");
     root.innerHTML = `
       <div class="wrap foot-top">
@@ -1203,8 +1383,8 @@
         <p class="copyright">© ${year} New Level Group LLC. All Rights Reserved.</p>
         <p class="demo-note">Demo build — not a live New Level page. Availability &amp; pricing shown are illustrative placeholders.</p>
         <div class="foot-prefs">
-          <label class="foot-pref"><span>Language</span><select id="langSelect" aria-label="Language"></select></label>
-          <label class="foot-pref"><span>Currency</span><select id="currencySelect" aria-label="Currency"></select></label>
+          <label class="foot-pref"><span>Language</span><select class="lang-select" aria-label="Language"></select></label>
+          <label class="foot-pref"><span>Currency</span><select class="currency-select" aria-label="Currency"></select></label>
           <button class="report-trigger" id="privacyTrigger" type="button">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6z"/></svg>
             Your privacy choices
@@ -1260,6 +1440,18 @@
     });
     return out;
   }
+  /* Every dedicated landing page cross-links to its siblings, so a visitor
+     exploring Team/Services/Testimonials/Events/Contact/Properties/About
+     never has to back out to the homepage to keep going. */
+  const SITE_PAGES = [
+    { key: "properties",   label: "Properties",   href: "properties.html" },
+    { key: "about",        label: "About New Level", href: "about.html" },
+    { key: "team",         label: "Team",          href: "team.html" },
+    { key: "services",     label: "Services",      href: "services.html" },
+    { key: "testimonials", label: "Testimonials",  href: "testimonials.html" },
+    { key: "events",       label: "Events",        href: "events.html" },
+    { key: "contact",      label: "Contact",       href: "contact.html" },
+  ];
   function menuNav(page) {
     if (page === "property") {
       const nb = $("#navBack");
@@ -1269,13 +1461,16 @@
         { label: "All properties", href: "properties.html" },
       ];
     }
-    if (page === "properties" || page === "about") return [{ label: "‹ New Level home", href: "index.html" }];
+    if (SITE_PAGES.some((p) => p.key === page)) {
+      const rest = SITE_PAGES.filter((p) => p.key !== page).map(({ label, href }) => ({ label, href }));
+      return [{ label: "‹ New Level home", href: "index.html" }, ...rest];
+    }
     return [{ label: "Choose a purpose", href: "#choose", scroll: true }];
   }
   function menuContext(page) {
-    return page === "property" ? "1331 NW 87th Street"
-      : page === "properties" ? "Properties"
-      : page === "about" ? "About New Level" : "New Level";
+    if (page === "property") return "1331 NW 87th Street";
+    const p = SITE_PAGES.find((x) => x.key === page);
+    return p ? p.label : "New Level";
   }
   function buildMenu() {
     const nav = $(".nav__inner"); if (!nav) return;
@@ -1332,30 +1527,41 @@
   /* ================================================================
      Preferences (language, currency) + Privacy choices
      ================================================================ */
+  /* Multiple lang/currency selects can appear on one page (footer, nav,
+     quote card) — they all stay in sync off the same currentLang/currentCurrency. */
   function initPreferences() {
-    const lang = $("#langSelect");
-    if (lang && typeof LANGUAGES !== "undefined") {
-      lang.innerHTML = LANGUAGES.map((l) => `<option value="${l.code}">${l.label}</option>`).join("");
+    const langEls = document.querySelectorAll(".lang-select");
+    if (langEls.length && typeof LANGUAGES !== "undefined") {
+      const opts = LANGUAGES.map((l) => `<option value="${l.code}">${l.label}</option>`).join("");
       let saved = "en"; try { saved = localStorage.getItem("nl_lang") || "en"; } catch (e) {}
-      currentLang = saved; lang.value = saved; document.documentElement.lang = saved;
-      lang.addEventListener("change", () => {
-        currentLang = lang.value;
-        try { localStorage.setItem("nl_lang", currentLang); } catch (e) {}
-        translatePage(currentLang);
-        const L = LANGUAGES.find((x) => x.code === currentLang);
-        toast(`${L ? L.label : "Language"} — interface translated (long-form content stays in English for the demo).`);
+      currentLang = saved; document.documentElement.lang = saved;
+      langEls.forEach((lang) => {
+        lang.innerHTML = opts;
+        lang.value = saved;
+        lang.addEventListener("change", () => {
+          currentLang = lang.value;
+          try { localStorage.setItem("nl_lang", currentLang); } catch (e) {}
+          translatePage(currentLang);
+          langEls.forEach((other) => { if (other !== lang) other.value = currentLang; });
+          const L = LANGUAGES.find((x) => x.code === currentLang);
+          toast(`${L ? L.label : "Language"} — interface translated (long-form content stays in English for the demo).`);
+        });
       });
     }
-    const c = $("#currencySelect");
-    if (c && typeof CURRENCIES !== "undefined") {
-      c.innerHTML = Object.keys(CURRENCIES).map((k) => `<option value="${k}">${CURRENCIES[k].label}</option>`).join("");
+    const curEls = document.querySelectorAll(".currency-select");
+    if (curEls.length && typeof CURRENCIES !== "undefined") {
+      const opts = Object.keys(CURRENCIES).map((k) => `<option value="${k}">${CURRENCIES[k].label}</option>`).join("");
       try { const s = localStorage.getItem("nl_currency"); if (s && CURRENCIES[s]) currentCurrency = s; } catch (e) {}
-      c.value = currentCurrency;
-      refreshMoney();
-      c.addEventListener("change", () => {
-        currentCurrency = c.value; try { localStorage.setItem("nl_currency", currentCurrency); } catch (e) {}
-        refreshMoney(); toast(`Prices shown in ${CURRENCIES[currentCurrency].label} — demo rate.`);
+      curEls.forEach((c) => {
+        c.innerHTML = opts;
+        c.value = currentCurrency;
+        c.addEventListener("change", () => {
+          currentCurrency = c.value; try { localStorage.setItem("nl_currency", currentCurrency); } catch (e) {}
+          curEls.forEach((other) => { if (other !== c) other.value = currentCurrency; });
+          refreshMoney(); toast(`Prices shown in ${CURRENCIES[currentCurrency].label} — demo rate.`);
+        });
       });
+      refreshMoney();
     }
   }
 
@@ -1616,6 +1822,11 @@
     else if (page === "properties") renderPropertyList();
     else if (page === "property") renderProperty();
     else if (page === "about") renderAbout();
+    else if (page === "team") renderTeamPage();
+    else if (page === "services") renderServicesPage();
+    else if (page === "testimonials") renderTestimonialsPage();
+    else if (page === "events") renderEventsPage();
+    else if (page === "contact") renderContactPage();
     applyImageOverrides();
     decorateSlots();
     // shared images arrive async; they re-apply over every tagged slot

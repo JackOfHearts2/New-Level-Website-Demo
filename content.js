@@ -49,6 +49,7 @@ const GLYPH = {
   arrowR: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
   whatsapp: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.004c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.42 1.32-1.95 1.36-.5.04-.98.22-3.3-.69-2.78-1.1-4.56-3.94-4.7-4.12-.14-.18-1.13-1.5-1.13-2.87 0-1.36.72-2.03.97-2.31.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17.01.4-.06.62.48.24.55.8 1.9.87 2.04.07.14.11.3.02.48-.09.18-.14.29-.27.45-.14.16-.29.36-.41.48-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.18-.2.69-.8.87-1.08.18-.28.36-.23.6-.14.25.09 1.57.74 1.84.87.27.14.45.2.51.32.07.11.07.66-.17 1.34Z"/></svg>`,
   spark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>`,
+  globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`,
 };
 
 /* =========================================================================
@@ -70,13 +71,33 @@ const SOCIALS = [
     `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2.1 1.5 3.6 3.5 3.9v2.6c-1.3 0-2.5-.4-3.5-1.1v5.9c0 3.3-2.5 5.7-5.7 5.7A5.6 5.6 0 0 1 5.3 14c0-3.1 2.6-5.6 6-5.2v2.7c-.4-.1-.8-.2-1.2-.2-1.5 0-2.6 1.2-2.6 2.7 0 1.5 1.1 2.7 2.7 2.7 1.6 0 2.7-1.2 2.7-2.9V3h3.6Z"/></svg>` },
 ];
 
-/* Footer navigation — EXACT structure from the live New Level site.
-   Links point to the main site root (visible placeholders). */
+/* Footer navigation — section titles mirror the live New Level site.
+   Links route to this demo's own dedicated pages where one exists; anything
+   out of scope for the demo (legal pages, the broker blog, agent recruiting)
+   is a clearly-external placeholder pointing at the main site. */
 const FOOTER_NAV = [
-  { title: "Company",   links: ["About Us", "Agents & Partners", "Contact", "Join Our Network"] },
-  { title: "Services",  links: ["Brokerage & Consulting", "Property Management", "Investment", "Events & Networking"] },
-  { title: "Resources", links: ["The Broker's Corner", "FAQs", "Property Portfolio"] },
-  { title: "Legal",     links: ["Privacy Policy", "Terms of Use", "Risk Disclosure"] },
+  { title: "Company", links: [
+    { label: "About Us",          href: "about.html" },
+    { label: "Agents & Partners", href: "team.html" },
+    { label: "Contact",           href: "contact.html" },
+    { label: "Join Our Network",  href: "https://newlevelassociates.com", external: true },
+  ] },
+  { title: "Services", links: [
+    { label: "Brokerage & Consulting", href: "services.html#brokerage" },
+    { label: "Property Management",    href: "services.html#management" },
+    { label: "Investment",             href: "services.html#investment" },
+    { label: "Events & Networking",    href: "events.html" },
+  ] },
+  { title: "Resources", links: [
+    { label: "The Broker's Corner", href: "https://newlevelassociates.com", external: true },
+    { label: "FAQs",                href: "property.html#faq" },
+    { label: "Property Portfolio",  href: "properties.html" },
+  ] },
+  { title: "Legal", links: [
+    { label: "Privacy Policy",   href: "https://newlevelassociates.com", external: true },
+    { label: "Terms of Use",     href: "https://newlevelassociates.com", external: true },
+    { label: "Risk Disclosure",  href: "https://newlevelassociates.com", external: true },
+  ] },
 ];
 
 /* Full photo album (client gallery) + on-page photo assignments. */
@@ -151,7 +172,7 @@ const FEES_POLICIES = {
   extra: [
     { t: "Refundable security deposit", v: "$500 · event rentals only" },
     { t: "Cleaning fee",                v: "$150" },
-    { t: "Event services (if New Level provides)", v: "$400–$850 each" },
+    { t: "Event package (if New Level provides services)", v: "$900–$2,400" },
     { t: "Lodging taxes",               v: "13% (shown in quote)" },
   ],
   houseRules: [
@@ -195,11 +216,20 @@ const REVIEWS = {
   ],
 };
 
+/* Property categories — how the properties landing page groups listings.
+   Not exhaustive by design; New Level can add more as the portfolio grows. */
+const PROPERTY_CATEGORIES = [
+  { id: "luxury-short-term", label: "Luxury Short-Term Rentals", blurb: "Premium full-property rentals for a few standout nights." },
+  { id: "short-term",        label: "Short-Term Rentals",        blurb: "Straightforward nightly stays for a quick trip." },
+  { id: "extended-stay",     label: "Extended Stays",            blurb: "Homes set up for weeks or months, not just a weekend." },
+  { id: "events",            label: "Private Events",            blurb: "Full-property venues built for hosting, not just sleeping." },
+];
+
 /* Other New Level properties — PLACEHOLDERS (no real second listing yet). */
 const OTHER_PROPERTIES = [
-  { title: "Bay Harbor villa",     meta: "Sleeps 10 · Waterfront",  rate: "from $600 / night", soon: true },
-  { title: "Wynwood loft",         meta: "Sleeps 6 · Events",       rate: "from $900 / day",   soon: true },
-  { title: "Coral Gables estate",  meta: "Sleeps 20 · Retreats",    rate: "from $750 / night", soon: true },
+  { title: "Bay Harbor villa",     meta: "Sleeps 10 · Waterfront",  rate: "from $600 / night", soon: true, categories: ["luxury-short-term"] },
+  { title: "Wynwood loft",         meta: "Sleeps 6 · Events",       rate: "from $900 / day",   soon: true, categories: ["events", "short-term"] },
+  { title: "Coral Gables estate",  meta: "Sleeps 20 · Retreats",    rate: "from $750 / night", soon: true, categories: ["extended-stay", "events"] },
 ];
 
 /* Currency — DEMO conversion rates (base USD). */
@@ -320,6 +350,54 @@ const I18N = {
   "Phone": { es: "Teléfono", fr: "Téléphone", pt: "Telefone", ht: "Telefòn" },
   "Preferred contact method": { es: "Método de contacto preferido", fr: "Méthode de contact préférée", pt: "Método de contato preferido", ht: "Metòd kontak ou pi renmen" },
   "Group size": { es: "Tamaño del grupo", fr: "Taille du groupe", pt: "Tamanho do grupo", ht: "Gwosè gwoup la" },
+  // event type picker
+  "Type of event": { es: "Tipo de evento", fr: "Type d'événement", pt: "Tipo de evento", ht: "Kalite evènman" },
+  "What kind of event is it?": { es: "¿Qué tipo de evento es?", fr: "De quel type d'événement s'agit-il ?", pt: "Que tipo de evento é?", ht: "Ki kalite evènman li ye?" },
+  "Pick a preset, or describe it in your own words.": { es: "Elige una opción o descríbelo con tus palabras.", fr: "Choisissez une option ou décrivez-le avec vos mots.", pt: "Escolha uma opção ou descreva com suas palavras.", ht: "Chwazi yon opsyon oswa dekri li nan pwòp mo ou." },
+  "Birthday": { es: "Cumpleaños", fr: "Anniversaire", pt: "Aniversário", ht: "Anivèsè" },
+  "Baby Shower": { es: "Baby shower", fr: "Baby shower", pt: "Chá de bebê", ht: "Baby shower" },
+  "Wedding / Anniversary": { es: "Boda / Aniversario", fr: "Mariage / Anniversaire de mariage", pt: "Casamento / Aniversário de casamento", ht: "Maryaj / Anivèsè" },
+  "Graduation": { es: "Graduación", fr: "Remise de diplôme", pt: "Formatura", ht: "Gradyasyon" },
+  "Religious Retreat / Gathering": { es: "Retiro / reunión religiosa", fr: "Retraite / rassemblement religieux", pt: "Retiro / encontro religioso", ht: "Retrèt / rasanbleman relijye" },
+  "Corporate Celebration": { es: "Celebración corporativa", fr: "Célébration d'entreprise", pt: "Celebração corporativa", ht: "Selebrasyon antrepriz" },
+  "Other Private Event": { es: "Otro evento privado", fr: "Autre événement privé", pt: "Outro evento privado", ht: "Lòt evènman prive" },
+  "Describe your event": { es: "Describe tu evento", fr: "Décrivez votre événement", pt: "Descreva seu evento", ht: "Dekri evènman ou" },
+  "Tell us a bit more — birthday, baby shower, retreat, whatever it is.": { es: "Cuéntanos un poco más — cumpleaños, baby shower, retiro, lo que sea.", fr: "Dites-nous en un peu plus — anniversaire, baby shower, retraite, peu importe.", pt: "Conte um pouco mais — aniversário, chá de bebê, retiro, o que for.", ht: "Di nou yon ti kras plis — anivèsè, baby shower, retrèt, nenpòt sa li ye." },
+  // event package picker
+  "Choose your event package": { es: "Elige tu paquete de evento", fr: "Choisissez votre forfait événement", pt: "Escolha seu pacote de evento", ht: "Chwazi pakè evènman ou" },
+  "Self-Provided": { es: "Tú lo provees", fr: "Vous fournissez tout", pt: "Você fornece", ht: "Ou founi" },
+  "Essentials": { es: "Esenciales", fr: "Essentiel", pt: "Essenciais", ht: "Esansyèl" },
+  "Signature": { es: "Signature", fr: "Signature", pt: "Signature", ht: "Signature" },
+  "All-Inclusive": { es: "Todo incluido", fr: "Tout inclus", pt: "Tudo incluso", ht: "Tout enkli" },
+  "Most popular": { es: "Más popular", fr: "Le plus populaire", pt: "Mais popular", ht: "Pi popilè" },
+  "Includes": { es: "Incluye", fr: "Comprend", pt: "Inclui", ht: "Enkli" },
+  // currency / language prominence
+  "View quote in": { es: "Ver cotización en", fr: "Voir le devis en", pt: "Ver orçamento em", ht: "Gade pri a nan" },
+  // carousels
+  "Previous": { es: "Anterior", fr: "Précédent", pt: "Anterior", ht: "Anvan" },
+  "Next": { es: "Siguiente", fr: "Suivant", pt: "Próximo", ht: "Apre" },
+  // property categories
+  "Luxury Short-Term Rentals": { es: "Alquileres de lujo a corto plazo", fr: "Locations de luxe à court terme", pt: "Aluguéis de curta duração de luxo", ht: "Lokasyon lix kout tèm" },
+  "Short-Term Rentals": { es: "Alquileres a corto plazo", fr: "Locations à court terme", pt: "Aluguéis de curta duração", ht: "Lokasyon kout tèm" },
+  "Extended Stays": { es: "Estancias prolongadas", fr: "Séjours prolongés", pt: "Estadias prolongadas", ht: "Sejou pwolonje" },
+  "Private Events": { es: "Eventos privados", fr: "Événements privés", pt: "Eventos privados", ht: "Evènman prive" },
+  "Premium full-property rentals for a few standout nights.": { es: "Alquileres de propiedad completa premium para unas noches destacadas.", fr: "Locations premium de propriété entière pour quelques nuits d'exception.", pt: "Aluguéis premium de imóvel inteiro para algumas noites especiais.", ht: "Lokasyon pwopriyete konplè premium pou kèk nwit espesyal." },
+  "Straightforward nightly stays for a quick trip.": { es: "Estancias nocturnas sencillas para un viaje rápido.", fr: "Séjours simples à la nuitée pour un voyage rapide.", pt: "Estadias noturnas simples para uma viagem rápida.", ht: "Sejou senp pou yon vwayaj rapid." },
+  "Homes set up for weeks or months, not just a weekend.": { es: "Casas preparadas para semanas o meses, no solo un fin de semana.", fr: "Maisons prêtes pour des semaines ou des mois, pas seulement un week-end.", pt: "Casas preparadas para semanas ou meses, não só um fim de semana.", ht: "Kay ki pare pou plizyè semèn oswa mwa, pa sèlman yon wikenn." },
+  "Full-property venues built for hosting, not just sleeping.": { es: "Propiedades completas hechas para recibir, no solo para dormir.", fr: "Propriétés entières conçues pour recevoir, pas seulement pour dormir.", pt: "Imóveis completos feitos para receber, não apenas para dormir.", ht: "Pwopriyete konplè fèt pou resevwa moun, pa sèlman pou dòmi." },
+  // new dedicated pages
+  "Our Team": { es: "Nuestro equipo", fr: "Notre équipe", pt: "Nossa equipe", ht: "Ekip nou an" },
+  "Agents and partners who match properties to the moments they're made for.": { es: "Agentes y socios que conectan propiedades con los momentos para los que fueron creadas.", fr: "Des agents et partenaires qui associent les propriétés aux moments pour lesquels elles ont été conçues.", pt: "Agentes e parceiros que combinam imóveis com os momentos para os quais foram feitos.", ht: "Ajan ak patnè ki matche pwopriyete ak moman yo fèt pou yo." },
+  "Get in touch": { es: "Ponte en contacto", fr: "Contactez-nous", pt: "Entre em contato", ht: "Kontakte nou" },
+  "We'd love to hear from you.": { es: "Nos encantaría saber de ti.", fr: "Nous serions ravis d'avoir de vos nouvelles.", pt: "Adoraríamos ouvir você.", ht: "Nou ta renmen tande nou nan men w." },
+  "Every property, every moment, every question — reach us directly.": { es: "Cada propiedad, cada momento, cada pregunta — contáctanos directamente.", fr: "Chaque propriété, chaque moment, chaque question — contactez-nous directement.", pt: "Cada imóvel, cada momento, cada pergunta — fale conosco diretamente.", ht: "Chak pwopriyete, chak moman, chak kesyon — kontakte nou dirèkteman." },
+  "What clients say, straight from the source.": { es: "Lo que dicen los clientes, directamente de la fuente.", fr: "Ce que disent les clients, directement de la source.", pt: "O que os clientes dizem, direto da fonte.", ht: "Sa kliyan yo di, dirèkteman nan sous la." },
+  "Explore properties": { es: "Explorar propiedades", fr: "Découvrir les propriétés", pt: "Explorar imóveis", ht: "Eksplore pwopriyete" },
+  "Meet the team ›": { es: "Conoce al equipo ›", fr: "Rencontrer l'équipe ›", pt: "Conheça a equipe ›", ht: "Rankontre ekip la ›" },
+  "See testimonials ›": { es: "Ver testimonios ›", fr: "Voir les témoignages ›", pt: "Ver depoimentos ›", ht: "Gade temwayaj yo ›" },
+  "See our services ›": { es: "Ver nuestros servicios ›", fr: "Voir nos services ›", pt: "Ver nossos serviços ›", ht: "Gade sèvis nou yo ›" },
+  "See events ›": { es: "Ver eventos ›", fr: "Voir les événements ›", pt: "Ver eventos ›", ht: "Gade evènman yo ›" },
+  "Get in touch ›": { es: "Contáctanos ›", fr: "Contactez-nous ›", pt: "Entre em contato ›", ht: "Kontakte nou ›" },
 };
 
 /* Privacy / cookie categories — privacy-preserving defaults (only essential on). */
@@ -344,6 +422,7 @@ const PROPERTY = {
     initials: "SL",
   },
   inquiryEmail: "jackbruncoquillon@gmail.com",  // PLACEHOLDER demo inbox — swap for team inbox
+  categories: ["luxury-short-term", "events", "extended-stay"],
 };
 
 /* New Level brand copy. Brand-level copy stays geography-neutral
@@ -358,6 +437,42 @@ const NLG_BRAND = {
   aboutLong: "At New Level, we believe excellence starts with connection. Real estate isn't just about buildings or numbers — it's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership, helping clients invest with confidence and achieve results that stand out. Across brokerage, investments, property management and events, we're here to help — real estate, redefined.",
 };
 
+/* Hero/intro copy for the dedicated landing pages (team.html, services.html,
+   testimonials.html, events.html, contact.html). Content is illustrative for
+   this demo — informed by the live site's structure where it was reachable,
+   placeholder where it wasn't. Each page also cross-links to its neighbors
+   so a visitor never has to back out to the homepage to keep exploring. */
+const PAGES = {
+  team: {
+    eyebrow: "Agents & Partners",
+    heading: "Our Team",
+    sub: "Agents and partners who match properties to the moments they're made for.",
+    intro: "New Level's team blends brokerage expertise with a hospitality mindset — the same people who list and manage the portfolio are the ones who help you match a property to the moment you're planning for.",
+  },
+  services: {
+    eyebrow: "Services",
+    heading: "What we do.",
+    sub: "Brokerage, investment, property management and events — the full New Level offering.",
+    intro: "From a first listing conversation to years of ongoing management, New Level stays involved across the life of a property — not just the transaction that starts it.",
+  },
+  testimonials: {
+    eyebrow: "Testimonials",
+    heading: "What clients say, straight from the source.",
+    sub: "Owners, investors and agents on what it's actually like working with New Level.",
+  },
+  events: {
+    eyebrow: "Events",
+    heading: "Come hang out with us.",
+    sub: "We love creating spaces where people connect and talk real estate in a way that makes sense — some educational, some just good people swapping ideas.",
+  },
+  contact: {
+    eyebrow: "Contact",
+    heading: "Get in touch",
+    sub: "We'd love to hear from you.",
+    intro: "Every property, every moment, every question — reach us directly.",
+  },
+};
+
 /* Testimonials — pulled from the live New Level site (verbatim quotes). */
 const TESTIMONIALS = [
   { name: "Sandra L.", role: "Property Owner",  text: "None compare to the consistency and communication I've experienced here." },
@@ -368,10 +483,10 @@ const TESTIMONIALS = [
 /* Meet the Team — demo. Photos are placeholders (team photos not yet supplied).
    Mirrors the live site's "Agents & Partners" section. */
 const TEAM = [
-  { name: "Shelley Lozier", role: "Point of Contact", placeholder: false },
-  { name: "Team Member",    role: "Broker · Partner", placeholder: true },
-  { name: "Team Member",    role: "Sales Associate",  placeholder: true },
-  { name: "Team Member",    role: "Property Management", placeholder: true },
+  { name: "Shelley Lozier", role: "Point of Contact",     motto: "Every detail, followed through.",            placeholder: false },
+  { name: "Team Member",    role: "Broker · Partner",     motto: "Real estate is relationships first.",        placeholder: true },
+  { name: "Team Member",    role: "Sales Associate",      motto: "Find the space that fits the moment.",       placeholder: true },
+  { name: "Team Member",    role: "Property Management",  motto: "Protect the property, protect the peace of mind.", placeholder: true },
 ];
 
 /* Services — copy pulled from the live New Level site. */
@@ -405,14 +520,43 @@ const EVENT_DEFAULT_CHECKOUT_MIN = 15 * 60;  // 3:00 PM
    the page or opens an email app. Empty = demo (shows confirmation, no send). */
 const INQUIRY_ENDPOINT = "";
 
-/* Event-tier add-ons. Each: guest self-provides (no charge), or New Level
-   provides (adds the amount below). Prices are DEMO figures — illustrative,
-   not final — and flow into the quote total when selected. */
+/* Service catalog behind the event packages below — à la carte reference
+   prices only (used to show "includes" line items + savings). Guests don't
+   pick these individually anymore; they pick a package (EVENT_PACKAGES).
+   Prices are DEMO figures — illustrative, not final. */
 const EVENT_ADDONS = [
   { id: "catering", label: "Catering",           desc: "Food & beverage service",          price: 850 },
   { id: "dj",       label: "Entertainment / DJ", desc: "DJ or live entertainment",          price: 650 },
   { id: "sound",    label: "Sound system",       desc: "PA / speakers / mics",              price: 400 },
   { id: "content",  label: "Content creation",   desc: "Photography / videography",         price: 550 },
+];
+
+/* Event-tier PACKAGES — the guest picks one tier instead of toggling each
+   service individually. `includes` references EVENT_ADDONS ids so the UI
+   can list what's bundled and show the à la carte savings. Package prices
+   are DEMO figures — a bundled discount off the à la carte total, not final. */
+const EVENT_PACKAGES = [
+  { id: "self",        label: "Self-Provided",  price: 0,
+    tagline: "You bring your own vendors — catering, entertainment, sound and content.", includes: [] },
+  { id: "essentials",  label: "Essentials",     price: 900,
+    tagline: "The basics handled for you — sound system and content creation.", includes: ["sound", "content"] },
+  { id: "signature",   label: "Signature",      price: 1800, popular: true,
+    tagline: "Full-service hosting — catering, entertainment and sound, coordinated for you.", includes: ["catering", "dj", "sound"] },
+  { id: "allInclusive", label: "All-Inclusive", price: 2400,
+    tagline: "Every New Level service in one flat add-on — nothing left to arrange.", includes: ["catering", "dj", "sound", "content"] },
+];
+
+/* Preset event-type chips shown under the purpose selector once "Private
+   Events" is chosen (Section: "Tell us your purpose"). Guests can pick a
+   preset or describe their own in the free-text field alongside it. */
+const EVENT_TYPES = [
+  "Birthday",
+  "Baby Shower",
+  "Wedding / Anniversary",
+  "Graduation",
+  "Religious Retreat / Gathering",
+  "Corporate Celebration",
+  "Other Private Event",
 ];
 
 /* Security deposit — refundable hold on EVENT (24-hour) rentals only.
