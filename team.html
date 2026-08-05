@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>About · New Level</title>
-  <meta name="description" content="About New Level — a South Florida real estate group. Real Estate. Redefined.">
+  <title>Team · New Level</title>
+  <meta name="description" content="The agents and partners behind New Level — a South Florida real estate group.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="about">
+<body data-page="team">
 
   <div class="demo-banner"><b>DEMO BUILD</b> — not live.</div>
 
@@ -37,21 +37,20 @@
   </div>
 
   <section class="section">
-    <div class="wrap about-page">
-      <span class="eyebrow">About</span>
-      <!-- brand lockup: New Level prominent, slogan smaller beneath (logo format) -->
-      <div class="wordmark" style="margin-top:16px">
-        <span class="wordmark__name">New Level</span>
-        <span class="wordmark__tag">Real Estate. Redefined.</span>
+    <div class="wrap">
+      <div class="section__head" style="text-align:center;margin-inline:auto;max-width:760px">
+        <span class="eyebrow" style="justify-content:center" id="pageEyebrow">Agents &amp; Partners</span>
+        <h1 class="h-xl" style="margin-top:14px" id="pageHeading">Our Team</h1>
+        <p class="lede muted" style="margin-top:10px" id="pageSub"></p>
       </div>
-      <p class="lede" id="aboutLongText" style="margin-top:26px"></p>
+      <p class="lede" id="pageIntro" style="max-width:760px;margin:0 auto clamp(28px,4vw,48px)"></p>
 
-      <div class="about-services">
-        <h3 class="h-md">What we do</h3>
-        <div class="services-grid" id="servicesGrid"></div>
+      <div class="carousel" id="teamCarousel">
+        <button class="carousel__arrow carousel__arrow--prev" id="teamPrev" type="button" aria-label="Previous">&lsaquo;</button>
+        <div class="carousel__track" id="teamGrid"></div>
+        <button class="carousel__arrow carousel__arrow--next" id="teamNext" type="button" aria-label="Next">&rsaquo;</button>
       </div>
-
-      <a class="btn btn--solid" href="index.html" style="margin-top:8px">Explore New Level ›</a>
+      <p class="ph-caption" style="text-align:center">Team photos are placeholders for this demo.</p>
     </div>
   </section>
 

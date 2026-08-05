@@ -4,18 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>About · New Level</title>
-  <meta name="description" content="About New Level — a South Florida real estate group. Real Estate. Redefined.">
+  <title>Testimonials · New Level</title>
+  <meta name="description" content="What clients say about working with New Level.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="about">
+<body data-page="testimonials">
 
   <div class="demo-banner"><b>DEMO BUILD</b> — not live.</div>
 
-  <!-- nav with visible in-page back arrow -->
   <div class="nav">
     <div class="wrap nav__inner">
       <div class="nav__left">
@@ -37,25 +36,33 @@
   </div>
 
   <section class="section">
-    <div class="wrap about-page">
-      <span class="eyebrow">About</span>
-      <!-- brand lockup: New Level prominent, slogan smaller beneath (logo format) -->
-      <div class="wordmark" style="margin-top:16px">
-        <span class="wordmark__name">New Level</span>
-        <span class="wordmark__tag">Real Estate. Redefined.</span>
-      </div>
-      <p class="lede" id="aboutLongText" style="margin-top:26px"></p>
-
-      <div class="about-services">
-        <h3 class="h-md">What we do</h3>
-        <div class="services-grid" id="servicesGrid"></div>
+    <div class="wrap">
+      <div class="section__head" style="text-align:center;margin-inline:auto;max-width:760px">
+        <span class="eyebrow" style="justify-content:center" id="pageEyebrow">Testimonials</span>
+        <h1 class="h-xl" style="margin-top:14px" id="pageHeading">What clients say.</h1>
+        <p class="lede muted" style="margin-top:10px" id="pageSub"></p>
       </div>
 
-      <a class="btn btn--solid" href="index.html" style="margin-top:8px">Explore New Level ›</a>
+      <div class="carousel" id="testimonialsCarousel">
+        <button class="carousel__arrow carousel__arrow--prev" id="testimonialsPrev" type="button" aria-label="Previous">&lsaquo;</button>
+        <div class="carousel__track" id="testimonialsGrid"></div>
+        <button class="carousel__arrow carousel__arrow--next" id="testimonialsNext" type="button" aria-label="Next">&rsaquo;</button>
+      </div>
     </div>
   </section>
 
   <section class="section section--alt">
+    <div class="wrap">
+      <div class="section__head">
+        <span class="eyebrow">Guest reviews</span>
+        <h2 class="h-lg" style="margin-top:14px">From guests at 1331 NW 87th Street.</h2>
+        <p class="muted" style="margin-top:8px">Property-specific reviews live on the property page, alongside how-it-works details.</p>
+      </div>
+      <a class="btn btn--solid" href="property.html#reviews">See guest reviews &rsaquo;</a>
+    </div>
+  </section>
+
+  <section class="section">
     <div class="wrap">
       <div class="section__head" style="text-align:center;margin-inline:auto">
         <span class="eyebrow" style="justify-content:center">Keep exploring</span>

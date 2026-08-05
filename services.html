@@ -4,26 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Properties · New Level</title>
-  <meta name="description" content="New Level properties matched to your purpose.">
+  <title>Services · New Level</title>
+  <meta name="description" content="Brokerage, investment, property management and events — the full New Level offering.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="properties">
+<body data-page="services">
 
-  <div class="demo-banner">
-    <b>DEMO BUILD</b> — not live. Only one property is listed in this demo.
-  </div>
+  <div class="demo-banner"><b>DEMO BUILD</b> — not live.</div>
 
-  <!-- top nav -->
   <div class="nav">
     <div class="wrap nav__inner">
       <div class="nav__left">
         <a class="nav__back" href="index.html">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          All purposes
+          Back to New Level
         </a>
       </div>
       <a class="brand nav__brand" href="index.html" aria-label="New Level — home">
@@ -38,15 +35,28 @@
     </div>
   </div>
 
-  <main class="section wrap">
-    <div class="section__head">
-      <span class="eyebrow" id="plEyebrow">Properties</span>
-      <h1 class="h-xl" style="margin-top:14px" id="plTitle">Homes for your stay</h1>
-      <p class="lede muted" style="margin-top:10px" id="plSub">Select a property to see availability, amenities and to send an inquiry.</p>
+  <section class="section">
+    <div class="wrap">
+      <div class="section__head" style="text-align:center;margin-inline:auto;max-width:760px">
+        <span class="eyebrow" style="justify-content:center" id="pageEyebrow">Services</span>
+        <h1 class="h-xl" style="margin-top:14px" id="pageHeading">What we do.</h1>
+        <p class="lede muted" style="margin-top:10px" id="pageSub"></p>
+      </div>
+      <p class="lede" id="pageIntro" style="max-width:760px;margin:0 auto clamp(28px,4vw,48px)"></p>
+
+      <div class="services-grid" id="servicesGrid"></div>
     </div>
-    <div class="property-list" id="propertyList" hidden></div>
-    <div id="propertyCategories"></div>
-  </main>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="section__head" style="text-align:center;margin-inline:auto">
+        <span class="eyebrow" style="justify-content:center">Keep exploring</span>
+        <h2 class="h-lg" style="margin-top:14px">More New Level.</h2>
+      </div>
+      <nav class="cross-nav__links" id="crossNavLinks" aria-label="More New Level pages"></nav>
+    </div>
+  </section>
 
   <footer class="site-footer" id="siteFooter"></footer>
 

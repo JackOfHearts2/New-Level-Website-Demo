@@ -24,12 +24,18 @@
       <a class="brand nav__brand" href="index.html" aria-label="New Level — home">
         <span class="brand__logo-slot" id="navMark"></span>
       </a>
-      <nav class="nav__right nav__links">
-        <a href="#choose">Properties</a>
-        <a href="#about-nl">About</a>
-        <a href="#team">Team</a>
-        <a href="#siteFooter">Contact</a>
-      </nav>
+      <div class="nav__right">
+        <nav class="nav__links">
+          <a href="properties.html">Properties</a>
+          <a href="about.html">About</a>
+          <a href="team.html">Team</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <label class="nav__lang" aria-label="Language">
+          <span class="nav__lang-ic" aria-hidden="true"></span>
+          <select class="lang-select" aria-label="Language"></select>
+        </label>
+      </div>
     </div>
   </div>
 
@@ -78,8 +84,13 @@
         <h2 class="h-xl" style="margin-top:14px">The people behind New Level.</h2>
         <p class="lede muted" style="margin-top:10px">Agents &amp; partners who match properties to the moments they're made for.</p>
       </div>
-      <div class="team-grid" id="teamGrid"></div>
+      <div class="carousel" id="teamCarousel">
+        <button class="carousel__arrow carousel__arrow--prev" id="teamPrev" type="button" aria-label="Previous">&lsaquo;</button>
+        <div class="carousel__track" id="teamGrid"></div>
+        <button class="carousel__arrow carousel__arrow--next" id="teamNext" type="button" aria-label="Next">&rsaquo;</button>
+      </div>
       <p class="ph-caption" style="text-align:center">Team photos are placeholders for this demo.</p>
+      <div style="text-align:center"><a class="link-arrow" href="team.html">Learn more &rsaquo;</a></div>
     </div>
   </section>
 
@@ -92,6 +103,7 @@
         <p class="muted" style="margin-top:8px">Brokerage, investment, property management and events — the full New Level offering.</p>
       </div>
       <div class="services-grid" id="servicesGrid"></div>
+      <a class="link-arrow" href="services.html">Learn more &rsaquo;</a>
     </div>
   </section>
 
@@ -102,7 +114,12 @@
         <span class="eyebrow" style="justify-content:center">Testimonials</span>
         <h2 class="h-lg" style="margin-top:14px">What clients say.</h2>
       </div>
-      <div class="testimonials-grid" id="testimonialsGrid"></div>
+      <div class="carousel" id="testimonialsCarousel">
+        <button class="carousel__arrow carousel__arrow--prev" id="testimonialsPrev" type="button" aria-label="Previous">&lsaquo;</button>
+        <div class="carousel__track" id="testimonialsGrid"></div>
+        <button class="carousel__arrow carousel__arrow--next" id="testimonialsNext" type="button" aria-label="Next">&rsaquo;</button>
+      </div>
+      <div style="text-align:center"><a class="link-arrow" href="testimonials.html">Learn more &rsaquo;</a></div>
     </div>
   </section>
 
@@ -113,6 +130,7 @@
         <span class="eyebrow">Events</span>
         <h2 class="h-lg" style="margin-top:14px">Come hang out with us.</h2>
         <p class="muted" style="margin-top:8px">We love creating spaces where people can connect and talk real estate in a way that actually makes sense — some educational, others just a chance to meet good people and swap ideas. <span class="ph-token">gallery placeholder</span></p>
+        <a class="link-arrow" href="events.html">Learn more &rsaquo;</a>
       </div>
       <div class="events-ph">
         <div class="ph-block ph-block--video"><span class="ph-block__label">▶ Event video — placeholder</span></div>
