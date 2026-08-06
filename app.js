@@ -36,7 +36,7 @@
   function translatePage(lang) {
     if (typeof I18N === "undefined") return;
     currentLang = lang;
-    document.querySelectorAll(".nav__links a,.nav__about,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab")
+    document.querySelectorAll(".nav__links a,.nav-dropdown a,.nav__about,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab")
       .forEach((e) => { if (e.childElementCount === 0) translateEl(e, lang); });
     document.querySelectorAll(".eyebrow,.field label,.btn,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit").forEach((e) => translateEl(e, lang));
     document.documentElement.lang = lang;
@@ -458,6 +458,7 @@
         OTHER_PROPERTIES.forEach((p, i) => { if (p.categories && p.categories.includes(cat.id)) cards.push(otherPropertyCard(p, i)); });
         if (!cards.length) return;
         const block = el("div", "category-block");
+        block.id = cat.id;
         block.innerHTML = `<div class="category-block__head"><h2 class="h-lg category-tab">${cat.label}</h2><p class="muted">${cat.blurb}</p></div>`;
         const grid = el("div", "property-list");
         cards.forEach((c) => grid.appendChild(c));
@@ -1347,6 +1348,35 @@
     document.querySelectorAll(".nav__lang-ic").forEach((n) => (n.innerHTML = GLYPH.globe));
   }
 
+  /* Desktop top nav — built from NAV_MENU so items with `children` get a
+     hover/click dropdown. Mobile hides #navLinks entirely (see styles.css);
+     the same NAV_MENU data drives the hamburger's accordion instead
+     (buildMenuSiteNav) so nothing is lost, it just moves. */
+  function buildTopNav() {
+    const box = $("#navLinks");
+    if (!box || typeof NAV_MENU === "undefined") return;
+    box.innerHTML = NAV_MENU.map((item, i) => {
+      if (!item.children || !item.children.length) return `<span class="nav-item"><a href="${item.href}">${item.label}</a></span>`;
+      return `
+        <span class="nav-item" data-idx="${i}">
+          <a href="${item.href}">${item.label}</a>
+          <button type="button" class="nav-item__caret" aria-expanded="false" aria-label="${item.label} submenu">${GLYPH.chevron}</button>
+          <span class="nav-dropdown">${item.children.map((c) => `<a href="${c.href}">${c.label}</a>`).join("")}</span>
+        </span>`;
+    }).join("");
+    box.querySelectorAll(".nav-item__caret").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const item = btn.closest(".nav-item");
+        const open = item.classList.contains("is-open");
+        box.querySelectorAll(".nav-item.is-open").forEach((n) => { n.classList.remove("is-open"); n.querySelector(".nav-item__caret").setAttribute("aria-expanded", "false"); });
+        if (!open) { item.classList.add("is-open"); btn.setAttribute("aria-expanded", "true"); }
+      });
+    });
+    document.addEventListener("click", () => box.querySelectorAll(".nav-item.is-open").forEach((n) => { n.classList.remove("is-open"); n.querySelector(".nav-item__caret").setAttribute("aria-expanded", "false"); }));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") box.querySelectorAll(".nav-item.is-open").forEach((n) => n.classList.remove("is-open")); });
+  }
+
   function ehoIcon() {
     return `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <rect x="3" y="3" width="42" height="42" rx="2"/>
@@ -1461,10 +1491,7 @@
         { label: "All properties", href: "properties.html" },
       ];
     }
-    if (SITE_PAGES.some((p) => p.key === page)) {
-      const rest = SITE_PAGES.filter((p) => p.key !== page).map(({ label, href }) => ({ label, href }));
-      return [{ label: "‹ New Level home", href: "index.html" }, ...rest];
-    }
+    if (SITE_PAGES.some((p) => p.key === page)) return [{ label: "‹ New Level home", href: "index.html" }];
     return [{ label: "Choose a purpose", href: "#choose", scroll: true }];
   }
   function menuContext(page) {
@@ -1472,6 +1499,33 @@
     const p = SITE_PAGES.find((x) => x.key === page);
     return p ? p.label : "New Level";
   }
+  /* Mobile hamburger's full site map — same NAV_MENU data as the desktop
+     dropdowns, rendered as a collapsible accordion (tap a parent to expand
+     its children in place; tap again to retract). Rebuilt fresh each time
+     the menu opens, same pattern as menuNav()/collectSections() above. */
+  function buildMenuSiteNav() {
+    const box = $("#menuSiteNav");
+    if (!box || typeof NAV_MENU === "undefined") return;
+    box.innerHTML = NAV_MENU.map((item, i) => {
+      if (!item.children || !item.children.length) return `<a class="menu-sitenav__link" href="${item.href}">${item.label}</a>`;
+      return `
+        <div class="menu-sitenav__group">
+          <a class="menu-sitenav__link" href="${item.href}">${item.label}</a>
+          <button type="button" class="menu-sitenav__toggle" aria-expanded="false" aria-label="${item.label} submenu" data-idx="${i}">${GLYPH.chevron}</button>
+          <div class="menu-sitenav__children" id="menuSiteChild${i}">
+            ${item.children.map((c) => `<a href="${c.href}">${c.label}</a>`).join("")}
+          </div>
+        </div>`;
+    }).join("");
+    box.querySelectorAll(".menu-sitenav__toggle").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", String(!open));
+        btn.parentElement.querySelector(".menu-sitenav__children").classList.toggle("is-open", !open);
+      });
+    });
+  }
+
   function buildMenu() {
     const nav = $(".nav__inner"); if (!nav) return;
     const page = document.body.getAttribute("data-page");
@@ -1489,6 +1543,8 @@
         </div>
         <div class="menu-panel__body">
           <div class="menu-group" id="menuNav"></div>
+          <div class="menu-label">Explore</div>
+          <nav class="menu-sitenav" id="menuSiteNav"></nav>
           <div class="menu-label">On this page</div>
           <nav class="menu-sections" id="menuSections"></nav>
         </div>
@@ -1506,6 +1562,7 @@
       $("#menuCtx").textContent = menuContext(page);
       $("#menuNav").innerHTML = menuNav(page).map((l) =>
         `<a class="menu-nav-link" href="${l.href}" data-scroll="${l.scroll ? 1 : 0}">${l.label}</a>`).join("");
+      buildMenuSiteNav();
       $("#menuSections").innerHTML = collectSections().map((s) =>
         `<a class="menu-sec-link" href="#${s.id}" data-id="${s.id}">${s.label}</a>`).join("");
       translatePage(currentLang);
@@ -1811,6 +1868,7 @@
   /* ================================================================ */
   document.addEventListener("DOMContentLoaded", () => {
     injectNavLogo();
+    buildTopNav();
     buildFooter();
     buildMenu();
     initReport();

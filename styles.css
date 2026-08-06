@@ -414,6 +414,21 @@ strong, b { font-weight: 600; }
 .nav__links a { font-family: var(--font-display); font-weight: 600; font-size: .92rem; text-decoration: none; color: var(--ink); }
 .nav__links a:hover { color: var(--green-deep); }
 
+/* nav items with a dropdown (desktop) — hover OR click the caret opens it */
+.nav-item { position: relative; display: inline-flex; align-items: center; gap: 3px; }
+.nav-item__caret { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; padding: 0; border: none; background: none; color: var(--muted); cursor: pointer; }
+.nav-item__caret svg { width: 13px; height: 13px; transition: transform .15s ease; }
+.nav-item:hover .nav-item__caret, .nav-item.is-open .nav-item__caret { color: var(--ink); }
+.nav-item.is-open .nav-item__caret svg { transform: rotate(180deg); }
+.nav-dropdown {
+  display: none; position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-50%);
+  min-width: 220px; background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 8px; flex-direction: column; z-index: 60;
+}
+.nav-dropdown a { display: block; padding: 9px 12px; border-radius: 8px; font-family: var(--font-display); font-weight: 600; font-size: .88rem; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.nav-dropdown a:hover { background: var(--green-tint); color: var(--green-deep); }
+.nav-item:hover .nav-dropdown, .nav-item:focus-within .nav-dropdown, .nav-item.is-open .nav-dropdown { display: flex; }
+
 /* prominent nav language switcher — visible on the page, not buried in the footer */
 .nav__lang { display: flex; align-items: center; gap: 6px; margin-left: 22px; padding-left: 22px; border-left: 1px solid var(--line); }
 .nav__lang-ic { width: 17px; height: 17px; color: var(--muted); display: inline-flex; }
@@ -421,7 +436,19 @@ strong, b { font-weight: 600; }
 .nav__lang select { font-family: var(--font-display); font-weight: 600; font-size: .86rem; color: var(--ink); background: transparent; border: none; cursor: pointer; padding: 4px 2px; }
 .nav__lang select:hover { color: var(--green-deep); }
 .nav__lang select:focus { outline: 2px solid var(--green); border-radius: 4px; }
-@media (max-width: 640px) { .nav__lang { margin-left: 12px; padding-left: 12px; } }
+
+/* Below this, .nav__links (7 items incl. dropdowns, ~900px of min-content)
+   no longer fits beside the centered logo in the 1fr/auto/1fr nav grid —
+   the logo column gets squeezed toward 0 width (verified empirically down
+   to 0px logo width from ~641px up through ~1150px). Hide the links here
+   and rely on the hamburger's "Explore" accordion (same NAV_MENU data)
+   instead; this covers tablet widths too, not just phone. Placed after the
+   base .nav__lang rules above so it actually wins the cascade. */
+@media (max-width: 1200px) {
+  .nav__links { display: none; }
+  .nav__lang { margin-left: 0; padding-left: 0; border-left: none; }
+  .nav__lang select { font-size: .8rem; }
+}
 
 /* audience cards also render as <button> in the in-page selector */
 button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-appearance: none; appearance: none; }
@@ -729,6 +756,21 @@ body.sticky-open .floaters { bottom: calc(clamp(16px, 3vw, 30px) + 62px); }
 .menu-sec-link:hover { background: var(--paper-2); }
 .menu-sec-link.is-active { border-left-color: var(--green); color: var(--ink); font-weight: 600; background: var(--green-tint); }
 
+/* mobile hamburger — full site nav as a collapsible accordion (mirrors the
+   desktop dropdowns above, same NAV_MENU data) */
+.menu-sitenav { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; }
+.menu-sitenav__link { display: block; padding: 11px 14px; border-radius: 10px; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 600; font-size: .95rem; }
+.menu-sitenav__link:hover { background: var(--green-tint); color: var(--green-deep); }
+.menu-sitenav__group { position: relative; }
+.menu-sitenav__group .menu-sitenav__link { padding-right: 42px; }
+.menu-sitenav__toggle { position: absolute; top: 4px; right: 4px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; color: var(--muted); cursor: pointer; }
+.menu-sitenav__toggle svg { width: 15px; height: 15px; transition: transform .15s ease; }
+.menu-sitenav__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.menu-sitenav__children { display: none; flex-direction: column; gap: 1px; padding: 2px 0 6px 14px; }
+.menu-sitenav__children.is-open { display: flex; }
+.menu-sitenav__children a { display: block; padding: 9px 14px; border-radius: 10px; text-decoration: none; color: var(--ink-soft); font-size: .9rem; }
+.menu-sitenav__children a:hover { background: var(--paper-2); color: var(--ink); }
+
 /* =========================================================================
    Reviews
    ========================================================================= */
@@ -854,7 +896,6 @@ body.sticky-open .floaters { bottom: calc(clamp(16px, 3vw, 30px) + 62px); }
   .quote__dates { grid-template-columns: 1fr; }
   .eho { flex-direction: column; align-items: center; text-align: center; }
   .tier-options { grid-template-columns: 1fr; }
-  .nav__links { gap: 16px; }
   .services-grid { grid-template-columns: 1fr; }
   .team-grid { grid-template-columns: repeat(2, 1fr); }
   .time-fields { grid-template-columns: 1fr; }
@@ -867,11 +908,8 @@ body.sticky-open .floaters { bottom: calc(clamp(16px, 3vw, 30px) + 62px); }
   .other-grid { grid-template-columns: 1fr; }
   .map-embed iframe { height: 240px; }
   .privacy-actions { flex-direction: column; }
-  .nav__links a:nth-child(n+3) { display: none; } /* trim nav on small screens */
   .highlights-list { grid-template-columns: 1fr; }
   .nav__about { display: none; }  /* the back arrow already leads home; save space for the lang switcher */
-  .nav__lang { margin-left: 0; padding-left: 0; border-left: none; }
-  .nav__lang select { font-size: .8rem; }
 }
 
 /* =========================================================================
