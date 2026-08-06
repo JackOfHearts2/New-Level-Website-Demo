@@ -1238,6 +1238,26 @@
     if (ex) ex.addEventListener("click", () => { setHeroTour(false); heroIndex = 0; showHero(); });
     const link = $("#galleryLink");
     if (link) { link.href = GALLERY_URL; link.target = "_blank"; link.rel = "noopener"; }
+    initHeroIdleReset();
+  }
+
+  /* If the page sits idle for 3 minutes while the hero is mid-photo-tour,
+     reset it back to the address/title view on the first photo — same
+     reset as the Exit button. Only fires while actually touring; browsing
+     the rest of the page (booking, form, etc.) still counts as activity,
+     it just has nothing to reset since the hero isn't in tour mode there. */
+  function initHeroIdleReset() {
+    const IDLE_MS = 3 * 60 * 1000;
+    let idleTimer = null;
+    const reset = () => {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        if (heroActive) { setHeroTour(false); heroIndex = 0; showHero(); }
+      }, IDLE_MS);
+    };
+    ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "wheel"].forEach((evt) =>
+      document.addEventListener(evt, reset, { passive: true }));
+    reset();
   }
 
   /* ---------------- Photo-tour lightbox ---------------- */
