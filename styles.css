@@ -161,8 +161,27 @@ strong, b { font-weight: 600; }
 .nav--overlay.nav--solid .brand__logo-slot { background: transparent; box-shadow: none; padding: 0; }
 
 .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 90px; }
-.nav__left { display: flex; align-items: center; gap: 14px; }
-.nav__right { display: flex; align-items: center; gap: 22px; }
+/* flex: 0 0 auto is load-bearing — the logo must NEVER shrink, no matter
+   how wide .nav__right's content gets (e.g. a long purpose-specific back
+   label alongside the full link set). Without it, flex's default
+   shrink-to-fit behavior can compress the logo when the two sides don't
+   both fit — that's the bug a longer back label on property.html exposed. */
+.nav__left { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
+/* .nav__right is the one allowed to run out of room — min-width:0 lets it
+   actually shrink below its content size (flex items don't by default),
+   at which point .nav__right-track scrolls horizontally instead of
+   pushing on the logo. Tiny arrows (JS-shown only when there's overflow
+   to scroll to) make that discoverable rather than just a hidden scrollbar. */
+.nav__right { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; justify-content: flex-end; }
+.nav__right-track { display: flex; align-items: center; gap: 22px; overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
+.nav__right-track::-webkit-scrollbar { display: none; }
+.nav__right-track > * { flex: 0 0 auto; }
+.nav-scroll__arrow { display: none; flex: 0 0 auto; width: 26px; height: 26px; align-items: center; justify-content: center; border: none; background: none; color: var(--muted); cursor: pointer; padding: 0; }
+.nav-scroll__arrow svg { width: 15px; height: 15px; }
+.nav-scroll__arrow:hover { color: var(--ink); }
+.nav-scroll__arrow.is-active { display: inline-flex; }
+.nav--overlay .nav-scroll__arrow { color: rgba(255,255,255,.8); }
+.nav--overlay.nav--solid .nav-scroll__arrow { color: var(--muted); }
 .brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; }
 .brand__name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
 .brand__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; align-self: center; }
@@ -605,9 +624,6 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
 
 /* About New Level block */
 .about-nl { max-width: 760px; }
-
-/* nav: back arrow beside logo + About link */
-.nav__left { display: flex; align-items: center; gap: 6px; }
 
 /* text wordmark (logo format): "New Level" dominant, tagline tracked to span
    the same width beneath it so the two read as one cohesive mark. */

@@ -569,6 +569,7 @@
     if (!nb) return;
     if (id) { nb.href = "properties.html?a=" + id; if (nbl) nbl.textContent = "Properties"; }
     else { nb.href = "index.html"; if (nbl) nbl.textContent = "New Level"; }
+    setTimeout(updateNavRightScroll, 0);
   }
 
   function showPurposePrompt() {
@@ -1438,6 +1439,31 @@
     targets.forEach((elm) => { elm.classList.add("reveal"); io.observe(elm); });
   }
 
+  /* .nav__right can outgrow the available width (a long purpose-specific
+     back label alongside the full link set) — rather than let that squeeze
+     the logo (.nav__left is flex:0 0 auto, guaranteed not to shrink), the
+     track scrolls horizontally, with tiny arrows shown only when there's
+     actually somewhere to scroll to. updateNavRightScroll is also called
+     from setBackTo() below, since the back label's text (and therefore
+     whether the track overflows) can change after a purpose is picked. */
+  let updateNavRightScroll = () => {};
+  function initNavRightScroll() {
+    const track = $(".nav__right-track");
+    const prev = $(".nav-scroll__arrow--prev");
+    const next = $(".nav-scroll__arrow--next");
+    if (!track || !prev || !next) return;
+    updateNavRightScroll = () => {
+      const overflowing = track.scrollWidth > track.clientWidth + 2;
+      prev.classList.toggle("is-active", overflowing && track.scrollLeft > 4);
+      next.classList.toggle("is-active", overflowing && track.scrollLeft < track.scrollWidth - track.clientWidth - 4);
+    };
+    prev.addEventListener("click", () => track.scrollBy({ left: -140, behavior: "smooth" }));
+    next.addEventListener("click", () => track.scrollBy({ left: 140, behavior: "smooth" }));
+    track.addEventListener("scroll", updateNavRightScroll, { passive: true });
+    window.addEventListener("resize", updateNavRightScroll);
+    setTimeout(updateNavRightScroll, 50);
+  }
+
   /* Desktop top nav — built from NAV_MENU so items with `children` get a
      hover/click dropdown. Mobile hides #navLinks entirely (see styles.css);
      the same NAV_MENU data drives the hamburger's accordion instead
@@ -1962,6 +1988,7 @@
     injectNavLogo();
     buildTopNav();
     initNavScroll();
+    initNavRightScroll();
     buildFooter();
     buildMenu();
     initReport();
