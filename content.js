@@ -71,6 +71,30 @@ const SOCIALS = [
     `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2.1 1.5 3.6 3.5 3.9v2.6c-1.3 0-2.5-.4-3.5-1.1v5.9c0 3.3-2.5 5.7-5.7 5.7A5.6 5.6 0 0 1 5.3 14c0-3.1 2.6-5.6 6-5.2v2.7c-.4-.1-.8-.2-1.2-.2-1.5 0-2.6 1.2-2.6 2.7 0 1.5 1.1 2.7 2.7 2.7 1.6 0 2.7-1.2 2.7-2.9V3h3.6Z"/></svg>` },
 ];
 
+/* Primary site nav — single source of truth for both the desktop dropdown
+   nav (index.html top bar) and the mobile hamburger's collapsible accordion.
+   `children` (when present) become the dropdown / accordion sub-items. */
+const NAV_MENU = [
+  { label: "Properties", href: "properties.html", children: [
+    { label: "All properties",              href: "properties.html" },
+    { label: "Luxury Short-Term Rentals",   href: "properties.html#luxury-short-term" },
+    { label: "Short-Term Rentals",          href: "properties.html#short-term" },
+    { label: "Extended Stays",              href: "properties.html#extended-stay" },
+    { label: "Private Events",              href: "properties.html#events" },
+  ] },
+  { label: "About", href: "about.html" },
+  { label: "Team", href: "team.html" },
+  { label: "Services", href: "services.html", children: [
+    { label: "Brokerage & Consulting", href: "services.html#brokerage" },
+    { label: "Property Management",    href: "services.html#management" },
+    { label: "Investment",             href: "services.html#investment" },
+    { label: "Events & Networking",    href: "events.html" },
+  ] },
+  { label: "Testimonials", href: "testimonials.html" },
+  { label: "Events", href: "events.html" },
+  { label: "Contact", href: "contact.html" },
+];
+
 /* Footer navigation — section titles mirror the live New Level site.
    Links route to this demo's own dedicated pages where one exists; anything
    out of scope for the demo (legal pages, the broker blog, agent recruiting)

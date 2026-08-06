@@ -43,6 +43,15 @@ Every dedicated page (team/services/testimonials/events/contact/about/properties
 visitor can jump straight to any other page without backing out to the homepage. The hamburger
 menu (`menuNav`/`menuContext`) does the same thing for every page.
 
+**Primary nav** (`NAV_MENU` in content.js, `buildTopNav()`/`buildMenuSiteNav()` in app.js) is one
+data source rendered two ways: hover/click dropdowns in index.html's desktop top bar, and a
+collapsible accordion under "Explore" in the hamburger menu on every page. `.nav__links` is
+hidden below **1200px** (not a typical phone-only breakpoint) — verified empirically that the
+7-item dropdown nav's ~900px min-content width squeezes the centered logo to 0px width in the
+`1fr auto 1fr` nav grid anywhere from ~641px up to ~1150px, so the cutoff has to clear that whole
+range, not just phone widths. If nav items are ever added/removed, re-check this breakpoint
+rather than assuming 1200px still clears it.
+
 ## Locked design decisions — do not drift
 
 These came from the client brief and were corrected several times. Don't "improve" them:
