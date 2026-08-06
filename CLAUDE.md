@@ -15,12 +15,13 @@ One Netlify Function provides shared image storage.
 ## Architecture
 
 ```
-index.html         New Level brand landing (hero · about · purpose selector · team ·
+index.html         New Level brand landing (hero · about · search box · event CTA · team ·
                    services · testimonials · events) — each section links to its own
                    dedicated landing page below via "Learn more" + the nav
 about.html         Fuller "About New Level" page
 properties.html    Property list — categorized (PROPERTY_CATEGORIES) by default;
-                   filtered to one property when ?a=<audience> is present
+                   filtered to one property when ?a=<audience> is present, or to a single
+                   category (with optional keyword) when ?category=<id>&q=<keyword> is present
 property.html      The 87th St property page — the big one
 team.html          Agents & Partners — full team carousel
 services.html      Full services list, anchor-linkable per service (#brokerage etc.)
@@ -51,6 +52,16 @@ hidden below **1200px** (not a typical phone-only breakpoint) — verified empir
 `1fr auto 1fr` nav grid anywhere from ~641px up to ~1150px, so the cutoff has to clear that whole
 range, not just phone widths. If nav items are ever added/removed, re-check this breakpoint
 rather than assuming 1200px still clears it.
+
+The nav has since been rebuilt as a left/right flex layout (not the `1fr auto 1fr` grid described
+above — that grid is gone). `.nav__left` (logo only) is pinned with `flex: 0 0 auto` so it can
+never shrink. `.nav__right` holds the back-link (on dedicated pages), `#navLinks`, and the
+language switcher inside a scrollable `.nav__right-track`, with small `.nav-scroll__arrow`
+buttons (`initNavRightScroll()` in app.js) that only render when the track actually overflows —
+this replaced hiding `.nav__links` below 1200px as the fix for logo-squeeze, so if you ever touch
+nav layout, don't reintroduce a fixed-column grid that lets `.nav__right` content compress the
+logo. On index.html and property.html the nav is also `.nav--overlay`: transparent over the hero,
+solidifies on scroll, and hides on scroll-down/reappears on scroll-up (`initNavScroll()`).
 
 ## Locked design decisions — do not drift
 
@@ -89,10 +100,24 @@ right under the purpose selector. Selection flows into the "Attached to your inq
 list and the inquiry payload's `event_type` field — it doesn't affect pricing.
 
 **Property categories** (`PROPERTY_CATEGORIES` in content.js)
-properties.html groups listings by category (Luxury Short-Term / Short-Term / Extended Stay /
-Private Events — not exhaustive, more can be added) unless `?a=` is present, in which case it
-falls back to the old single-property purpose-filtered view. Each property (including the
-"coming soon" placeholders in `OTHER_PROPERTIES`) tags itself via a `categories` array.
+properties.html groups listings by category (grown to 7: Luxury Short-Term / Short-Term /
+Long-Term / Extended Stay / Private Events / For Sale / Investment — not exhaustive, more can be
+added) unless `?a=` or `?category=` is present. Each property (including the "coming soon"
+placeholders in `OTHER_PROPERTIES`) tags itself via a `categories` array.
+
+**Search box & event CTA** (`SEARCH_CATEGORIES`, `EVENT_CTA` in content.js, `buildSearchBox()` /
+`buildEventCta()` in app.js)
+index.html's old 5-icon `#audienceGrid` purpose selector is gone, replaced by two separate
+entry points below the hero: a search box (For Sale / For Rent [with a Long-Term / Short-Term /
+Extended sub-menu] / Investment Properties, plus a free-text keyword field) and a distinct
+"Hosting an event?" CTA band. They're kept separate deliberately — event-hosting is a different
+question from what-are-you-shopping-for, not a 4th search chip. The search box submits to
+`properties.html?category=<id>&q=<keyword>`; the event CTA links straight to
+`properties.html?category=events`. Both route into `renderPropertyList()`'s `?category=` branch
+(single-category view with keyword soft-matching via `matchesKeyword()`), reusing the existing
+category/card rendering rather than a parallel results view. property.html's own `#purposeGrid`
+5-icon audience selector (Family/Corporate/Ministry/etc. content personalization) was
+deliberately left as-is in this pass — only the homepage entry point changed.
 
 **Currency & language** (`CURRENCIES`/`LANGUAGES` in content.js, `initPreferences()` in app.js)
 Any element with class `.currency-select` / `.lang-select` is auto-wired and kept in sync —
@@ -129,6 +154,14 @@ and their dedicated pages. Reusable: `initCarousel(trackSelector, prevArrowSelec
   `load`/rAF (the nav upload badge got this wrong first time).
 - The `#25D366` green in the codebase is **WhatsApp's brand color** and is correct — don't
   "fix" it to the New Level green.
+- **`initScrollReveal()`'s IntersectionObserver threshold must stay `0`, not a fraction.** A
+  `threshold: 0.12` (requiring 12% of a target's own height in view before it fires) looked fine
+  on short sections but never reliably fired on tall single-wrapper sections — e.g.
+  properties.html's ~6000px results container — leaving the **entire page** stuck at
+  `opacity: 0` from nav to footer. DOM/text-content assertions don't catch this (they pass fine
+  on an invisible page); only a real screenshot or a computed-style/opacity check does. There's
+  now also a defensive 2500ms timeout that force-reveals any still-stuck `.reveal` element as a
+  safety net, but don't rely on that — keep the threshold at `0`.
 
 ## Testing on this machine
 
@@ -153,6 +186,14 @@ image upload system.
 Verified this session via a headless-Chromium/Playwright smoke pass across every page (booking
 flow end-to-end including package selection + currency + language switch, plus a console-error
 sweep) — see "Testing on this machine" above for how to repeat it.
+
+**Most recent session:** rebuilt the top nav (logo pinned left, scrollable+arrowed right side,
+transparent-over-hero/hide-on-scroll motion), replaced the homepage 5-icon purpose selector with
+a search box + separate event CTA, added `?category=` search-result routing to properties.html,
+grew property categories to 7, and fixed the scroll-reveal threshold bug described above. Verified
+via Playwright across desktop + mobile widths with a console-error sweep; not yet re-confirmed
+against a live newlevelassociates.com pull (still returning 403 to this environment as of last
+check) or pushed live to Netlify.
 
 **Content note:** newlevelassociates.com returned HTTP 403 to this session's fetch attempts (bot
 protection), so the new pages' copy is informed by the content already captured in `content.js`
