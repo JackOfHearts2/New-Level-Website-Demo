@@ -36,7 +36,7 @@
   function translatePage(lang) {
     if (typeof I18N === "undefined") return;
     currentLang = lang;
-    document.querySelectorAll(".nav__links a,.nav-dropdown a,.nav__about,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab")
+    document.querySelectorAll(".nav__links a,.nav-dropdown a,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab")
       .forEach((e) => { if (e.childElementCount === 0) translateEl(e, lang); });
     document.querySelectorAll(".eyebrow,.field label,.btn,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit").forEach((e) => translateEl(e, lang));
     document.documentElement.lang = lang;
@@ -250,8 +250,8 @@
     buildTeam();
     buildServices();
     buildTestimonials();
-    initCarousel("#teamGrid", "#teamPrev", "#teamNext");
-    initCarousel("#testimonialsGrid", "#testimonialsPrev", "#testimonialsNext");
+    initCarousel("#teamGrid", "#teamPrev", "#teamNext", "#teamDots");
+    initCarousel("#testimonialsGrid", "#testimonialsPrev", "#testimonialsNext", "#testimonialsDots");
     translatePage(currentLang);
   }
 
@@ -283,7 +283,7 @@
       $("#pageIntro").textContent = PAGES.team.intro;
     }
     buildTeam("#teamGrid");
-    initCarousel("#teamGrid", "#teamPrev", "#teamNext");
+    initCarousel("#teamGrid", "#teamPrev", "#teamNext", "#teamDots");
     buildCrossNav("#crossNavLinks", "team");
     translatePage(currentLang);
   }
@@ -318,7 +318,7 @@
       $("#pageSub").textContent = PAGES.testimonials.sub;
     }
     buildTestimonials("#testimonialsGrid");
-    initCarousel("#testimonialsGrid", "#testimonialsPrev", "#testimonialsNext");
+    initCarousel("#testimonialsGrid", "#testimonialsPrev", "#testimonialsNext", "#testimonialsDots");
     buildCrossNav("#crossNavLinks", "testimonials");
     translatePage(currentLang);
   }
@@ -365,20 +365,51 @@
 
   /* Generic bounded left/right carousel — arrows scroll the track, disabling
      at each end. No infinite loop; scrolling left always lets you scroll
-     back right. Used for Team + Testimonials on the landing and dedicated pages. */
-  function initCarousel(trackSel, prevSel, nextSel) {
+     back right. Used for Team + Testimonials on the landing and dedicated
+     pages. Optionally takes a dots-container selector (renders position
+     indicators) and nudges the track once when it first scrolls into view,
+     as a visual hint that it's scrollable. */
+  function initCarousel(trackSel, prevSel, nextSel, dotsSel) {
     const track = $(trackSel), prev = $(prevSel), next = $(nextSel);
     if (!track || !prev || !next) return;
+    const dots = dotsSel ? $(dotsSel) : null;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const step = () => Math.min(track.clientWidth * 0.9, 640);
+    const pageCount = () => Math.max(1, Math.round((track.scrollWidth - track.clientWidth) / step()) + 1);
+    const activePage = () => Math.min(pageCount() - 1, Math.round(track.scrollLeft / step()));
+
+    function buildDots() {
+      if (!dots) return;
+      const n = pageCount();
+      dots.innerHTML = n > 1 ? Array.from({ length: n }, (_, i) =>
+        `<button type="button" class="carousel__dot" aria-label="Go to slide ${i + 1}"></button>`).join("") : "";
+      dots.querySelectorAll(".carousel__dot").forEach((d, i) => d.addEventListener("click", () => track.scrollTo({ left: i * step(), behavior: "smooth" })));
+    }
     prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
     next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
     const update = () => {
       prev.disabled = track.scrollLeft <= 4;
       next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
+      if (dots) dots.querySelectorAll(".carousel__dot").forEach((d, i) => d.classList.toggle("is-active", i === activePage()));
     };
     track.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("resize", () => { buildDots(); update(); });
+    buildDots();
     setTimeout(update, 0);
+
+    // one-time "peek" nudge the first time the carousel scrolls into view —
+    // signals it's interactive rather than a static row of cards
+    if (!reduceMotion && "IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || track.scrollWidth <= track.clientWidth + 4) return;
+          io.disconnect();
+          track.scrollBy({ left: 88, behavior: "smooth" });
+          setTimeout(() => track.scrollBy({ left: -88, behavior: "smooth" }), 700);
+        });
+      }, { threshold: 0.6 });
+      io.observe(track);
+    }
   }
 
   function buildServices(gridSel) {
@@ -1348,6 +1379,65 @@
     document.querySelectorAll(".nav__lang-ic").forEach((n) => (n.innerHTML = GLYPH.globe));
   }
 
+  /* Nav motion: hides on scroll-down / reappears on scroll-up everywhere;
+     on .nav--overlay pages (hero directly behind the nav) it also starts
+     transparent and solidifies once scrolled past the hero. Re-measures
+     on resize since hero height is viewport-relative. */
+  function initNavScroll() {
+    const nav = $(".nav");
+    if (!nav) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isOverlay = nav.classList.contains("nav--overlay");
+    const banner = $(".demo-banner");
+    let bannerH = banner ? banner.offsetHeight : 0;
+    const heroEl = $(".nl-hero") || $(".a-hero");
+    let heroH = heroEl ? heroEl.offsetHeight : 0;
+    let lastY = window.scrollY, ticking = false;
+
+    function measure() {
+      bannerH = banner ? banner.offsetHeight : 0;
+      heroH = heroEl ? heroEl.offsetHeight : 0;
+    }
+    function update() {
+      const y = window.scrollY;
+      if (isOverlay) {
+        nav.classList.toggle("nav--solid", y > Math.max(heroH - 90, 40));
+        nav.style.top = Math.max(0, bannerH - y) + "px";
+      }
+      if (!reduceMotion) {
+        if (y > lastY && y > 140) nav.classList.add("nav--hidden");
+        else nav.classList.remove("nav--hidden");
+      }
+      lastY = y; ticking = false;
+    }
+    window.addEventListener("scroll", () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    window.addEventListener("resize", measure);
+    measure(); update();
+  }
+
+  /* Scroll-reveal: sections fade/slide into place as you reach them,
+     instead of just appearing static. Progressive enhancement — the
+     .reveal class (which starts things at opacity:0) is only ever added
+     by this function, so a page never gets stuck invisible if JS fails or
+     IntersectionObserver isn't supported. Hero bands are intentionally
+     excluded (above the fold, already have their own Ken Burns motion). */
+  function initScrollReveal() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!("IntersectionObserver" in window)) return;
+    const targets = document.querySelectorAll(".section, .agentbar");
+    if (!targets.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-revealed");
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
+    targets.forEach((elm) => { elm.classList.add("reveal"); io.observe(elm); });
+  }
+
   /* Desktop top nav — built from NAV_MENU so items with `children` get a
      hover/click dropdown. Mobile hides #navLinks entirely (see styles.css);
      the same NAV_MENU data drives the hamburger's accordion instead
@@ -1531,8 +1621,10 @@
     const page = document.body.getAttribute("data-page");
     const btn = el("button", "menu-btn"); btn.id = "menuBtn"; btn.type = "button";
     btn.setAttribute("aria-label", "Open menu"); btn.innerHTML = "<span></span><span></span><span></span>";
-    const slot = nav.querySelector(".nav__left") || nav;
-    slot.insertBefore(btn, slot.firstChild);
+    // right side, mobile-only (desktop already has the full dropdown nav) —
+    // keeps the logo alone and unchallenged on the left
+    const slot = nav.querySelector(".nav__right") || nav;
+    slot.appendChild(btn);
 
     const overlay = el("div", "menu-overlay"); overlay.id = "menuOverlay"; overlay.hidden = true;
     overlay.innerHTML = `
@@ -1589,7 +1681,7 @@
   function initPreferences() {
     const langEls = document.querySelectorAll(".lang-select");
     if (langEls.length && typeof LANGUAGES !== "undefined") {
-      const opts = LANGUAGES.map((l) => `<option value="${l.code}">${l.label}</option>`).join("");
+      const opts = LANGUAGES.map((l) => `<option value="${l.code}" title="${l.label}">${l.code.toUpperCase()}</option>`).join("");
       let saved = "en"; try { saved = localStorage.getItem("nl_lang") || "en"; } catch (e) {}
       currentLang = saved; document.documentElement.lang = saved;
       langEls.forEach((lang) => {
@@ -1869,6 +1961,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     injectNavLogo();
     buildTopNav();
+    initNavScroll();
     buildFooter();
     buildMenu();
     initReport();
@@ -1887,6 +1980,7 @@
     else if (page === "contact") renderContactPage();
     applyImageOverrides();
     decorateSlots();
+    initScrollReveal();
     // shared images arrive async; they re-apply over every tagged slot
     loadServerImages().then(() => {
       updateEditCount();
