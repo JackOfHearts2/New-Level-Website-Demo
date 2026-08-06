@@ -17,13 +17,15 @@
     <b>DEMO BUILD</b> — not live. Imagery, availability &amp; rates are illustrative placeholders.
   </div>
 
-  <!-- top nav (landing is top-level: no back arrow) -->
-  <div class="nav nav--landing">
+  <!-- top nav — floats transparent over the hero, solidifies on scroll
+       (landing is top-level: logo only, no back arrow) -->
+  <div class="nav nav--overlay">
     <div class="wrap nav__inner">
-      <div class="nav__left"></div>
-      <a class="brand nav__brand" href="index.html" aria-label="New Level — home">
-        <span class="brand__logo-slot" id="navMark"></span>
-      </a>
+      <div class="nav__left">
+        <a class="brand nav__brand" href="index.html" aria-label="New Level — home">
+          <span class="brand__logo-slot" id="navMark"></span>
+        </a>
+      </div>
       <div class="nav__right">
         <nav class="nav__links" id="navLinks" aria-label="Primary"></nav>
         <label class="nav__lang" aria-label="Language">
@@ -84,6 +86,7 @@
         <div class="carousel__track" id="teamGrid"></div>
         <button class="carousel__arrow carousel__arrow--next" id="teamNext" type="button" aria-label="Next">&rsaquo;</button>
       </div>
+      <div class="carousel__dots" id="teamDots" aria-hidden="true"></div>
       <p class="ph-caption" style="text-align:center">Team photos are placeholders for this demo.</p>
       <div style="text-align:center"><a class="link-arrow" href="team.html">Learn more &rsaquo;</a></div>
     </div>
@@ -114,6 +117,7 @@
         <div class="carousel__track" id="testimonialsGrid"></div>
         <button class="carousel__arrow carousel__arrow--next" id="testimonialsNext" type="button" aria-label="Next">&rsaquo;</button>
       </div>
+      <div class="carousel__dots" id="testimonialsDots" aria-hidden="true"></div>
       <div style="text-align:center"><a class="link-arrow" href="testimonials.html">Learn more &rsaquo;</a></div>
     </div>
   </section>

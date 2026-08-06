@@ -17,34 +17,25 @@
     <b>DEMO BUILD</b> — this is an inquiry, not a booking. Availability &amp; rates are illustrative placeholders.
   </div>
 
-  <!-- top nav: visible back arrow (to previous screen) + About link -->
-  <div class="nav">
+  <!-- top nav — floats transparent over the hero, solidifies on scroll -->
+  <div class="nav nav--overlay">
     <div class="wrap nav__inner">
       <div class="nav__left">
-        <!-- menu button injected here by app.js -->
+        <a class="brand nav__brand" href="index.html" aria-label="New Level — home">
+          <span class="brand__logo-slot" id="navMark"></span>
+        </a>
+      </div>
+      <div class="nav__right">
         <a class="nav__back" id="navBack" href="properties.html">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           <span id="navBackLabel">Properties</span>
         </a>
-      </div>
-      <a class="brand nav__brand" href="index.html" aria-label="New Level — home">
-        <span class="brand__logo-slot" id="navMark"></span>
-      </a>
-      <div class="nav__right">
-        <a class="nav__about" href="index.html">About New Level</a>
+        <nav class="nav__links" id="navLinks" aria-label="Primary"></nav>
         <label class="nav__lang" aria-label="Language">
           <span class="nav__lang-ic" aria-hidden="true"></span>
           <select class="lang-select" aria-label="Language"></select>
         </label>
       </div>
-    </div>
-  </div>
-
-  <!-- short brand intro (for direct-entry visitors) + About Us (one-way forward) -->
-  <div class="brand-strip">
-    <div class="wrap brand-strip__inner">
-      <p class="brand-strip__text" id="brandIntro"></p>
-      <a class="brand-strip__about" href="index.html" id="aboutUsLink">About New Level &rsaquo;</a>
     </div>
   </div>
 
@@ -83,6 +74,14 @@
       <a class="hero-tour-link" id="galleryLink" target="_blank" rel="noopener">Full album &rsaquo;</a>
     </div>
   </header>
+
+  <!-- short brand intro (for direct-entry visitors) + About Us (one-way forward) -->
+  <div class="brand-strip">
+    <div class="wrap brand-strip__inner">
+      <p class="brand-strip__text" id="brandIntro"></p>
+      <a class="brand-strip__about" href="index.html" id="aboutUsLink">About New Level &rsaquo;</a>
+    </div>
+  </div>
 
   <main>
     <!-- IN-PAGE PURPOSE SELECTOR (shown when no audience is known) -->
