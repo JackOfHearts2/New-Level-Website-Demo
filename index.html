@@ -45,7 +45,7 @@
   </div>
 
   <!-- 1. HERO -->
-  <header class="nl-hero">
+  <header class="nl-hero nl-hero--search">
     <div class="nl-hero__bg" data-img-key="brand-hero" aria-hidden="true">
       <span class="nl-hero__placeholder">▶ &nbsp;Brand film / imagery — placeholder</span>
     </div>
@@ -53,11 +53,53 @@
       <span class="eyebrow" id="heroEyebrow">New Level</span>
       <h1 class="display nl-hero__title">Spaces for the moments that matter.</h1>
       <p class="nl-hero__line" id="heroLine"></p>
-      <a class="btn btn--green" href="#choose">Start your search</a>
     </div>
   </header>
 
-  <!-- 2. ABOUT NEW LEVEL (short) — directly below hero, before the search box -->
+  <!-- 1b. SEARCH BAR — overlaps the bottom edge of the hero photo -->
+  <main class="search-overlay" id="choose">
+    <div class="wrap">
+      <div class="search-bar">
+        <div class="search-bar__tabs" id="searchTabs" role="tablist" aria-label="What kind of real estate are you looking for?"></div>
+        <div class="search-bar__fields">
+          <div class="search-bar__field search-bar__field--grow">
+            <label for="searchKeyword">Search</label>
+            <input type="text" id="searchKeyword" placeholder="City, neighborhood, or keyword…">
+          </div>
+          <div class="search-bar__field" id="rentDurationField" hidden>
+            <label for="rentDuration">Rental type</label>
+            <select id="rentDuration"></select>
+          </div>
+          <div class="search-bar__field">
+            <label for="fNeighborhood">Neighborhood</label>
+            <select id="fNeighborhood"></select>
+          </div>
+          <div class="search-bar__field">
+            <label for="fBeds">Min Beds</label>
+            <select id="fBeds"></select>
+          </div>
+          <div class="search-bar__field">
+            <label for="fBaths">Min Baths</label>
+            <select id="fBaths"></select>
+          </div>
+          <div class="search-bar__field">
+            <label for="fMinPrice">Min Price</label>
+            <select id="fMinPrice"></select>
+          </div>
+          <div class="search-bar__field">
+            <label for="fMaxPrice">Max Price</label>
+            <select id="fMaxPrice"></select>
+          </div>
+          <div class="search-bar__actions">
+            <button type="button" class="search-bar__reset" id="searchReset">Reset</button>
+            <button type="button" class="btn btn--green search-bar__submit" id="searchSubmit" disabled>Search</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 2. ABOUT NEW LEVEL (short) -->
   <section class="section" id="about-nl">
     <div class="wrap about-band">
       <div>
@@ -71,24 +113,7 @@
     </div>
   </section>
 
-  <!-- 3. SEARCH BOX — the primary "what are you here for" entry point -->
-  <main class="search-section" id="choose">
-    <div class="wrap">
-      <div class="section__head" style="text-align:center;margin-inline:auto;max-width:640px">
-        <h2 class="h-xl">What kind of real estate are you looking for?</h2>
-      </div>
-      <div class="search-box">
-        <div class="search-box__chips" id="searchChips" role="radiogroup" aria-label="What kind of real estate are you looking for?"></div>
-        <div class="search-box__sub" id="rentSubMenu" hidden></div>
-        <div class="search-box__row">
-          <input type="text" id="searchKeyword" class="search-box__input" placeholder="City, neighborhood, or keyword…">
-          <button type="button" class="btn btn--green search-box__submit" id="searchSubmit" disabled>Search</button>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- 3b. HOSTING AN EVENT — separate prompt, not a 4th search chip (different question) -->
+  <!-- 2b. HOSTING AN EVENT — separate prompt, not a 4th search tab (different question) -->
   <section class="event-cta">
     <div class="wrap event-cta__inner">
       <div class="event-cta__copy">
@@ -100,7 +125,7 @@
     </div>
   </section>
 
-  <!-- 4. MEET THE TEAM -->
+  <!-- 3. MEET THE TEAM -->
   <section class="section section--alt" id="team">
     <div class="wrap">
       <div class="section__head" style="text-align:center;margin-inline:auto">
@@ -119,7 +144,7 @@
     </div>
   </section>
 
-  <!-- 5a. SERVICES (placeholder — structure reserved) -->
+  <!-- 4a. SERVICES (placeholder — structure reserved) -->
   <section class="section" id="services">
     <div class="wrap">
       <div class="section__head">
@@ -132,7 +157,7 @@
     </div>
   </section>
 
-  <!-- 5b. TESTIMONIALS (placeholder — structure reserved) -->
+  <!-- 4b. TESTIMONIALS (placeholder — structure reserved) -->
   <section class="section section--alt" id="testimonials">
     <div class="wrap">
       <div class="section__head" style="text-align:center;margin-inline:auto">
@@ -149,7 +174,7 @@
     </div>
   </section>
 
-  <!-- 5c. EVENTS AREA (placeholder — gallery + video) -->
+  <!-- 4c. EVENTS AREA (placeholder — gallery + video) -->
   <section class="section" id="events">
     <div class="wrap">
       <div class="section__head">

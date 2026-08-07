@@ -255,13 +255,15 @@ const PROPERTY_CATEGORIES = [
   { id: "investment",        label: "Investment Properties",     blurb: "Opportunities for buyers looking to grow a portfolio." },
 ];
 
-/* Homepage search box — the primary "what are you here for" entry point,
-   replacing the old 5-icon purpose grid. For Rent expands into a small
-   dropdown of durations; each leaf id maps straight to a PROPERTY_CATEGORIES
-   id above so results routes to properties.html?category=<id>. "Hosting an
-   event?" is deliberately NOT a 4th chip here — it's a separate prompt
-   (EVENT_CTA below) since it answers a different question ("why are you
-   here") than these three ("what kind of listing"). */
+/* Homepage search bar — the primary "what are you here for" entry point,
+   replacing the old 5-icon purpose grid. Rendered as tabs (For Sale / For
+   Rent / Investment) overlaid on the hero image; each leaf id maps straight
+   to a PROPERTY_CATEGORIES id above so results route to
+   properties.html?category=<id>. Picking "For Rent" reveals a Rental Type
+   dropdown (Long-Term/Short-Term/Extended) that must be set before Search
+   is enabled. "Hosting an event?" is deliberately NOT a 4th tab here — it's
+   a separate prompt (EVENT_CTA below) since it answers a different question
+   ("why are you here") than these three ("what kind of listing"). */
 const SEARCH_CATEGORIES = [
   { id: "for-sale",   label: "For Sale" },
   { id: "for-rent",   label: "For Rent", children: [
@@ -271,6 +273,21 @@ const SEARCH_CATEGORIES = [
   ] },
   { id: "investment", label: "Investment Properties" },
 ];
+
+/* Decorative filter fields on the search bar (Neighborhood / beds / baths /
+   price range) — visual only for now. This demo has one real listing plus a
+   handful of placeholders, not a real MLS inventory, so there's nothing
+   meaningful for "Min Beds: 3+" to filter against yet. They render as live,
+   selectable dropdowns (not grayed out) so the bar reads as finished, but
+   selecting a value doesn't change search results — only the tab + keyword
+   field do. Wire these into real filtering once there's real inventory. */
+const SEARCH_FILTERS = {
+  neighborhood: ["Any", "Downtown Miami", "Brickell", "Coral Gables", "Coconut Grove", "Wynwood", "Miami Beach"],
+  beds:         ["Any", "1+", "2+", "3+", "4+", "5+"],
+  baths:        ["Any", "1+", "2+", "3+", "4+"],
+  minPrice:     ["Any", "$200k", "$500k", "$1M", "$2M", "$5M"],
+  maxPrice:     ["Any", "$500k", "$1M", "$2M", "$5M", "$10M+"],
+};
 
 /* The separate "hosting an event?" prompt beneath the search box. Routes to
    properties.html?category=events — the actual "what kind of event" choice
@@ -468,6 +485,13 @@ const I18N = {
   "Long-Term Rentals": { es: "Alquileres a largo plazo", fr: "Locations longue durée", pt: "Aluguéis de longa duração", ht: "Lokasyon long tèm" },
   "City, neighborhood, or keyword…": { es: "Ciudad, vecindario o palabra clave…", fr: "Ville, quartier ou mot-clé…", pt: "Cidade, bairro ou palavra-chave…", ht: "Vil, katye, oswa mo kle…" },
   "Search": { es: "Buscar", fr: "Rechercher", pt: "Buscar", ht: "Chèche" },
+  "Reset": { es: "Restablecer", fr: "Réinitialiser", pt: "Redefinir", ht: "Reyajiste" },
+  "Rental type": { es: "Tipo de alquiler", fr: "Type de location", pt: "Tipo de aluguel", ht: "Tip lokasyon" },
+  "Rental type…": { es: "Tipo de alquiler…", fr: "Type de location…", pt: "Tipo de aluguel…", ht: "Tip lokasyon…" },
+  "Min Beds": { es: "Habitaciones mín.", fr: "Chambres min.", pt: "Quartos mín.", ht: "Chanm min." },
+  "Min Baths": { es: "Baños mín.", fr: "Salles de bain min.", pt: "Banheiros mín.", ht: "Twalèt min." },
+  "Min Price": { es: "Precio mín.", fr: "Prix min.", pt: "Preço mín.", ht: "Pri min." },
+  "Max Price": { es: "Precio máx.", fr: "Prix max.", pt: "Preço máx.", ht: "Pri maks." },
   "Hosting an event?": { es: "¿Organizas un evento?", fr: "Vous organisez un événement ?", pt: "Vai organizar um evento?", ht: "W ap òganize yon evènman?" },
   "We can help with that too.": { es: "También podemos ayudarte con eso.", fr: "Nous pouvons aussi vous aider avec ça.", pt: "Também podemos ajudar com isso.", ht: "Nou ka ede w avèk sa tou." },
   "See event venues": { es: "Ver espacios para eventos", fr: "Voir les lieux pour événements", pt: "Ver espaços para eventos", ht: "Gade kote pou evènman" },

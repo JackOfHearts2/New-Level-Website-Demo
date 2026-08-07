@@ -105,14 +105,21 @@ Long-Term / Extended Stay / Private Events / For Sale / Investment — not exhau
 added) unless `?a=` or `?category=` is present. Each property (including the "coming soon"
 placeholders in `OTHER_PROPERTIES`) tags itself via a `categories` array.
 
-**Search box & event CTA** (`SEARCH_CATEGORIES`, `EVENT_CTA` in content.js, `buildSearchBox()` /
-`buildEventCta()` in app.js)
-index.html's old 5-icon `#audienceGrid` purpose selector is gone, replaced by two separate
-entry points below the hero: a search box (For Sale / For Rent [with a Long-Term / Short-Term /
-Extended sub-menu] / Investment Properties, plus a free-text keyword field) and a distinct
-"Hosting an event?" CTA band. They're kept separate deliberately — event-hosting is a different
-question from what-are-you-shopping-for, not a 4th search chip. The search box submits to
-`properties.html?category=<id>&q=<keyword>`; the event CTA links straight to
+**Search bar & event CTA** (`SEARCH_CATEGORIES`, `SEARCH_FILTERS`, `EVENT_CTA` in content.js,
+`buildSearchBox()` / `buildEventCta()` in app.js)
+index.html's old 5-icon `#audienceGrid` purpose selector is gone. In its place: a search bar
+that overlaps the seam between the hero photo and the page body (`.search-overlay`, pulled up
+over `.nl-hero--search` with a negative margin — see reference layout the client shared), plus a
+separate "Hosting an event?" CTA band further down the page. They're kept separate deliberately
+— event-hosting is a different question from what-are-you-shopping-for, not a 4th search tab.
+The bar itself is tabs (For Sale / For Rent / Investment Properties — `SEARCH_CATEGORIES`), a
+keyword field, and Neighborhood/Min Beds/Min Baths/Min Price/Max Price dropdowns
+(`SEARCH_FILTERS`) plus Reset/Search buttons. **Those five filter dropdowns are decorative** —
+populated and selectable, but not wired into filtering. This demo has one real listing plus a
+handful of placeholders, not a real MLS inventory, so there's nothing for "Min Beds: 3+" to
+filter against yet; only the tab + keyword field affect results. Picking "For Rent" reveals a
+Rental Type dropdown (Long-Term/Short-Term/Extended) that gates the Search button. The bar
+submits to `properties.html?category=<id>&q=<keyword>`; the event CTA links straight to
 `properties.html?category=events`. Both route into `renderPropertyList()`'s `?category=` branch
 (single-category view with keyword soft-matching via `matchesKeyword()`), reusing the existing
 category/card rendering rather than a parallel results view. property.html's own `#purposeGrid`
@@ -190,8 +197,10 @@ sweep) — see "Testing on this machine" above for how to repeat it.
 **Most recent session:** rebuilt the top nav (logo pinned left, scrollable+arrowed right side,
 transparent-over-hero/hide-on-scroll motion), replaced the homepage 5-icon purpose selector with
 a search box + separate event CTA, added `?category=` search-result routing to properties.html,
-grew property categories to 7, and fixed the scroll-reveal threshold bug described above. Verified
-via Playwright across desktop + mobile widths with a console-error sweep; not yet re-confirmed
+grew property categories to 7, and fixed the scroll-reveal threshold bug described above. Then,
+after the client shared a concrete reference screenshot, reworked the search box again into the
+hero-overlay search bar described above (tabs + decorative filter dropdowns). Verified via
+Playwright across desktop + mobile widths with a console-error sweep; not yet re-confirmed
 against a live newlevelassociates.com pull (still returning 403 to this environment as of last
 check) or pushed live to Netlify.
 
