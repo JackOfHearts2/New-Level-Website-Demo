@@ -36,11 +36,13 @@
   function translatePage(lang) {
     if (typeof I18N === "undefined") return;
     currentLang = lang;
-    document.querySelectorAll(".nav__links a,.nav-dropdown a,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab,.search-chip")
+    document.querySelectorAll(".nav__links a,.nav-dropdown a,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab,.search-tab")
       .forEach((e) => { if (e.childElementCount === 0) translateEl(e, lang); });
-    document.querySelectorAll(".eyebrow,.field label,.btn,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit").forEach((e) => translateEl(e, lang));
+    document.querySelectorAll(".eyebrow,.field label,.search-bar__field label,.btn,.search-bar__reset,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit").forEach((e) => translateEl(e, lang));
     const kw = $("#searchKeyword");
     if (kw) { const base = "City, neighborhood, or keyword…"; kw.placeholder = lang === "en" ? base : ((I18N[base] && I18N[base][lang]) || base); }
+    const rd = $("#rentDuration");
+    if (rd) { const opt = rd.querySelector('option[value=""]'); if (opt) { const base = "Rental type…"; opt.textContent = lang === "en" ? base : ((I18N[base] && I18N[base][lang]) || base); } }
     document.documentElement.lang = lang;
   }
   const money = (n) => { const c = cur(); return c.symbol + Math.round(n * c.rate).toLocaleString("en-US"); };
@@ -258,50 +260,75 @@
     translatePage(currentLang);
   }
 
-  /* Homepage search box — replaces the old 5-icon purpose grid. Picking a
-     top-level category with no children (For Sale / Investment) selects it
-     directly; "For Rent" reveals a small sub-row (Long-Term/Short-Term/
-     Extended) and needs one of those picked before Search is enabled.
-     Submits to properties.html?category=<id>&q=<keyword>, reusing the
-     categorized properties list already built. */
+  /* Homepage search bar — overlaid on the hero image. Tabs (For Sale/For
+     Rent/Investment) replace the old chip row; picking "For Rent" reveals a
+     Rental Type dropdown (Long-Term/Short-Term/Extended) that must be set
+     before Search is enabled. The Neighborhood/beds/baths/price dropdowns
+     are decorative (see SEARCH_FILTERS comment in content.js) — populated
+     and selectable, but excluded from the submit params. Submits to
+     properties.html?category=<id>&q=<keyword>, reusing the categorized
+     properties list already built. */
   function buildSearchBox() {
-    const chips = $("#searchChips"), subMenu = $("#rentSubMenu"), submitBtn = $("#searchSubmit"), keyword = $("#searchKeyword");
-    if (!chips || typeof SEARCH_CATEGORIES === "undefined") return;
-    let selected = null;
+    const tabs = $("#searchTabs"), durationField = $("#rentDurationField"), durationSelect = $("#rentDuration"),
+      submitBtn = $("#searchSubmit"), keyword = $("#searchKeyword"), resetBtn = $("#searchReset");
+    if (!tabs || typeof SEARCH_CATEGORIES === "undefined") return;
+    let activeTop = null, activeChild = null;
 
-    chips.innerHTML = SEARCH_CATEGORIES.map((c) =>
-      `<button type="button" class="search-chip" data-id="${c.id}" aria-pressed="false">${c.label}</button>`).join("");
+    tabs.innerHTML = SEARCH_CATEGORIES.map((c) =>
+      `<button type="button" class="search-tab" data-id="${c.id}" role="tab" aria-selected="false">${c.label}</button>`).join("");
 
-    function selectTop(id, btn) {
-      chips.querySelectorAll(".search-chip").forEach((b) => { const on = b === btn; b.classList.toggle("is-active", on); b.setAttribute("aria-pressed", String(on)); });
+    const selectedId = () => {
+      const cat = SEARCH_CATEGORIES.find((c) => c.id === activeTop);
+      return (cat && cat.children && cat.children.length) ? activeChild : activeTop;
+    };
+
+    function selectTab(id, btn) {
+      activeTop = id; activeChild = null;
+      tabs.querySelectorAll(".search-tab").forEach((b) => { const on = b === btn; b.classList.toggle("is-active", on); b.setAttribute("aria-selected", String(on)); });
       const cat = SEARCH_CATEGORIES.find((c) => c.id === id);
       if (cat.children && cat.children.length) {
-        subMenu.hidden = false;
-        subMenu.innerHTML = cat.children.map((c) =>
-          `<button type="button" class="search-chip search-chip--sub" data-id="${c.id}" aria-pressed="false">${c.label}</button>`).join("");
-        subMenu.querySelectorAll(".search-chip--sub").forEach((b) => b.addEventListener("click", () => {
-          subMenu.querySelectorAll(".search-chip--sub").forEach((x) => { x.classList.remove("is-active"); x.setAttribute("aria-pressed", "false"); });
-          b.classList.add("is-active"); b.setAttribute("aria-pressed", "true");
-          selected = b.getAttribute("data-id");
-          submitBtn.disabled = false;
-        }));
-        selected = null; submitBtn.disabled = true; // must still pick a duration
+        durationField.hidden = false;
+        durationSelect.innerHTML = `<option value="">Rental type…</option>` +
+          cat.children.map((c) => `<option value="${c.id}">${c.label}</option>`).join("");
+        durationSelect.value = "";
       } else {
-        subMenu.hidden = true; subMenu.innerHTML = "";
-        selected = id; submitBtn.disabled = false;
+        durationField.hidden = true;
+        durationSelect.innerHTML = "";
       }
+      submitBtn.disabled = !selectedId();
     }
-    chips.querySelectorAll(".search-chip").forEach((b) => b.addEventListener("click", () => selectTop(b.getAttribute("data-id"), b)));
+    tabs.querySelectorAll(".search-tab").forEach((b) => b.addEventListener("click", () => selectTab(b.getAttribute("data-id"), b)));
+    durationSelect.addEventListener("change", () => { activeChild = durationSelect.value || null; submitBtn.disabled = !selectedId(); });
+
+    const firstTab = tabs.querySelector(".search-tab");
+    if (firstTab) selectTab(firstTab.getAttribute("data-id"), firstTab);
 
     const submit = () => {
-      if (!selected) return;
-      const params = new URLSearchParams({ category: selected });
+      const id = selectedId();
+      if (!id) return;
+      const params = new URLSearchParams({ category: id });
       const q = (keyword.value || "").trim();
       if (q) params.set("q", q);
       location.href = "properties.html?" + params.toString();
     };
     submitBtn.addEventListener("click", submit);
     keyword.addEventListener("keydown", (e) => { if (e.key === "Enter" && !submitBtn.disabled) submit(); });
+
+    // decorative filter dropdowns — populated for visual completeness, not wired into filtering yet
+    const decorMap = { fNeighborhood: "neighborhood", fBeds: "beds", fBaths: "baths", fMinPrice: "minPrice", fMaxPrice: "maxPrice" };
+    if (typeof SEARCH_FILTERS !== "undefined") {
+      Object.keys(decorMap).forEach((elId) => {
+        const sel = document.getElementById(elId);
+        if (!sel) return;
+        sel.innerHTML = SEARCH_FILTERS[decorMap[elId]].map((v) => `<option>${v}</option>`).join("");
+      });
+    }
+
+    if (resetBtn) resetBtn.addEventListener("click", () => {
+      keyword.value = "";
+      Object.keys(decorMap).forEach((elId) => { const sel = document.getElementById(elId); if (sel) sel.selectedIndex = 0; });
+      if (firstTab) selectTab(firstTab.getAttribute("data-id"), firstTab);
+    });
   }
 
   function buildEventCta() {
