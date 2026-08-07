@@ -54,14 +54,28 @@ range, not just phone widths. If nav items are ever added/removed, re-check this
 rather than assuming 1200px still clears it.
 
 The nav has since been rebuilt as a left/right flex layout (not the `1fr auto 1fr` grid described
-above — that grid is gone). `.nav__left` (logo only) is pinned with `flex: 0 0 auto` so it can
-never shrink. `.nav__right` holds the back-link (on dedicated pages), `#navLinks`, and the
-language switcher inside a scrollable `.nav__right-track`, with small `.nav-scroll__arrow`
-buttons (`initNavRightScroll()` in app.js) that only render when the track actually overflows —
-this replaced hiding `.nav__links` below 1200px as the fix for logo-squeeze, so if you ever touch
-nav layout, don't reintroduce a fixed-column grid that lets `.nav__right` content compress the
-logo. On index.html and property.html the nav is also `.nav--overlay`: transparent over the hero,
-solidifies on scroll, and hides on scroll-down/reappears on scroll-up (`initNavScroll()`).
+above — that grid is gone), and the logo has moved out of it entirely. `.nav__right` holds the
+back-link (on dedicated pages), `#navLinks`, and the language switcher inside a scrollable
+`.nav__right-track`, with small `.nav-scroll__arrow` buttons (`initNavRightScroll()` in app.js)
+that only render when the track actually overflows — this replaced hiding `.nav__links` below
+1200px as the fix for logo-squeeze, so if you ever touch nav layout, don't reintroduce a
+fixed-column grid that lets `.nav__right` content compress anything. On index.html and
+property.html the nav is also `.nav--overlay`: transparent over the hero, solidifies on scroll,
+and hides on scroll-down/reappears on scroll-up (`initNavScroll()`).
+
+**The logo (`.brand-float`)** is a fixed-position sibling of `.nav`, not a nav child — see the
+`.brand-float` comment block in styles.css for the full rationale. Short version: on desktop it
+sits flush against the true left edge of the viewport (there's dead space between the true edge
+and where `.wrap`'s centered `max-width` column starts on wide screens — `.brand-float` sits
+outside that column on purpose, "on its own"), and it stays visible even while the nav bar hides
+on scroll-down, since `.nav--hidden`'s transform never touches it. On mobile (`max-width:640px`)
+both of those flip: the flush-left placement reads as oversized on a narrow screen, so it centers
+instead (smaller, with the hamburger anchoring the right side) and hides/reappears together with
+the rest of the bar again, like the classic mobile pattern. `initNavScroll()` in app.js drives all
+of this — it mirrors `.nav`'s hidden/solid state onto `.brand-float` every scroll tick; which of
+those mirrored classes actually do anything is purely a CSS/breakpoint question. If you ever need
+to change the logo's position or visibility behavior, that function plus the `.brand-float` rules
+in styles.css (base + the `max-width:640px` override) are the only two places to touch.
 
 ## Locked design decisions — do not drift
 
@@ -72,7 +86,8 @@ These came from the client brief and were corrected several times. Don't "improv
 - **Type: Poppins** (display) + **DM Sans** (body). No serif anywhere.
 - **Logo** (`assets/logo.png`) is the real asset from newlevelassociates.com. Its white space is
   pure `#FFFFFF`, so any surface it sits on uses `--true-white` — otherwise you get a visible seam.
-  It is **centered** in the nav; menu + back arrow group on the left.
+  Its position has moved a few times as the client refined the brief — see `.brand-float` above
+  for current placement (flush-left + always-visible on desktop, centered on mobile).
 - **Brand-level copy says "South Florida," never "Miami"** so the template works for future
   properties. Property-specific copy may name Miami.
 - **Audience icons are shape-differentiated, never color-coded.** The Church/Ministry icon
@@ -148,6 +163,14 @@ render or new text won't translate.
 Bounded left/right arrow-scroll (no infinite loop) used for Team and Testimonials on index.html
 and their dedicated pages. Reusable: `initCarousel(trackSelector, prevArrowSelector, nextArrowSelector)`.
 
+**Hover motion** — clickable/selectable elements (property cards, testimonial cards, team photos,
+tier/package options, event-type chips, search bar tabs & fields, link-arrows, the floating logo)
+get a lift/scale/tint on `:hover` so the site doesn't read as static. Deliberately **not** applied
+to purely informational, non-clickable blocks (`.fact`, `.amenity`, `.step`, `.other-card` — the
+"coming soon" placeholder property cards, which are plain `<div>`s with no link or handler) —
+adding hover feedback there would imply an interaction that doesn't exist. Keep that distinction
+if you add more hover states later: hover means "this does something," not decoration.
+
 ## Gotchas discovered the hard way
 
 - **The property page rewrites its own URL** (`history.replaceState`) when a purpose is selected.
@@ -194,15 +217,17 @@ Verified this session via a headless-Chromium/Playwright smoke pass across every
 flow end-to-end including package selection + currency + language switch, plus a console-error
 sweep) — see "Testing on this machine" above for how to repeat it.
 
-**Most recent session:** rebuilt the top nav (logo pinned left, scrollable+arrowed right side,
+**Most recent session:** rebuilt the top nav (scrollable+arrowed right side,
 transparent-over-hero/hide-on-scroll motion), replaced the homepage 5-icon purpose selector with
 a search box + separate event CTA, added `?category=` search-result routing to properties.html,
 grew property categories to 7, and fixed the scroll-reveal threshold bug described above. Then,
 after the client shared a concrete reference screenshot, reworked the search box again into the
-hero-overlay search bar described above (tabs + decorative filter dropdowns). Verified via
-Playwright across desktop + mobile widths with a console-error sweep; not yet re-confirmed
-against a live newlevelassociates.com pull (still returning 403 to this environment as of last
-check) or pushed live to Netlify.
+hero-overlay search bar described above (tabs + decorative filter dropdowns). Finally, detached
+the logo from the nav bar entirely into `.brand-float` (flush-left + always-visible on desktop,
+centered + hides-with-the-bar on mobile — see the dedicated writeup above) and did a hover-motion
+pass across clickable elements site-wide. Verified via Playwright across desktop + mobile widths
+with a console-error sweep; not yet re-confirmed against a live newlevelassociates.com pull
+(still returning 403 to this environment as of last check) or pushed live to Netlify.
 
 **Content note:** newlevelassociates.com returned HTTP 403 to this session's fetch attempts (bot
 protection), so the new pages' copy is informed by the content already captured in `content.js`

@@ -1520,10 +1520,21 @@
   /* Nav motion: hides on scroll-down / reappears on scroll-up everywhere;
      on .nav--overlay pages (hero directly behind the nav) it also starts
      transparent and solidifies once scrolled past the hero. Re-measures
-     on resize since hero height is viewport-relative. */
+     on resize since hero height is viewport-relative.
+     .brand-float (the logo, now a fixed sibling of .nav rather than a
+     child — see styles.css) needs the same "collapse up as the demo banner
+     scrolls away" vertical offset .nav gets, and — on overlay pages — the
+     same solid/transparent toggle, so it visually tracks the bar instead of
+     floating at a mismatched height or keeping its hero-card background
+     once the bar has already solidified. Its .nav--hidden class is mirrored
+     from .nav too: on desktop that's inert (the logo stays visible by
+     design — no CSS rule outside the mobile breakpoint acts on it), but on
+     mobile it makes the centered logo hide/reappear together with the rest
+     of the bar rather than floating on its own. */
   function initNavScroll() {
     const nav = $(".nav");
     if (!nav) return;
+    const brandFloat = $(".brand-float");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isOverlay = nav.classList.contains("nav--overlay");
     const banner = $(".demo-banner");
@@ -1538,13 +1549,23 @@
     }
     function update() {
       const y = window.scrollY;
+      const topOffset = Math.max(0, bannerH - y);
+      if (brandFloat) brandFloat.style.top = topOffset + "px";
       if (isOverlay) {
-        nav.classList.toggle("nav--solid", y > Math.max(heroH - 90, 40));
-        nav.style.top = Math.max(0, bannerH - y) + "px";
+        const solid = y > Math.max(heroH - 90, 40);
+        nav.classList.toggle("nav--solid", solid);
+        if (brandFloat) brandFloat.classList.toggle("nav--solid", solid);
+        nav.style.top = topOffset + "px";
       }
       if (!reduceMotion) {
-        if (y > lastY && y > 140) nav.classList.add("nav--hidden");
-        else nav.classList.remove("nav--hidden");
+        const hide = y > lastY && y > 140;
+        nav.classList.toggle("nav--hidden", hide);
+        // mirrored onto brand-float too: inert on desktop (no matching
+        // transform rule outside the mobile breakpoint), but on mobile the
+        // logo hides/reappears with the rest of the bar instead of staying
+        // permanently fixed — see the .brand-float.nav--hidden rule in the
+        // max-width:640px media query in styles.css.
+        if (brandFloat) brandFloat.classList.toggle("nav--hidden", hide);
       }
       lastY = y; ticking = false;
     }
@@ -1588,11 +1609,12 @@
 
   /* .nav__right can outgrow the available width (a long purpose-specific
      back label alongside the full link set) — rather than let that squeeze
-     the logo (.nav__left is flex:0 0 auto, guaranteed not to shrink), the
-     track scrolls horizontally, with tiny arrows shown only when there's
-     actually somewhere to scroll to. updateNavRightScroll is also called
-     from setBackTo() below, since the back label's text (and therefore
-     whether the track overflows) can change after a purpose is picked. */
+     the logo (which lives outside .nav entirely now, see .brand-float),
+     the track scrolls horizontally, with tiny arrows shown only when
+     there's actually somewhere to scroll to. updateNavRightScroll is also
+     called from setBackTo() below, since the back label's text (and
+     therefore whether the track overflows) can change after a purpose is
+     picked. */
   let updateNavRightScroll = () => {};
   function initNavRightScroll() {
     const track = $(".nav__right-track");
