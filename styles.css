@@ -161,8 +161,27 @@ strong, b { font-weight: 600; }
 .nav--overlay.nav--solid .brand__logo-slot { background: transparent; box-shadow: none; padding: 0; }
 
 .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 90px; }
-.nav__left { display: flex; align-items: center; gap: 14px; }
-.nav__right { display: flex; align-items: center; gap: 22px; }
+/* flex: 0 0 auto is load-bearing — the logo must NEVER shrink, no matter
+   how wide .nav__right's content gets (e.g. a long purpose-specific back
+   label alongside the full link set). Without it, flex's default
+   shrink-to-fit behavior can compress the logo when the two sides don't
+   both fit — that's the bug a longer back label on property.html exposed. */
+.nav__left { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
+/* .nav__right is the one allowed to run out of room — min-width:0 lets it
+   actually shrink below its content size (flex items don't by default),
+   at which point .nav__right-track scrolls horizontally instead of
+   pushing on the logo. Tiny arrows (JS-shown only when there's overflow
+   to scroll to) make that discoverable rather than just a hidden scrollbar. */
+.nav__right { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; justify-content: flex-end; }
+.nav__right-track { display: flex; align-items: center; gap: 22px; overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
+.nav__right-track::-webkit-scrollbar { display: none; }
+.nav__right-track > * { flex: 0 0 auto; }
+.nav-scroll__arrow { display: none; flex: 0 0 auto; width: 26px; height: 26px; align-items: center; justify-content: center; border: none; background: none; color: var(--muted); cursor: pointer; padding: 0; }
+.nav-scroll__arrow svg { width: 15px; height: 15px; }
+.nav-scroll__arrow:hover { color: var(--ink); }
+.nav-scroll__arrow.is-active { display: inline-flex; }
+.nav--overlay .nav-scroll__arrow { color: rgba(255,255,255,.8); }
+.nav--overlay.nav--solid .nav-scroll__arrow { color: var(--muted); }
 .brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; }
 .brand__name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
 .brand__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; align-self: center; }
@@ -510,6 +529,35 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
 .nl-hero__inner .btn { margin-top: 30px; }
 
 /* =========================================================================
+   SEARCH BOX (index.html) — the primary "what are you here for" entry
+   point, replacing the old 5-icon purpose grid.
+   ========================================================================= */
+.search-section { padding-block: var(--section-y); }
+.search-box { max-width: 720px; margin: clamp(28px, 4vw, 44px) auto 0; background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: clamp(22px, 3vw, 36px); }
+.search-box__chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.search-chip { font-family: var(--font-display); font-weight: 600; font-size: .95rem; padding: 12px 22px; border-radius: 100px; border: 1.5px solid var(--line); background: var(--true-white); color: var(--ink); cursor: pointer; transition: border-color .15s ease, background .15s ease, color .15s ease; }
+.search-chip:hover { border-color: var(--ink); }
+.search-chip.is-active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.search-box__sub { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.search-box__sub .search-chip--sub { padding: 9px 18px; font-size: .86rem; background: var(--paper-2); }
+.search-box__sub .search-chip--sub.is-active { background: var(--green); color: #fff; border-color: var(--green); }
+.search-box__row { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.search-box__input { flex: 1 1 240px; font-family: var(--font-body); font-size: 1rem; padding: 14px 18px; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--true-white); }
+.search-box__input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-tint); }
+.search-box__submit { flex: 0 0 auto; padding: 14px 30px; }
+.search-box__submit:disabled { opacity: .4; cursor: not-allowed; }
+
+/* "Hosting an event?" — deliberately separate from the search box above,
+   not a 4th chip, since it answers a different question. */
+.event-cta { background: var(--ink); }
+.event-cta__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding-block: clamp(36px, 5vw, 56px); }
+.event-cta__copy { max-width: 620px; }
+.event-cta .eyebrow { color: #fff; }
+.event-cta .eyebrow::before { background: var(--green); }
+.event-cta__copy h3 { color: #fff; }
+.event-cta__copy p { color: rgba(255,255,255,.75); }
+
+/* =========================================================================
    PROPERTY LIST (properties.html)
    ========================================================================= */
 .property-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 28px; }
@@ -605,9 +653,6 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
 
 /* About New Level block */
 .about-nl { max-width: 760px; }
-
-/* nav: back arrow beside logo + About link */
-.nav__left { display: flex; align-items: center; gap: 6px; }
 
 /* text wordmark (logo format): "New Level" dominant, tagline tracked to span
    the same width beneath it so the two read as one cohesive mark. */

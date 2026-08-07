@@ -36,9 +36,11 @@
   function translatePage(lang) {
     if (typeof I18N === "undefined") return;
     currentLang = lang;
-    document.querySelectorAll(".nav__links a,.nav-dropdown a,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab")
+    document.querySelectorAll(".nav__links a,.nav-dropdown a,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab,.search-chip")
       .forEach((e) => { if (e.childElementCount === 0) translateEl(e, lang); });
     document.querySelectorAll(".eyebrow,.field label,.btn,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit").forEach((e) => translateEl(e, lang));
+    const kw = $("#searchKeyword");
+    if (kw) { const base = "City, neighborhood, or keyword…"; kw.placeholder = lang === "en" ? base : ((I18N[base] && I18N[base][lang]) || base); }
     document.documentElement.lang = lang;
   }
   const money = (n) => { const c = cur(); return c.symbol + Math.round(n * c.rate).toLocaleString("en-US"); };
@@ -246,13 +248,69 @@
     if (line) line.textContent = NLG_BRAND.landingLine;
     const about = $("#aboutShortText");
     if (about) about.textContent = NLG_BRAND.aboutShort;
-    buildAudienceIcons($("#audienceGrid"), { href: (id) => `properties.html?a=${id}` });
+    buildSearchBox();
+    buildEventCta();
     buildTeam();
     buildServices();
     buildTestimonials();
     initCarousel("#teamGrid", "#teamPrev", "#teamNext", "#teamDots");
     initCarousel("#testimonialsGrid", "#testimonialsPrev", "#testimonialsNext", "#testimonialsDots");
     translatePage(currentLang);
+  }
+
+  /* Homepage search box — replaces the old 5-icon purpose grid. Picking a
+     top-level category with no children (For Sale / Investment) selects it
+     directly; "For Rent" reveals a small sub-row (Long-Term/Short-Term/
+     Extended) and needs one of those picked before Search is enabled.
+     Submits to properties.html?category=<id>&q=<keyword>, reusing the
+     categorized properties list already built. */
+  function buildSearchBox() {
+    const chips = $("#searchChips"), subMenu = $("#rentSubMenu"), submitBtn = $("#searchSubmit"), keyword = $("#searchKeyword");
+    if (!chips || typeof SEARCH_CATEGORIES === "undefined") return;
+    let selected = null;
+
+    chips.innerHTML = SEARCH_CATEGORIES.map((c) =>
+      `<button type="button" class="search-chip" data-id="${c.id}" aria-pressed="false">${c.label}</button>`).join("");
+
+    function selectTop(id, btn) {
+      chips.querySelectorAll(".search-chip").forEach((b) => { const on = b === btn; b.classList.toggle("is-active", on); b.setAttribute("aria-pressed", String(on)); });
+      const cat = SEARCH_CATEGORIES.find((c) => c.id === id);
+      if (cat.children && cat.children.length) {
+        subMenu.hidden = false;
+        subMenu.innerHTML = cat.children.map((c) =>
+          `<button type="button" class="search-chip search-chip--sub" data-id="${c.id}" aria-pressed="false">${c.label}</button>`).join("");
+        subMenu.querySelectorAll(".search-chip--sub").forEach((b) => b.addEventListener("click", () => {
+          subMenu.querySelectorAll(".search-chip--sub").forEach((x) => { x.classList.remove("is-active"); x.setAttribute("aria-pressed", "false"); });
+          b.classList.add("is-active"); b.setAttribute("aria-pressed", "true");
+          selected = b.getAttribute("data-id");
+          submitBtn.disabled = false;
+        }));
+        selected = null; submitBtn.disabled = true; // must still pick a duration
+      } else {
+        subMenu.hidden = true; subMenu.innerHTML = "";
+        selected = id; submitBtn.disabled = false;
+      }
+    }
+    chips.querySelectorAll(".search-chip").forEach((b) => b.addEventListener("click", () => selectTop(b.getAttribute("data-id"), b)));
+
+    const submit = () => {
+      if (!selected) return;
+      const params = new URLSearchParams({ category: selected });
+      const q = (keyword.value || "").trim();
+      if (q) params.set("q", q);
+      location.href = "properties.html?" + params.toString();
+    };
+    submitBtn.addEventListener("click", submit);
+    keyword.addEventListener("keydown", (e) => { if (e.key === "Enter" && !submitBtn.disabled) submit(); });
+  }
+
+  function buildEventCta() {
+    if (typeof EVENT_CTA === "undefined") return;
+    const eb = $("#eventCtaEyebrow"), h = $("#eventCtaHeading"), s = $("#eventCtaSub"), btn = $("#eventCtaBtn");
+    if (eb) eb.textContent = EVENT_CTA.eyebrow;
+    if (h) h.textContent = EVENT_CTA.heading;
+    if (s) s.textContent = EVENT_CTA.sub;
+    if (btn) btn.textContent = EVENT_CTA.cta + " ›";
   }
 
   function renderAbout() {
@@ -464,11 +522,27 @@
        </div>`);
   }
 
+  /* Matches the homepage search box's keyword field against a property's
+     visible text — soft/illustrative given this demo's tiny inventory, not
+     a real search index. */
+  function matchesKeyword(text, q) {
+    return text.toLowerCase().includes(q.toLowerCase());
+  }
+  function categoryCards(catId) {
+    const cards = [];
+    if (PROPERTY.categories && PROPERTY.categories.includes(catId)) cards.push({ card: realPropertyCard(null), text: `${PROPERTY.address} ${PROPERTY.siteName}` });
+    OTHER_PROPERTIES.forEach((p, i) => { if (p.categories && p.categories.includes(catId)) cards.push({ card: otherPropertyCard(p, i), text: `${p.title} ${p.meta}` }); });
+    return cards;
+  }
+
   function renderPropertyList() {
     const params = new URLSearchParams(location.search);
     let id = params.get("a");
     if (!AUDIENCES[id]) id = null;
     const a = id ? AUDIENCES[id] : null;
+    const catId = params.get("category");
+    const cat = !a && typeof PROPERTY_CATEGORIES !== "undefined" ? PROPERTY_CATEGORIES.find((c) => c.id === catId) : null;
+    const q = (params.get("q") || "").trim();
     const list = $("#propertyList"), catsBox = $("#propertyCategories");
 
     if (a) {
@@ -479,20 +553,36 @@
       list.hidden = false; list.innerHTML = "";
       list.appendChild(realPropertyCard(id));
       if (catsBox) catsBox.innerHTML = "";
+    } else if (cat) {
+      // search-box result: just this one category, with a way back to browse everything
+      list.hidden = true;
+      $("#plEyebrow").textContent = "Search results";
+      $("#plTitle").textContent = cat.label;
+      let entries = categoryCards(cat.id);
+      let sub = cat.blurb;
+      if (q) {
+        const filtered = entries.filter((e) => matchesKeyword(e.text, q));
+        if (filtered.length) { entries = filtered; sub = `Matching “${q}” in ${cat.label}.`; }
+        else sub = `No exact matches for “${q}” — showing all ${cat.label.toLowerCase()} listings instead.`;
+      }
+      $("#plSub").textContent = sub;
+      catsBox.innerHTML = "";
+      const grid = el("div", "property-list");
+      entries.forEach((e) => grid.appendChild(e.card));
+      catsBox.appendChild(grid);
+      catsBox.appendChild(el("p", "ph-caption", `<a class="link-arrow" href="properties.html">‹ Browse all categories</a>`));
     } else if (catsBox && typeof PROPERTY_CATEGORIES !== "undefined") {
       // default view: properties grouped by category
       list.hidden = true;
       catsBox.innerHTML = "";
-      PROPERTY_CATEGORIES.forEach((cat) => {
-        const cards = [];
-        if (PROPERTY.categories && PROPERTY.categories.includes(cat.id)) cards.push(realPropertyCard(null));
-        OTHER_PROPERTIES.forEach((p, i) => { if (p.categories && p.categories.includes(cat.id)) cards.push(otherPropertyCard(p, i)); });
-        if (!cards.length) return;
+      PROPERTY_CATEGORIES.forEach((c) => {
+        const entries = categoryCards(c.id);
+        if (!entries.length) return;
         const block = el("div", "category-block");
-        block.id = cat.id;
-        block.innerHTML = `<div class="category-block__head"><h2 class="h-lg category-tab">${cat.label}</h2><p class="muted">${cat.blurb}</p></div>`;
+        block.id = c.id;
+        block.innerHTML = `<div class="category-block__head"><h2 class="h-lg category-tab">${c.label}</h2><p class="muted">${c.blurb}</p></div>`;
         const grid = el("div", "property-list");
-        cards.forEach((c) => grid.appendChild(c));
+        entries.forEach((e) => grid.appendChild(e.card));
         block.appendChild(grid);
         catsBox.appendChild(block);
       });
@@ -569,6 +659,7 @@
     if (!nb) return;
     if (id) { nb.href = "properties.html?a=" + id; if (nbl) nbl.textContent = "Properties"; }
     else { nb.href = "index.html"; if (nbl) nbl.textContent = "New Level"; }
+    setTimeout(updateNavRightScroll, 0);
   }
 
   function showPurposePrompt() {
@@ -1237,6 +1328,26 @@
     if (ex) ex.addEventListener("click", () => { setHeroTour(false); heroIndex = 0; showHero(); });
     const link = $("#galleryLink");
     if (link) { link.href = GALLERY_URL; link.target = "_blank"; link.rel = "noopener"; }
+    initHeroIdleReset();
+  }
+
+  /* If the page sits idle for 3 minutes while the hero is mid-photo-tour,
+     reset it back to the address/title view on the first photo — same
+     reset as the Exit button. Only fires while actually touring; browsing
+     the rest of the page (booking, form, etc.) still counts as activity,
+     it just has nothing to reset since the hero isn't in tour mode there. */
+  function initHeroIdleReset() {
+    const IDLE_MS = 3 * 60 * 1000;
+    let idleTimer = null;
+    const reset = () => {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        if (heroActive) { setHeroTour(false); heroIndex = 0; showHero(); }
+      }, IDLE_MS);
+    };
+    ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "wheel"].forEach((evt) =>
+      document.addEventListener(evt, reset, { passive: true }));
+    reset();
   }
 
   /* ---------------- Photo-tour lightbox ---------------- */
@@ -1428,14 +1539,49 @@
     if (!("IntersectionObserver" in window)) return;
     const targets = document.querySelectorAll(".section, .agentbar");
     if (!targets.length) return;
+    // threshold: 0 (not e.g. 0.12) — a percentage-of-target threshold
+    // requires that fraction of the ELEMENT'S OWN height to be visible,
+    // which a very tall section (properties.html's whole results block can
+    // be 6000px+) may never reach even scrolled fully into view. Fire as
+    // soon as any part of it is visible instead.
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         entry.target.classList.add("is-revealed");
         io.unobserve(entry.target);
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
+    }, { threshold: 0, rootMargin: "0px 0px -60px 0px" });
     targets.forEach((elm) => { elm.classList.add("reveal"); io.observe(elm); });
+    // Safety net: this is progressive enhancement, so nothing should ever
+    // stay invisible — force-reveal anything still waiting after 2.5s
+    // (e.g. an element that never intersects because it's inside a hidden
+    // ancestor at init time and only shown later).
+    setTimeout(() => document.querySelectorAll(".reveal:not(.is-revealed)").forEach((elm) => elm.classList.add("is-revealed")), 2500);
+  }
+
+  /* .nav__right can outgrow the available width (a long purpose-specific
+     back label alongside the full link set) — rather than let that squeeze
+     the logo (.nav__left is flex:0 0 auto, guaranteed not to shrink), the
+     track scrolls horizontally, with tiny arrows shown only when there's
+     actually somewhere to scroll to. updateNavRightScroll is also called
+     from setBackTo() below, since the back label's text (and therefore
+     whether the track overflows) can change after a purpose is picked. */
+  let updateNavRightScroll = () => {};
+  function initNavRightScroll() {
+    const track = $(".nav__right-track");
+    const prev = $(".nav-scroll__arrow--prev");
+    const next = $(".nav-scroll__arrow--next");
+    if (!track || !prev || !next) return;
+    updateNavRightScroll = () => {
+      const overflowing = track.scrollWidth > track.clientWidth + 2;
+      prev.classList.toggle("is-active", overflowing && track.scrollLeft > 4);
+      next.classList.toggle("is-active", overflowing && track.scrollLeft < track.scrollWidth - track.clientWidth - 4);
+    };
+    prev.addEventListener("click", () => track.scrollBy({ left: -140, behavior: "smooth" }));
+    next.addEventListener("click", () => track.scrollBy({ left: 140, behavior: "smooth" }));
+    track.addEventListener("scroll", updateNavRightScroll, { passive: true });
+    window.addEventListener("resize", updateNavRightScroll);
+    setTimeout(updateNavRightScroll, 50);
   }
 
   /* Desktop top nav — built from NAV_MENU so items with `children` get a
@@ -1582,7 +1728,7 @@
       ];
     }
     if (SITE_PAGES.some((p) => p.key === page)) return [{ label: "‹ New Level home", href: "index.html" }];
-    return [{ label: "Choose a purpose", href: "#choose", scroll: true }];
+    return [{ label: "Start your search", href: "#choose", scroll: true }];
   }
   function menuContext(page) {
     if (page === "property") return "1331 NW 87th Street";
@@ -1962,6 +2108,7 @@
     injectNavLogo();
     buildTopNav();
     initNavScroll();
+    initNavRightScroll();
     buildFooter();
     buildMenu();
     initReport();

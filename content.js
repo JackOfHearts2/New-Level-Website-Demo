@@ -241,19 +241,54 @@ const REVIEWS = {
 };
 
 /* Property categories — how the properties landing page groups listings.
-   Not exhaustive by design; New Level can add more as the portfolio grows. */
+   Not exhaustive by design; New Level can add more as the portfolio grows.
+   for-sale/long-term/investment are new alongside the homepage search box
+   (SEARCH_CATEGORIES below) — this demo has no real for-sale inventory, so
+   those three lean on OTHER_PROPERTIES placeholders for variety. */
 const PROPERTY_CATEGORIES = [
   { id: "luxury-short-term", label: "Luxury Short-Term Rentals", blurb: "Premium full-property rentals for a few standout nights." },
   { id: "short-term",        label: "Short-Term Rentals",        blurb: "Straightforward nightly stays for a quick trip." },
+  { id: "long-term",         label: "Long-Term Rentals",         blurb: "Extended leases for guests settling in for a while." },
   { id: "extended-stay",     label: "Extended Stays",            blurb: "Homes set up for weeks or months, not just a weekend." },
   { id: "events",            label: "Private Events",            blurb: "Full-property venues built for hosting, not just sleeping." },
+  { id: "for-sale",          label: "For Sale",                  blurb: "Homes and properties available to purchase." },
+  { id: "investment",        label: "Investment Properties",     blurb: "Opportunities for buyers looking to grow a portfolio." },
 ];
+
+/* Homepage search box — the primary "what are you here for" entry point,
+   replacing the old 5-icon purpose grid. For Rent expands into a small
+   dropdown of durations; each leaf id maps straight to a PROPERTY_CATEGORIES
+   id above so results routes to properties.html?category=<id>. "Hosting an
+   event?" is deliberately NOT a 4th chip here — it's a separate prompt
+   (EVENT_CTA below) since it answers a different question ("why are you
+   here") than these three ("what kind of listing"). */
+const SEARCH_CATEGORIES = [
+  { id: "for-sale",   label: "For Sale" },
+  { id: "for-rent",   label: "For Rent", children: [
+    { id: "long-term",     label: "Long-Term" },
+    { id: "short-term",    label: "Short-Term" },
+    { id: "extended-stay", label: "Extended" },
+  ] },
+  { id: "investment", label: "Investment Properties" },
+];
+
+/* The separate "hosting an event?" prompt beneath the search box. Routes to
+   properties.html?category=events — the actual "what kind of event" choice
+   stays where it already works, the event-type picker on the property page,
+   rather than duplicating that picker here too. */
+const EVENT_CTA = {
+  eyebrow: "Hosting an event?",
+  heading: "We can help with that too.",
+  sub: "Milestone celebrations, private dinners, corporate gatherings — see venues set up to host, not just sleep.",
+  cta: "See event venues",
+};
 
 /* Other New Level properties — PLACEHOLDERS (no real second listing yet). */
 const OTHER_PROPERTIES = [
-  { title: "Bay Harbor villa",     meta: "Sleeps 10 · Waterfront",  rate: "from $600 / night", soon: true, categories: ["luxury-short-term"] },
-  { title: "Wynwood loft",         meta: "Sleeps 6 · Events",       rate: "from $900 / day",   soon: true, categories: ["events", "short-term"] },
-  { title: "Coral Gables estate",  meta: "Sleeps 20 · Retreats",    rate: "from $750 / night", soon: true, categories: ["extended-stay", "events"] },
+  { title: "Bay Harbor villa",           meta: "Sleeps 10 · Waterfront", rate: "from $600 / night", soon: true, categories: ["luxury-short-term", "short-term"] },
+  { title: "Wynwood loft",               meta: "Sleeps 6 · Events",      rate: "from $900 / day",   soon: true, categories: ["events", "short-term"] },
+  { title: "Coral Gables estate",        meta: "Sleeps 20 · Retreats",   rate: "from $750 / night", soon: true, categories: ["extended-stay", "events", "long-term"] },
+  { title: "Brickell Skyline Residence", meta: "3 BR · Downtown",        rate: "Listed at $1.4M",   soon: true, categories: ["for-sale", "investment"] },
 ];
 
 /* Currency — DEMO conversion rates (base USD). */
@@ -422,6 +457,21 @@ const I18N = {
   "See our services ›": { es: "Ver nuestros servicios ›", fr: "Voir nos services ›", pt: "Ver nossos serviços ›", ht: "Gade sèvis nou yo ›" },
   "See events ›": { es: "Ver eventos ›", fr: "Voir les événements ›", pt: "Ver eventos ›", ht: "Gade evènman yo ›" },
   "Get in touch ›": { es: "Contáctanos ›", fr: "Contactez-nous ›", pt: "Entre em contato ›", ht: "Kontakte nou ›" },
+  // homepage search box + event CTA
+  "What kind of real estate are you looking for?": { es: "¿Qué tipo de propiedad buscas?", fr: "Quel type de bien immobilier recherchez-vous ?", pt: "Que tipo de imóvel você procura?", ht: "Ki kalite pwopriyete w ap chèche?" },
+  "For Sale": { es: "En venta", fr: "À vendre", pt: "À venda", ht: "Pou vann" },
+  "For Rent": { es: "En alquiler", fr: "À louer", pt: "Para alugar", ht: "Pou lwe" },
+  "Long-Term": { es: "Largo plazo", fr: "Longue durée", pt: "Longa duração", ht: "Long tèm" },
+  "Short-Term": { es: "Corto plazo", fr: "Courte durée", pt: "Curta duração", ht: "Kout tèm" },
+  "Extended": { es: "Prolongada", fr: "Prolongé", pt: "Prolongada", ht: "Pwolonje" },
+  "Investment Properties": { es: "Propiedades de inversión", fr: "Biens d'investissement", pt: "Imóveis para investimento", ht: "Pwopriyete envestisman" },
+  "Long-Term Rentals": { es: "Alquileres a largo plazo", fr: "Locations longue durée", pt: "Aluguéis de longa duração", ht: "Lokasyon long tèm" },
+  "City, neighborhood, or keyword…": { es: "Ciudad, vecindario o palabra clave…", fr: "Ville, quartier ou mot-clé…", pt: "Cidade, bairro ou palavra-chave…", ht: "Vil, katye, oswa mo kle…" },
+  "Search": { es: "Buscar", fr: "Rechercher", pt: "Buscar", ht: "Chèche" },
+  "Hosting an event?": { es: "¿Organizas un evento?", fr: "Vous organisez un événement ?", pt: "Vai organizar um evento?", ht: "W ap òganize yon evènman?" },
+  "We can help with that too.": { es: "También podemos ayudarte con eso.", fr: "Nous pouvons aussi vous aider avec ça.", pt: "Também podemos ajudar com isso.", ht: "Nou ka ede w avèk sa tou." },
+  "See event venues": { es: "Ver espacios para eventos", fr: "Voir les lieux pour événements", pt: "Ver espaços para eventos", ht: "Gade kote pou evènman" },
+  "Start your search": { es: "Empieza tu búsqueda", fr: "Commencez votre recherche", pt: "Comece sua busca", ht: "Kòmanse rechèch ou" },
 };
 
 /* Privacy / cookie categories — privacy-preserving defaults (only essential on). */
@@ -446,7 +496,7 @@ const PROPERTY = {
     initials: "SL",
   },
   inquiryEmail: "jackbruncoquillon@gmail.com",  // PLACEHOLDER demo inbox — swap for team inbox
-  categories: ["luxury-short-term", "events", "extended-stay"],
+  categories: ["luxury-short-term", "short-term", "events", "extended-stay"],
 };
 
 /* New Level brand copy. Brand-level copy stays geography-neutral
