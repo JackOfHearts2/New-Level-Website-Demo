@@ -17,15 +17,16 @@
     <b>DEMO BUILD</b> — not live. Imagery, availability &amp; rates are illustrative placeholders.
   </div>
 
+  <!-- logo floats on its own, fixed to the left edge, unaffected by the
+       nav bar's hide-on-scroll motion below -->
+  <a class="brand-float brand-float--overlay" href="index.html" aria-label="New Level — home">
+    <span class="brand__logo-slot" id="navMark"></span>
+  </a>
+
   <!-- top nav — floats transparent over the hero, solidifies on scroll
-       (landing is top-level: logo only, no back arrow) -->
+       (landing is top-level: no back arrow) -->
   <div class="nav nav--overlay">
     <div class="wrap nav__inner">
-      <div class="nav__left">
-        <a class="brand nav__brand" href="index.html" aria-label="New Level — home">
-          <span class="brand__logo-slot" id="navMark"></span>
-        </a>
-      </div>
       <div class="nav__right">
         <button class="nav-scroll__arrow nav-scroll__arrow--prev" type="button" aria-label="Scroll left">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
