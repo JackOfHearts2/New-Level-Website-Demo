@@ -72,10 +72,20 @@ on scroll-down, since `.nav--hidden`'s transform never touches it. On mobile (`m
 both of those flip: the flush-left placement reads as oversized on a narrow screen, so it centers
 instead (smaller, with the hamburger anchoring the right side) and hides/reappears together with
 the rest of the bar again, like the classic mobile pattern. `initNavScroll()` in app.js drives all
-of this — it mirrors `.nav`'s hidden/solid state onto `.brand-float` every scroll tick; which of
-those mirrored classes actually do anything is purely a CSS/breakpoint question. If you ever need
-to change the logo's position or visibility behavior, that function plus the `.brand-float` rules
-in styles.css (base + the `max-width:640px` override) are the only two places to touch.
+of this — it mirrors `.nav`'s hidden state onto `.brand-float` every scroll tick (inert on desktop,
+active only inside the mobile breakpoint). If you ever need to change the logo's position or
+visibility behavior, that function plus the `.brand-float` rules in styles.css (base + the
+`max-width:640px` override) are the only two places to touch.
+
+**The logo's white card is permanent — don't fade it on scroll again.** `assets/logo.png` is fully
+opaque (baked-in white background, no transparency), so `.brand__logo-slot` always renders a
+white card + soft shadow behind it. An earlier version faded that card away once the nav
+solidified, on the theory that a solid nav bar directly behind the logo made the card redundant —
+true when the logo lived inside the nav, false now that it's an independent `position:fixed`
+element drifting over whatever page content has scrolled underneath it (off-white `.paper-2`
+alternating sections, dark bands like `.event-cta`, etc.). Reintroducing a fade-on-solid rule
+reintroduces the bug: the logo's own opaque white rectangle shows up as a mismatched box against
+anything that isn't pure white.
 
 ## Locked design decisions — do not drift
 

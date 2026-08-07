@@ -163,17 +163,24 @@ strong, b { font-weight: 600; }
    so the nav's own hide-on-scroll-down transform (.nav--hidden above) never
    directly touches it. JS (initNavScroll in app.js) keeps its top offset
    synced with the nav's own (both collapse up as the demo banner scrolls
-   away), and — on .nav--overlay pages only, via the brand-float--overlay
-   modifier — toggles the same .nav--solid class so its white card behaves
-   like the old .nav--overlay .brand__logo-slot treatment used to (the logo
-   PNG is fully opaque, see CLAUDE.md, so it needs a card over the
-   transparent/hero state or it shows an ugly white box; fades once the nav
-   solidifies). initNavScroll also mirrors .nav--hidden onto .brand-float —
-   inert here (no matching transform below), but see the mobile media query
+   away). initNavScroll also mirrors .nav--hidden onto .brand-float — inert
+   on desktop (no matching transform below), but see the mobile media query
    further down, where the flush-left/always-visible treatment flips to
    centered + hides/reappears with the rest of the bar (a big fixed mark is
    too much on a small screen; the classic mobile pattern — centered mark,
-   menu on the right, both collapsing together — reads better there). */
+   menu on the right, both collapsing together — reads better there).
+
+   The logo PNG is fully opaque (baked-in white background, see CLAUDE.md),
+   so it always needs its own white card + shadow underneath it — that card
+   is permanent, not just a transparent-hero treatment, because a fixed,
+   always-visible logo ends up floating over whatever section has scrolled
+   underneath it (the off-white .paper-2 alternating sections, a dark band
+   like .event-cta, the hero itself...). An earlier version faded the card
+   away once the nav solidified, on the assumption that "solid" meant "the
+   nav bar is now a matching solid-white surface right behind the logo" —
+   true back when the logo lived inside the nav bar itself, but no longer
+   true now that it's an independent floating element drifting over
+   arbitrary page content. Don't reintroduce that fade. */
 .brand-float {
   position: fixed; top: 0; left: 0; z-index: 45;
   height: 90px; display: inline-flex; align-items: center;
@@ -182,8 +189,7 @@ strong, b { font-weight: 600; }
   transition: transform .35s ease;
 }
 .brand-float:hover .brand__logo-slot { transform: scale(1.04); }
-.brand-float--overlay .brand__logo-slot { background: var(--true-white); border-radius: 10px; padding: 8px 16px; box-shadow: 0 3px 14px rgba(0,0,0,.18); transition: opacity .3s ease, background .3s ease, box-shadow .3s ease, padding .3s ease, transform .15s ease; }
-.brand-float--overlay.nav--solid .brand__logo-slot { background: transparent; box-shadow: none; padding: 0; }
+.brand-float .brand__logo-slot { background: var(--true-white); border-radius: 10px; padding: 8px 16px; box-shadow: 0 3px 14px rgba(0,0,0,.18); }
 
 .nav__inner { display: flex; align-items: center; justify-content: flex-end; gap: 16px; min-height: 90px; }
 /* .nav__right is the one allowed to run out of room — min-width:0 lets it

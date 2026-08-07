@@ -1523,14 +1523,15 @@
      on resize since hero height is viewport-relative.
      .brand-float (the logo, now a fixed sibling of .nav rather than a
      child — see styles.css) needs the same "collapse up as the demo banner
-     scrolls away" vertical offset .nav gets, and — on overlay pages — the
-     same solid/transparent toggle, so it visually tracks the bar instead of
-     floating at a mismatched height or keeping its hero-card background
-     once the bar has already solidified. Its .nav--hidden class is mirrored
-     from .nav too: on desktop that's inert (the logo stays visible by
-     design — no CSS rule outside the mobile breakpoint acts on it), but on
-     mobile it makes the centered logo hide/reappear together with the rest
-     of the bar rather than floating on its own. */
+     scrolls away" vertical offset .nav gets, so it visually tracks the bar
+     instead of floating at a mismatched height. It does NOT mirror
+     .nav--solid — its white card is permanent (see styles.css), since a
+     fixed, always-visible logo drifts over arbitrary page content as you
+     scroll, not just the nav bar's own background. Its .nav--hidden class
+     IS mirrored from .nav: on desktop that's inert (the logo stays visible
+     by design — no CSS rule outside the mobile breakpoint acts on it), but
+     on mobile it makes the centered logo hide/reappear together with the
+     rest of the bar rather than floating on its own. */
   function initNavScroll() {
     const nav = $(".nav");
     if (!nav) return;
@@ -1552,9 +1553,7 @@
       const topOffset = Math.max(0, bannerH - y);
       if (brandFloat) brandFloat.style.top = topOffset + "px";
       if (isOverlay) {
-        const solid = y > Math.max(heroH - 90, 40);
-        nav.classList.toggle("nav--solid", solid);
-        if (brandFloat) brandFloat.classList.toggle("nav--solid", solid);
+        nav.classList.toggle("nav--solid", y > Math.max(heroH - 90, 40));
         nav.style.top = topOffset + "px";
       }
       if (!reduceMotion) {
