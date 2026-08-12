@@ -151,6 +151,17 @@ category/card rendering rather than a parallel results view. property.html's own
 5-icon audience selector (Family/Corporate/Ministry/etc. content personalization) was
 deliberately left as-is in this pass — only the homepage entry point changed.
 
+**Events calendar** (`EVENTS_CALENDAR` in content.js, `renderEventsCalendar()` in app.js)
+events.html shows a single-month calendar (marked event days) plus a list of every upcoming
+event, both driven by one `EVENTS_CALENDAR` array (`{ date: "YYYY-MM-DD", title, type, time,
+blurb }`). It's purely informational — day cells aren't clickable/pickable like the booking
+calendar's are, they just carry a native tooltip; each card in the list is the real detail
+surface and links to contact.html so a visitor can actually RSVP or ask about it. The calendar
+opens on the first *upcoming* event's month (not always the current month) so it doesn't land on
+an empty grid when the nearest event is a few weeks out. All entries are currently placeholders —
+updating this means editing the array (or handing dates to Claude) until the admin login planned
+for later lets the team do it themselves.
+
 **Currency & language** (`CURRENCIES`/`LANGUAGES` in content.js, `initPreferences()` in app.js)
 Any element with class `.currency-select` / `.lang-select` is auto-wired and kept in sync —
 there's one of each in the footer, plus a prominent one in the main nav (`.nav__lang`, all

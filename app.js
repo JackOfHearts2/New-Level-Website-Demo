@@ -38,7 +38,7 @@
     currentLang = lang;
     document.querySelectorAll(".nav__links a,.nav-dropdown a,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab,.search-tab")
       .forEach((e) => { if (e.childElementCount === 0) translateEl(e, lang); });
-    document.querySelectorAll(".eyebrow,.field label,.search-bar__field label,.btn,.search-bar__reset,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit").forEach((e) => translateEl(e, lang));
+    document.querySelectorAll(".eyebrow,.field label,.search-bar__field label,.btn,.search-bar__reset,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit,.legdot").forEach((e) => translateEl(e, lang));
     const kw = $("#searchKeyword");
     if (kw) { const base = "City, neighborhood, or keyword…"; kw.placeholder = lang === "en" ? base : ((I18N[base] && I18N[base][lang]) || base); }
     const rd = $("#rentDuration");
@@ -414,8 +414,87 @@
       $("#pageHeading").textContent = PAGES.events.heading;
       $("#pageSub").textContent = PAGES.events.sub;
     }
+    renderEventsCalendar();
     buildCrossNav("#crossNavLinks", "events");
     translatePage(currentLang);
+  }
+
+  /* Events calendar (events.html) — a single-month view marking days that
+     have a scheduled event, plus a scannable list of everything upcoming.
+     Not a booking calendar (nothing to pick/reserve) — purely informational,
+     so day cells are non-interactive; the cards below are the real detail
+     surface, each linking to Contact so a visitor can actually RSVP/ask
+     about one. Opens on the first upcoming event's month rather than
+     always "today" so it doesn't land on an empty month when the nearest
+     event is a few weeks out. */
+  function renderEventsCalendar() {
+    const calBox = $("#eventsCal"), listBox = $("#eventsList");
+    if (!calBox || !listBox || typeof EVENTS_CALENDAR === "undefined") return;
+
+    const today = startOfDay(new Date());
+    const events = EVENTS_CALENDAR
+      .map((e) => ({ ...e, d: new Date(e.date + "T00:00:00") }))
+      .sort((a, b) => a.d - b.d);
+    const byDay = new Map();
+    events.forEach((e) => { if (!byDay.has(e.date)) byDay.set(e.date, []); byDay.get(e.date).push(e); });
+    const upcoming = events.filter((e) => e.d >= today);
+
+    let view = upcoming.length
+      ? new Date(upcoming[0].d.getFullYear(), upcoming[0].d.getMonth(), 1)
+      : new Date(today.getFullYear(), today.getMonth(), 1);
+
+    function drawMonth() {
+      calBox.innerHTML = "";
+      const head = el("div", "cal__head");
+      const prev = el("button", "cal__nav", "‹"); prev.type = "button"; prev.setAttribute("aria-label", "Previous month");
+      const next = el("button", "cal__nav", "›"); next.type = "button"; next.setAttribute("aria-label", "Next month");
+      head.appendChild(prev);
+      head.appendChild(el("div", "month__label", `${MONTHS[view.getMonth()]} ${view.getFullYear()}`));
+      head.appendChild(next);
+      calBox.appendChild(head);
+
+      const dow = el("div", "dow");
+      DOW.forEach((d) => dow.appendChild(el("span", null, d)));
+      calBox.appendChild(dow);
+
+      const days = el("div", "days");
+      const y = view.getFullYear(), m = view.getMonth();
+      const lead = new Date(y, m, 1).getDay();
+      const total = new Date(y, m + 1, 0).getDate();
+      for (let i = 0; i < lead; i++) days.appendChild(el("div", "day is-empty"));
+      for (let dn = 1; dn <= total; dn++) {
+        const date = new Date(y, m, dn);
+        const key = `${y}-${String(m + 1).padStart(2, "0")}-${String(dn).padStart(2, "0")}`;
+        const dayEvents = byDay.get(key);
+        const cell = el("div", "day" + (dayEvents ? " day--event" : ""), String(dn));
+        if (sameDay(date, today)) cell.classList.add("is-today");
+        if (dayEvents) cell.title = dayEvents.map((e) => e.title).join(", ");
+        days.appendChild(cell);
+      }
+      calBox.appendChild(days);
+      calBox.appendChild(el("div", "cal__legend", `<span class="legdot"><i style="background:var(--green)"></i> Event day</span>`));
+
+      prev.addEventListener("click", () => { view = addMonths(view, -1); drawMonth(); });
+      next.addEventListener("click", () => { view = addMonths(view, 1); drawMonth(); });
+    }
+    drawMonth();
+
+    listBox.innerHTML = upcoming.length
+      ? upcoming.map((e) => `
+        <a class="event-card" href="contact.html">
+          <div class="event-card__date">
+            <span class="event-card__day">${e.d.getDate()}</span>
+            <span class="event-card__mon">${MONTHS[e.d.getMonth()].slice(0, 3)}</span>
+          </div>
+          <div class="event-card__body">
+            <span class="event-card__type">${e.type}</span>
+            <div class="event-card__title">${e.title}</div>
+            <div class="event-card__time">${e.time}</div>
+            <p class="event-card__blurb">${e.blurb}</p>
+            <span class="link-arrow">RSVP or ask a question &rsaquo;</span>
+          </div>
+        </a>`).join("")
+      : `<p class="muted">Nothing on the calendar right now — check back soon.</p>`;
   }
 
   function renderContactPage() {

@@ -359,6 +359,29 @@ strong, b { font-weight: 600; }
 .legdot i { width: 13px; height: 13px; border-radius: 4px; display: inline-block; }
 .cal__note { font-size: .82rem; color: var(--muted); margin-top: 10px; }
 
+/* Events page — upcoming events calendar + list. Reuses the .cal/.day
+   building blocks above, but this one is purely informational (nothing to
+   pick/reserve, unlike the booking calendar), so it's a single month and
+   day cells aren't interactive — the marked days just carry a native
+   tooltip, with the cards alongside as the real detail surface. */
+.events-cal-grid { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: clamp(28px, 4vw, 48px); align-items: start; }
+.cal--single { max-width: 380px; }
+.day--event::after { content: ""; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+.event-list { display: flex; flex-direction: column; gap: 14px; }
+.event-card { display: flex; gap: 18px; padding: 18px 20px; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--paper); text-decoration: none; color: var(--ink); transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.event-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); border-color: var(--green); }
+.event-card__date { flex: 0 0 auto; width: 58px; text-align: center; padding: 10px 0; border-radius: var(--radius); background: var(--paper-2); height: max-content; }
+.event-card__day { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--ink); }
+.event-card__mon { display: block; font-family: var(--font-display); font-weight: 600; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--green); }
+.event-card__type { font-family: var(--font-display); font-weight: 600; font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; color: var(--green); }
+.event-card__title { font-family: var(--font-display); font-weight: 700; font-size: 1.08rem; margin-top: 2px; }
+.event-card__time { color: var(--muted); font-size: .88rem; margin-top: 2px; }
+.event-card__blurb { color: var(--ink-soft); font-size: .92rem; margin: 8px 0 0; }
+@media (max-width: 780px) {
+  .events-cal-grid { grid-template-columns: 1fr; }
+  .cal--single { max-width: 420px; width: 100%; margin-inline: auto; }
+}
+
 /* =========================================================================
    QUOTE / TAX BREAKDOWN
    ========================================================================= */
