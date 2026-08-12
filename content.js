@@ -300,6 +300,18 @@ const EVENT_CTA = {
   cta: "See event venues",
 };
 
+/* Upcoming New Level events — mixers, workshops, networking — shown on the
+   events.html calendar + list. PLACEHOLDER dates/details until the team
+   supplies real ones; updating this means editing this array (or handing
+   the details to Claude) until the admin login (planned) lets the team do
+   it themselves without touching code. `date` is YYYY-MM-DD. */
+const EVENTS_CALENDAR = [
+  { date: "2026-08-20", title: "Investor Mixer",            type: "Networking", time: "6:00 – 8:00 PM",      blurb: "Casual drinks and conversation with local investors and agents." },
+  { date: "2026-08-28", title: "First-Time Buyer Workshop",  type: "Workshop",    time: "10:00 AM – 12:00 PM", blurb: "A no-pressure walkthrough of the buying process, financing, and what to expect." },
+  { date: "2026-09-10", title: "Market Update Breakfast",    type: "Networking",  time: "8:30 – 10:00 AM",     blurb: "A quick, casual look at what's moving in the South Florida market right now." },
+  { date: "2026-09-19", title: "Property Tour Meetup",       type: "Mixer",       time: "5:00 – 7:00 PM",      blurb: "Walk 1331 NW 87th Street with the team and see the space in person." },
+];
+
 /* Other New Level properties — PLACEHOLDERS (no real second listing yet). */
 const OTHER_PROPERTIES = [
   { title: "Bay Harbor villa",           meta: "Sleeps 10 · Waterfront", rate: "from $600 / night", soon: true, categories: ["luxury-short-term", "short-term"] },
@@ -496,6 +508,13 @@ const I18N = {
   "We can help with that too.": { es: "También podemos ayudarte con eso.", fr: "Nous pouvons aussi vous aider avec ça.", pt: "Também podemos ajudar com isso.", ht: "Nou ka ede w avèk sa tou." },
   "See event venues": { es: "Ver espacios para eventos", fr: "Voir les lieux pour événements", pt: "Ver espaços para eventos", ht: "Gade kote pou evènman" },
   "Start your search": { es: "Empieza tu búsqueda", fr: "Commencez votre recherche", pt: "Comece sua busca", ht: "Kòmanse rechèch ou" },
+  // events calendar
+  "Upcoming Events": { es: "Próximos eventos", fr: "Événements à venir", pt: "Próximos eventos", ht: "Evènman kap vini" },
+  "Mixers, workshops & networking.": { es: "Encuentros, talleres y networking.", fr: "Rencontres, ateliers et networking.", pt: "Encontros, workshops e networking.", ht: "Rankont, atelye ak rezo." },
+  "Some upcoming events — dates & details are illustrative for this demo.": { es: "Algunos próximos eventos: las fechas y los detalles son ilustrativos para esta demo.", fr: "Quelques événements à venir — dates et détails sont fournis à titre indicatif pour cette démo.", pt: "Alguns próximos eventos — datas e detalhes são ilustrativos para esta demo.", ht: "Kèk evènman kap vini — dat ak detay yo se egzanp pou demo sa a." },
+  "Event day": { es: "Día de evento", fr: "Jour d'événement", pt: "Dia de evento", ht: "Jou evènman" },
+  "Nothing on the calendar right now — check back soon.": { es: "No hay nada en el calendario por ahora — vuelve pronto.", fr: "Rien de prévu au calendrier pour le moment — revenez bientôt.", pt: "Nada no calendário por enquanto — volte em breve.", ht: "Pa gen anyen sou kalandriye a kounye a — tounen vin gade talè." },
+  "RSVP or ask a question ›": { es: "Confirma asistencia o pregunta algo ›", fr: "Confirmez votre présence ou posez une question ›", pt: "Confirme presença ou tire uma dúvida ›", ht: "Konfime patisipasyon w oswa poze yon kesyon ›" },
 };
 
 /* Privacy / cookie categories — privacy-preserving defaults (only essential on). */
