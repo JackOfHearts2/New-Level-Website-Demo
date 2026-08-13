@@ -343,9 +343,54 @@
   function renderAbout() {
     const t = $("#aboutLongText");
     if (t) t.textContent = NLG_BRAND.aboutLong;
+    const mission = $("#aboutMission");
+    if (mission && NLG_BRAND.mission) mission.textContent = NLG_BRAND.mission;
+    const story = $("#aboutStory");
+    if (story && NLG_BRAND.story) story.textContent = NLG_BRAND.story;
+    buildValues("#valuesGrid");
     buildServices();
     buildCrossNav("#crossNavLinks", "about");
     translatePage(currentLang);
+  }
+
+  function renderBrokersCornerPage() {
+    if (typeof PAGES !== "undefined") {
+      $("#pageEyebrow").textContent = PAGES.brokersCorner.eyebrow;
+      $("#pageHeading").textContent = PAGES.brokersCorner.heading;
+      $("#pageSub").textContent = PAGES.brokersCorner.sub;
+    }
+    if (typeof BROKERS_CORNER !== "undefined") {
+      const intro = $("#brokersCornerIntro");
+      if (intro) intro.textContent = BROKERS_CORNER.intro;
+      const bio = $("#brokersCornerBio");
+      if (bio) bio.textContent = BROKERS_CORNER.bio;
+    }
+    buildCrossNav("#crossNavLinks", "brokers-corner");
+    translatePage(currentLang);
+  }
+
+  function renderFaqPage() {
+    if (typeof PAGES !== "undefined") {
+      $("#pageEyebrow").textContent = PAGES.faq.eyebrow;
+      $("#pageHeading").textContent = PAGES.faq.heading;
+      $("#pageSub").textContent = PAGES.faq.sub;
+    }
+    buildFaqList("#faqList");
+    buildCrossNav("#crossNavLinks", "faq");
+    translatePage(currentLang);
+  }
+
+  /* Shared FAQ list renderer — used on faq.html and inline on contact.html
+     (same FAQS array, one source, so the answers are the same in both
+     places). Plain expand/collapse via <details>, no JS state needed. */
+  function buildFaqList(sel) {
+    const box = $(sel);
+    if (!box || typeof FAQS === "undefined") return;
+    box.innerHTML = FAQS.map((f) => `
+      <details class="faq-item">
+        <summary class="faq-item__q">${f.q}</summary>
+        <p class="faq-item__a">${f.a}</p>
+      </details>`).join("");
   }
 
   /* Pill links to the other dedicated pages — lets a visitor keep exploring
@@ -380,20 +425,31 @@
       $("#pageSub").textContent = PAGES.services.sub;
       $("#pageIntro").textContent = PAGES.services.intro;
     }
-    const grid = $("#servicesGrid");
-    if (grid && typeof SERVICES !== "undefined") {
-      grid.innerHTML = "";
-      const idFor = (t) => /brokerage/i.test(t) ? "brokerage" : /management/i.test(t) ? "management" : /investment/i.test(t) ? "investment" : /events/i.test(t) ? "events-service" : "";
-      SERVICES.forEach((s) => {
-        const card = el("div", "service-card");
-        const id = idFor(s.t);
-        if (id) card.id = id;
-        card.innerHTML = `<div class="service-card__t">${s.t}</div><p class="service-card__d">${s.d}</p>`;
-        grid.appendChild(card);
-      });
-    }
+    buildServices("#servicesGrid", { detailed: true });
     buildCrossNav("#crossNavLinks", "services");
     translatePage(currentLang);
+    scrollToHashTarget();
+    window.addEventListener("hashchange", scrollToHashTarget);
+  }
+
+  /* The Services dropdown links to services.html#brokerage etc., but those
+     ids only exist once buildServices() has injected the cards — the
+     browser's own automatic "jump to #hash on load" can run before that,
+     so it silently does nothing; handled once here after render. Clicking
+     one of those links again while ALREADY on services.html is trickier —
+     changing only the URL's hash on the very same document is a
+     same-document navigation by spec, so the browser never reloads the
+     page and none of our render code re-runs at all. The hashchange
+     listener above is what catches that case. -100px clears the fixed nav
+     bar so the card isn't hidden underneath it. */
+  function scrollToHashTarget() {
+    if (!location.hash) return;
+    const el = document.getElementById(location.hash.slice(1));
+    if (!el) return;
+    requestAnimationFrame(() => {
+      const y = el.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: Math.max(0, y), behavior: "auto" });
+    });
   }
 
   function renderTestimonialsPage() {
@@ -507,8 +563,28 @@
     wirePersistent();
     const mail = $("#contactEmail");
     if (mail) { mail.textContent = PROPERTY.inquiryEmail; mail.href = "mailto:" + PROPERTY.inquiryEmail; }
+    buildContactTopics();
+    buildFaqList("#faqList");
     buildCrossNav("#crossNavLinks", "contact");
     translatePage(currentLang);
+  }
+
+  /* "What's this about?" topic chips — so Contact clearly serves general
+     inquiries (investment, property management, joining as an agent...),
+     not just property bookers. Picking one just tags which chip is active
+     for now (no separate form fields to change) — a `?topic=<id>` in the
+     URL preselects one, which is how the footer's "Join Our Network" link
+     lands here with "Join Our Network" already highlighted. */
+  function buildContactTopics() {
+    const box = $("#contactTopics");
+    if (!box || typeof CONTACT_TOPICS === "undefined") return;
+    const preselect = new URLSearchParams(location.search).get("topic");
+    box.innerHTML = CONTACT_TOPICS.map((t) =>
+      `<button type="button" class="event-type__chip${t.id === preselect ? " is-active" : ""}" data-id="${t.id}">${t.label}</button>`).join("");
+    box.querySelectorAll(".event-type__chip").forEach((btn) => btn.addEventListener("click", () => {
+      box.querySelectorAll(".event-type__chip").forEach((b) => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+    }));
   }
 
   function buildTeam(gridSel) {
@@ -561,27 +637,60 @@
     buildDots();
     setTimeout(update, 0);
 
-    // one-time "peek" nudge the first time the carousel scrolls into view —
-    // signals it's interactive rather than a static row of cards
+    // "Peek" nudge every time the carousel scrolls into view — not just the
+    // first time (IntersectionObserver keeps firing on each re-entry since
+    // we never disconnect it) — signals it's interactive rather than a
+    // static row of cards, and the reminder repeats if someone scrolls away
+    // and back. Holds the peeked position for ~2s (long enough to actually
+    // notice, per feedback that a quick nudge read as barely-there) before
+    // gliding back to the first slide. Skips the nudge if the visitor has
+    // already manually scrolled the track — don't yank them back mid-browse.
     if (!reduceMotion && "IntersectionObserver" in window) {
+      let nudging = false;
       const io = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting || track.scrollWidth <= track.clientWidth + 4) return;
-          io.disconnect();
+          if (!entry.isIntersecting || nudging) return;
+          if (track.scrollWidth <= track.clientWidth + 4) return;
+          if (track.scrollLeft > 8) return;
+          nudging = true;
           track.scrollBy({ left: 88, behavior: "smooth" });
-          setTimeout(() => track.scrollBy({ left: -88, behavior: "smooth" }), 700);
+          setTimeout(() => {
+            track.scrollTo({ left: 0, behavior: "smooth" });
+            setTimeout(() => { nudging = false; }, 500);
+          }, 2000);
         });
       }, { threshold: 0.6 });
       io.observe(track);
     }
   }
 
-  function buildServices(gridSel) {
+  /* detailed:true (services.html only) swaps in the fuller copy + a
+     capabilities list per service, and anchors each card with its id so
+     the Services dropdown's #brokerage/#management/#investment links land
+     somewhere. Compact grids elsewhere (homepage, about.html) stay short. */
+  function buildServices(gridSel, opts) {
+    const detailed = !!(opts && opts.detailed);
     const grid = $(gridSel || "#servicesGrid");
     if (!grid || typeof SERVICES === "undefined") return;
     grid.innerHTML = "";
-    SERVICES.forEach((s) => grid.appendChild(el("div", "service-card",
-      `<div class="service-card__t">${s.t}</div><p class="service-card__d">${s.d}</p>`)));
+    SERVICES.forEach((s) => {
+      const list = detailed && s.capabilities
+        ? `<ul class="service-card__list">${s.capabilities.map((c) => `<li><strong>${c.t}</strong> — ${c.d}</li>`).join("")}</ul>`
+        : "";
+      const cta = detailed ? `<a class="btn btn--ghost service-card__cta" href="contact.html">Book a Consultation &rsaquo;</a>` : "";
+      const card = el("div", "service-card" + (detailed ? " service-card--detailed" : ""),
+        `<div class="service-card__t">${s.t}</div><p class="service-card__d">${detailed && s.long ? s.long : s.d}</p>${list}${cta}`);
+      if (detailed && s.id) card.id = s.id;
+      grid.appendChild(card);
+    });
+  }
+
+  function buildValues(gridSel) {
+    const grid = $(gridSel || "#valuesGrid");
+    if (!grid || typeof VALUES === "undefined") return;
+    grid.innerHTML = "";
+    VALUES.forEach((v) => grid.appendChild(el("div", "value-card",
+      `<div class="value-card__t">${v.t}</div><p class="value-card__d">${v.d}</p>`)));
   }
 
   function buildTestimonials(gridSel) {
@@ -1600,21 +1709,28 @@
      on .nav--overlay pages (hero directly behind the nav) it also starts
      transparent and solidifies once scrolled past the hero. Re-measures
      on resize since hero height is viewport-relative.
-     .brand-float (the logo, now a fixed sibling of .nav rather than a
-     child — see styles.css) needs the same "collapse up as the demo banner
-     scrolls away" vertical offset .nav gets, so it visually tracks the bar
-     instead of floating at a mismatched height. It does NOT mirror
-     .nav--solid — its white card is permanent (see styles.css), since a
-     fixed, always-visible logo drifts over arbitrary page content as you
-     scroll, not just the nav bar's own background. Its .nav--hidden class
-     IS mirrored from .nav: on desktop that's inert (the logo stays visible
-     by design — no CSS rule outside the mobile breakpoint acts on it), but
-     on mobile it makes the centered logo hide/reappear together with the
-     rest of the bar rather than floating on its own. */
+
+     Solidifying uses hysteresis, not one single threshold: scrolling DOWN
+     solidifies once you pass the hero (unchanged), but scrolling back UP
+     stays solid all the way until you're essentially back at the very top
+     of the page — not the moment you cross back over that same threshold.
+     Without that gap, the bar would flicker transparent early on the way
+     up; this way the white bar (and the logo sitting flush inside it, see
+     below) hold until the hero is genuinely about to show through again.
+
+     .brand-float (the logo) gets the same vertical offset sync .nav gets,
+     plus its own .brand-float--card class mirroring whether the nav is
+     currently solid — see the big comment on .brand-float in styles.css
+     for why toggling the CARD (not the background) is what's safe here.
+     On non-overlay pages the nav is always solid, so `solid` just starts
+     true and never changes — the logo sits flush there from the first
+     paint. Its .nav--hidden class is also mirrored: inert on desktop, but
+     on mobile it makes the centered logo hide/reappear with the bar. */
   function initNavScroll() {
     const nav = $(".nav");
     if (!nav) return;
     const brandFloat = $(".brand-float");
+    const contactFloat = $(".contact-float");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isOverlay = nav.classList.contains("nav--overlay");
     const banner = $(".demo-banner");
@@ -1622,6 +1738,7 @@
     const heroEl = $(".nl-hero") || $(".a-hero");
     let heroH = heroEl ? heroEl.offsetHeight : 0;
     let lastY = window.scrollY, ticking = false;
+    let solid = !isOverlay;
 
     function measure() {
       bannerH = banner ? banner.offsetHeight : 0;
@@ -1631,10 +1748,16 @@
       const y = window.scrollY;
       const topOffset = Math.max(0, bannerH - y);
       if (brandFloat) brandFloat.style.top = topOffset + "px";
+      if (contactFloat) contactFloat.style.top = topOffset + "px";
       if (isOverlay) {
-        nav.classList.toggle("nav--solid", y > Math.max(heroH - 90, 40));
+        const solidifyAt = Math.max(heroH - 90, 40);
+        const desolidifyAt = 40;
+        if (y > solidifyAt) solid = true;
+        else if (y <= desolidifyAt) solid = false;
+        nav.classList.toggle("nav--solid", solid);
         nav.style.top = topOffset + "px";
       }
+      if (brandFloat) brandFloat.classList.toggle("brand-float--card", !solid);
       if (!reduceMotion) {
         const hide = y > lastY && y > 140;
         nav.classList.toggle("nav--hidden", hide);
@@ -1654,12 +1777,18 @@
     measure(); update();
   }
 
-  /* Scroll-reveal: sections fade/slide into place as you reach them,
-     instead of just appearing static. Progressive enhancement — the
-     .reveal class (which starts things at opacity:0) is only ever added
-     by this function, so a page never gets stuck invisible if JS fails or
-     IntersectionObserver isn't supported. Hero bands are intentionally
-     excluded (above the fold, already have their own Ken Burns motion). */
+  /* Scroll-reveal: sections fade/slide into place every time you reach
+     them — not just the first time. Originally one-shot (revealed once,
+     then left alone), which read as "already done" if you scrolled away
+     and back; toggling .is-revealed on both enter AND exit instead of only
+     ever adding it means the animation replays each time a section crosses
+     into view, in either scroll direction, which is what actually reads as
+     "here's a new section" rather than a one-time page-load flourish.
+     Progressive enhancement — the .reveal class (which starts things at
+     opacity:0) is only ever added by this function, so a page never gets
+     stuck invisible if JS fails or IntersectionObserver isn't supported.
+     Hero bands are intentionally excluded (above the fold, already have
+     their own Ken Burns motion). */
   function initScrollReveal() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!("IntersectionObserver" in window)) return;
@@ -1669,19 +1798,21 @@
     // requires that fraction of the ELEMENT'S OWN height to be visible,
     // which a very tall section (properties.html's whole results block can
     // be 6000px+) may never reach even scrolled fully into view. Fire as
-    // soon as any part of it is visible instead.
+    // soon as any part of it is visible instead — same reasoning applies
+    // to the exit side now that this repeats: a fraction-based threshold
+    // could also never report "not intersecting" for a very tall section.
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-revealed");
-        io.unobserve(entry.target);
+        entry.target.classList.toggle("is-revealed", entry.isIntersecting);
       });
     }, { threshold: 0, rootMargin: "0px 0px -60px 0px" });
     targets.forEach((elm) => { elm.classList.add("reveal"); io.observe(elm); });
     // Safety net: this is progressive enhancement, so nothing should ever
     // stay invisible — force-reveal anything still waiting after 2.5s
     // (e.g. an element that never intersects because it's inside a hidden
-    // ancestor at init time and only shown later).
+    // ancestor at init time and only shown later). Harmless now too: if the
+    // observer later reports that element as genuinely out of view, the
+    // toggle above still corrects it same as anything else.
     setTimeout(() => document.querySelectorAll(".reveal:not(.is-revealed)").forEach((elm) => elm.classList.add("is-revealed")), 2500);
   }
 
@@ -1840,9 +1971,11 @@
     { key: "properties",   label: "Properties",   href: "properties.html" },
     { key: "about",        label: "About New Level", href: "about.html" },
     { key: "team",         label: "Team",          href: "team.html" },
+    { key: "brokers-corner", label: "The Broker's Corner", href: "brokers-corner.html" },
     { key: "services",     label: "Services",      href: "services.html" },
     { key: "testimonials", label: "Testimonials",  href: "testimonials.html" },
     { key: "events",       label: "Events",        href: "events.html" },
+    { key: "faq",          label: "FAQs",          href: "faq.html" },
     { key: "contact",      label: "Contact",       href: "contact.html" },
   ];
   function menuNav(page) {
@@ -2252,6 +2385,8 @@
     else if (page === "testimonials") renderTestimonialsPage();
     else if (page === "events") renderEventsPage();
     else if (page === "contact") renderContactPage();
+    else if (page === "brokers-corner") renderBrokersCornerPage();
+    else if (page === "faq") renderFaqPage();
     applyImageOverrides();
     decorateSlots();
     initScrollReveal();
