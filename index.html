@@ -23,6 +23,11 @@
     <span class="brand__logo-slot" id="navMark"></span>
   </a>
 
+  <!-- persistent "reach out" pill, mirrors the logo on the right -->
+  <a class="contact-float" href="contact.html">
+    <span class="contact-float__btn">Get in Touch</span>
+  </a>
+
   <!-- top nav — floats transparent over the hero, solidifies on scroll
        (landing is top-level: no back arrow) -->
   <div class="nav nav--overlay">
@@ -114,6 +119,22 @@
     </div>
   </section>
 
+  <!-- 2c. SERVICES — kept high on the page (not buried below team/testimonials)
+       so a first-time visitor sees the full breadth of what New Level does
+       (brokerage, investment, property management, events) right away,
+       rather than the page reading as just a property search tool. -->
+  <section class="section section--alt" id="services">
+    <div class="wrap">
+      <div class="section__head">
+        <span class="eyebrow">Services</span>
+        <h2 class="h-lg" style="margin-top:14px">What we do.</h2>
+        <p class="muted" style="margin-top:8px">Brokerage, investment, property management and events — the full New Level offering.</p>
+      </div>
+      <div class="services-grid" id="servicesGrid"></div>
+      <a class="link-arrow" href="services.html">Learn more &rsaquo;</a>
+    </div>
+  </section>
+
   <!-- 2b. HOSTING AN EVENT — separate prompt, not a 4th search tab (different question) -->
   <section class="event-cta">
     <div class="wrap event-cta__inner">
@@ -145,21 +166,8 @@
     </div>
   </section>
 
-  <!-- 4a. SERVICES (placeholder — structure reserved) -->
-  <section class="section" id="services">
-    <div class="wrap">
-      <div class="section__head">
-        <span class="eyebrow">Services</span>
-        <h2 class="h-lg" style="margin-top:14px">What we do.</h2>
-        <p class="muted" style="margin-top:8px">Brokerage, investment, property management and events — the full New Level offering.</p>
-      </div>
-      <div class="services-grid" id="servicesGrid"></div>
-      <a class="link-arrow" href="services.html">Learn more &rsaquo;</a>
-    </div>
-  </section>
-
   <!-- 4b. TESTIMONIALS (placeholder — structure reserved) -->
-  <section class="section section--alt" id="testimonials">
+  <section class="section" id="testimonials">
     <div class="wrap">
       <div class="section__head" style="text-align:center;margin-inline:auto">
         <span class="eyebrow" style="justify-content:center">Testimonials</span>
@@ -176,7 +184,7 @@
   </section>
 
   <!-- 4c. EVENTS AREA (placeholder — gallery + video) -->
-  <section class="section" id="events">
+  <section class="section section--alt" id="events">
     <div class="wrap">
       <div class="section__head">
         <span class="eyebrow">Events</span>
