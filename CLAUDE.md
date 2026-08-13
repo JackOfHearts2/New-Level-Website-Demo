@@ -79,16 +79,26 @@ theory that FAQs are a "looked for, not browsed to" page. If another page gets a
 default to nesting it under the nearest existing dropdown before adding a new top-level item.
 
 **"Reach out" is available everywhere, not just from Contact-flavored sections.** `.contact-float`
-is a persistent "Get in Touch" pill, fixed top-right, rendered on every page except contact.html
-itself (would be redundant there) and hidden below 640px (mobile has the hamburger + in-page CTAs
-for this instead — see `@media (max-width:640px)` in styles.css). It mirrors `.brand-float`'s
-fixed positioning on the opposite side and is driven by the same `initNavScroll()` top-offset/
-hide-on-scroll logic (`contactFloat` alongside `brandFloat` in that function) so the two stay in
-sync as the demo banner/nav show and hide. Separately, contact.html itself now opens with a
-`CONTACT_TOPICS` chip selector (`buildContactTopics()`) so "reach out" isn't implicitly
-property-inquiry-only — a visitor can flag *why* they're reaching out (property / investment /
-management / events / join the team / general) before the point-of-contact card. `?topic=<id>`
-preselects a chip (e.g. the footer's "Join Our Network" link is `contact.html?topic=join`).
+is a persistent top-right cluster — a round WhatsApp icon plus a "Get in Touch" button — rendered
+on every page except contact.html itself (would be redundant there) and hidden below 640px
+(mobile has the hamburger + in-page CTAs for this instead — see `@media (max-width:640px)` in
+styles.css). It mirrors `.brand-float`'s fixed positioning on the opposite side and is driven by
+the same `initNavScroll()` top-offset/hide-on-scroll logic (`contactFloat` alongside `brandFloat`
+in that function) so the two stay in sync as the demo banner/nav show and hide. Clicking
+"Get in Touch" opens a lightweight quick-contact panel (`initQuickContact()` in app.js — Name /
+Email / Message / Send, built the same way as the report/privacy modals) rather than always
+navigating to contact.html, so a visitor can send a message without losing their place on the
+page; it links out to the full contact page too. **Both anchors inside `.contact-float` need
+`text-decoration:none` set directly on themselves** (not just an inner child) — an ancestor
+`<a>`'s default underline still gets drawn across a descendant that sets its own
+`text-decoration:none`, since the line belongs to the ancestor's box. Missing this was the earlier
+"black line appears under the button on hover" bug: the underline sat at the anchor's original
+baseline, invisible behind the pill until `:hover`'s `translateY(-2px)` moved the pill up and
+exposed it. Separately, contact.html itself now opens with a `CONTACT_TOPICS` chip selector
+(`buildContactTopics()`) so "reach out" isn't implicitly property-inquiry-only — a visitor can
+flag *why* they're reaching out (property / investment / management / events / join the team /
+general) before the point-of-contact card. `?topic=<id>` preselects a chip (e.g. the footer's
+"Join Our Network" link is `contact.html?topic=join`).
 
 **The logo (`.brand-float`)** is a fixed-position sibling of `.nav`, not a nav child — see the
 `.brand-float` comment block in styles.css for the full rationale. Short version: on desktop it
@@ -104,42 +114,39 @@ active only inside the mobile breakpoint). If you ever need to change the logo's
 visibility behavior, that function plus the `.brand-float` rules in styles.css (base + the
 `max-width:640px` override) are the only two places to touch.
 
-**The logo's white background is permanent — don't fade it to transparent on scroll.**
-`assets/logo.png` is fully opaque (baked-in white background, no transparency), so
-`.brand__logo-slot` must always render on solid white. An earlier version faded that background
-away once the nav solidified, on the theory that a solid nav bar directly behind the logo made a
-white backing redundant — true when the logo lived inside the nav, false now that it's an
-independent `position:fixed` element drifting over whatever page content has scrolled underneath
-it (off-white `.paper-2` alternating sections, dark bands like `.event-cta`, etc.). Reintroducing
-a fade-on-solid-*background* rule reintroduces that bug: the logo's own opaque white rectangle
-shows up as a mismatched box against anything that isn't pure white. What *does* now toggle is
-described next.
+**The logo's white background AND card chrome are both permanent now — nothing about
+`.brand__logo-slot` toggles with scroll state anymore.** `assets/logo.png` is fully opaque
+(baked-in white background, no transparency), so the white backing was already unconditional (an
+earlier version faded it away and that was reverted — the raw white PNG landing on non-white
+content with nothing to blend into looked broken). A later round then tried a *hysteresis-based
+melt*: the nav bar solidifying on scroll-down would strip the logo's card (rounded corners,
+padding, shadow) so it read as flush with the solid bar instead of a second white panel stacked on
+top of it, popping the card back only once the bar went transparent over the hero again. **That
+melt behavior has since been reverted per direct client feedback** — the client watched it live
+and reported the logo "losing its frame" while scrolling: because `solid` is `true` for basically
+the entire scroll depth of every page (and is *permanently* `true` on every non-overlay page —
+about/team/services/testimonials/events/contact/brokers-corner/faq/properties — since those pages
+have no hero to be transparent over in the first place), the card was effectively never showing
+except in the first instant at the very top of index.html/property.html. The fix: `.brand__logo-slot`
+now carries the rounded/padded/shadowed card look unconditionally in its base rule — no
+`.brand-float--card` modifier, no `solid`-driven toggle in `initNavScroll()`. **Don't reintroduce
+a scroll-state-driven card toggle here without re-reading this note first** — it's been tried
+twice now and both times looked wrong in practice, for opposite-sounding reasons (a mismatched
+white panel vs. a logo with no visual separation from the page at all). The nav bar's own
+solid/transparent hysteresis (see next paragraph) is unrelated and untouched — only the logo's
+own card chrome stopped being conditional on it.
 
-**Nav solidify/logo-melt now has hysteresis, and only the logo's card *chrome* toggles, never its
-background.** The client asked for two things: (1) once the transparent-over-hero nav solidifies
-on scroll-down, it should stay solid through the whole climb back up and only go transparent again
-right at the very top — not flip back the instant you cross the same threshold going up; (2) the
-floating logo should visually "melt" flush into that solid white bar (lose its separate
-card/shadow) rather than read as a second white panel stacked on top of it, and pop back out as
-its own distinct floating card only once the bar itself goes transparent over the hero.
-`initNavScroll()` in app.js implements both:
-- A `solid` boolean uses two different thresholds depending on direction — flips to `true` only
-  when `y > solidifyAt` (`heroH - 90`, scrolling down) and flips to `false` only when
-  `y <= desolidifyAt` (`40`, scrolling up) — so a partial scroll-up that doesn't reach the top
-  leaves `solid` (and everything derived from it) unchanged. Don't collapse this back to a single
-  shared threshold; that's what caused the original flicker.
-- `.brand-float--card` is toggled as `!solid` (present when the bar is transparent, absent when
-  solid) and controls *only* `border-radius`/`padding`/`box-shadow` on `.brand__logo-slot` — the
-  base (no-modifier) rule is flush (`border-radius:0; padding:0; box-shadow:none`) so the logo
-  reads as part of the solid bar, and the modifier adds the rounded/padded/shadowed "floating
-  card" look. The white *background* itself is never conditional on this class — see the
-  paragraph above for why. If you need to touch this again, `.brand-float` in styles.css (for what
-  the classes render) and `initNavScroll()` in app.js (for when they're applied) are the only two
-  places to touch, same as before.
-- `.contact-float` (see the "reach out" paragraph above) shares the same fixed top-offset
-  bookkeeping in `initNavScroll()` as `.brand-float`, so the two stay vertically in sync as the
-  demo banner/nav show and hide, but it has no card-chrome toggle of its own — it's a simple pill,
-  not a logo.
+**The nav bar itself still solidifies with hysteresis** (this part is unchanged and the client
+confirmed they like it): on `.nav--overlay` pages, once the transparent-over-hero bar solidifies
+on scroll-down, it stays solid through the whole climb back up and only goes transparent again
+right at the very top — not the instant you cross the same threshold going up. `initNavScroll()`
+in app.js: a `solid` boolean uses two different thresholds depending on direction — flips to
+`true` only when `y > solidifyAt` (`heroH - 90`, scrolling down) and flips to `false` only when
+`y <= desolidifyAt` (`40`, scrolling up) — so a partial scroll-up that doesn't reach the top leaves
+`solid` unchanged. Don't collapse this back to a single shared threshold; that's what caused the
+original flicker. `.contact-float` (see the "reach out" paragraph above) shares the same fixed
+top-offset bookkeeping in `initNavScroll()` as `.brand-float`, so the two stay vertically in sync
+as the demo banner/nav show and hide.
 
 ## Locked design decisions — do not drift
 
@@ -306,6 +313,23 @@ if you add more hover states later: hover means "this does something," not decor
   for any `.reveal:not(.is-revealed)` or low-opacity-while-in-viewport element at each step — came
   back clean both directions, but re-run that same check (not just a static page load) after any
   future change here.
+- **Setting only `overflow-x` on an element silently forces `overflow-y` to compute as `auto` too
+  — it never stays `visible`.** This is spec behavior (CSS Overflow Module), not a browser bug, and
+  it broke the desktop dropdown nav completely: `.nav__right-track` sets `overflow-x: auto` (so the
+  nav row scrolls horizontally when it overflows — see the nav-layout paragraph above), which meant
+  its computed `overflow-y` was *also* `auto`, clipping `.nav-dropdown` panels that used to live
+  nested inside `.nav-item` inside that track — the panel extended ~140px below the track's own
+  ~26px height, so it was invisible on every hover even though `:hover`/`.is-open` were toggling
+  correctly (Playwright's `.isVisible()` doesn't catch ancestor-overflow clipping, only a real
+  screenshot or a bounding-box comparison against the clipping ancestor does — that's how this one
+  was actually confirmed, not just inferred). Fixed by portaling `.nav-dropdown` panels out to be
+  direct children of `.nav` itself (not `.nav-item`) — see `buildTopNav()` in app.js and the
+  `.nav-dropdown` comment in styles.css. Because that breaks the ancestor/descendant relationship
+  the old pure-CSS `:hover` cascade relied on, show/hide + position are now handled in JS
+  (`mouseenter`/`mouseleave` + a shared close-delay so moving the cursor from the trigger down into
+  the now-sibling panel doesn't immediately close it — see the `closeTimer` comment in the same
+  function). If you ever add another `overflow-x`-only container, check whether anything
+  absolutely-positioned needs to escape it vertically before assuming `overflow-y` stayed `visible`.
 - **A same-document hash change (`services.html#a` → `services.html#b`) does not reload the page
   or re-run any script.** That's spec behavior, not a bug — but it means anchor targets that only
   exist because JS injected them (services.html's `#brokerage`/`#management`/`#investment` ids,
@@ -344,7 +368,33 @@ Verified this session via a headless-Chromium/Playwright smoke pass across every
 flow end-to-end including package selection + currency + language switch, plus a console-error
 sweep) — see "Testing on this machine" above for how to repeat it.
 
-**Most recent session:** migrated real wording from the client's existing site
+**Most recent session:** a client feedback/bugfix round on the live-pushed site (Netlify still not
+connected, so "live" here means the client pulled the branch locally and ran it). Four real
+findings: (1) the desktop dropdown nav (About/Services) never actually opened — root-caused to the
+`overflow-x`/`overflow-y` CSS gotcha documented above, fixed by portaling dropdown panels out of
+the scrollable `.nav__right-track`; (2) the logo's floating card was reverted to always-on (see the
+`.brand-float` section above) after the client reported it losing its frame while scrolling — the
+prior hysteresis-based melt turned the card off for nearly the entire scroll depth of every page,
+not just briefly near a hero boundary; (3) `.contact-float` had a genuine CSS bug (a stray
+underline drawn by the ancestor `<a>`, invisible until hover's `translateY` exposed it — see the
+"reach out" paragraph above) and was rebuilt from a single pill into a WhatsApp-icon + "Get in
+Touch" cluster, the latter opening a new quick-contact modal (`initQuickContact()`) instead of
+always navigating to contact.html; (4) `initScrollReveal()`'s single-block 30px fade was called out
+as too subtle to notice — reworked to stagger each section's own direct content chunks in via a
+`--reveal-i`-driven delay, plus the `.eyebrow` accent line growing from 0 width as an explicit
+"new section" cue (see the scroll-reveal comment in styles.css/app.js). Also removed a stray empty
+`git` file that had been accidentally committed at the repo root in an earlier round. Verified via
+Playwright: the dropdown opens/is visible/its link navigates correctly (confirmed via a real
+bounding-box check against the clipping ancestor, not just `.isVisible()`), the logo card is now
+present at every scroll depth on both overlay and non-overlay pages, the contact-float WhatsApp
+link has no stray underline and the quick-contact modal opens/validates/submits, staggered
+`.reveal-item` elements render with the expected per-chunk delays, the same properties.html
+tall-section down-then-up regression check from prior rounds (0 stuck/low-opacity elements either
+direction), and an 11-page mobile-viewport pass (390px) confirming `.contact-float` stays hidden,
+no horizontal overflow anywhere, and the hamburger accordion opens cleanly. Not yet re-confirmed
+against a live newlevelassociates.com pull, and not yet pushed live to Netlify.
+
+**Previous session:** migrated real wording from the client's existing site
 (newlevelassociates.com, via saved HTML files the client sent — see "Content migrated from the
 live site" below) into mission/story/values, Shelley Lozier's real title (Founder & Principal
 Broker, not the old placeholder "Point of Contact"), expanded Services copy, real event-naming

@@ -1492,6 +1492,73 @@
     });
   }
 
+  /* Persistent "Get in Touch" FAB cluster (site-wide, every page but
+     contact.html — see .contact-float in styles.css). The WhatsApp icon is
+     a plain deep-link with a generic opener (not tied to any one property
+     or purpose, unlike property.html's own [data-wa] elements). The
+     "Get in Touch" button opens a small quick-contact panel built the same
+     way as the report/privacy modals above — name, email, a message, Send —
+     so a visitor can reach out without leaving the page they're on or being
+     routed to the full contact.html form. */
+  function initQuickContact() {
+    const wa = $(".contact-float__wa");
+    if (wa && typeof PROPERTY !== "undefined") {
+      wa.href = `https://wa.me/${PROPERTY.agent.whatsapp}?text=${encodeURIComponent("Hi, I'd like to get in touch with New Level.")}`;
+    }
+    const trigger = $("#quickContactBtn");
+    if (!trigger) return;
+
+    const modal = el("div", "report-modal");
+    modal.id = "quickContactModal"; modal.hidden = true;
+    modal.innerHTML = `
+      <div class="report-card" role="dialog" aria-modal="true" aria-label="Get in touch">
+        <button class="report-close" id="qcClose" type="button" aria-label="Close">&times;</button>
+        <h3 class="report-card__title">Get in touch</h3>
+        <p class="muted">Send us a message and we'll follow up directly — or see the <a href="contact.html">full contact page</a>.</p>
+        <label class="report-field"><span>Name</span>
+          <input id="qcName" type="text" autocomplete="name">
+        </label>
+        <label class="report-field"><span>Email</span>
+          <input id="qcEmail" type="email" autocomplete="email">
+        </label>
+        <label class="report-field"><span>Message</span>
+          <textarea id="qcMessage" rows="4" placeholder="What can we help with?"></textarea>
+        </label>
+        <button class="btn btn--solid btn--full" id="qcSend" type="button">Send</button>
+        <p class="form-status" id="qcStatus" role="status" aria-live="polite"></p>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const close = () => { modal.hidden = true; document.body.style.overflow = ""; };
+    const open = () => { modal.hidden = false; document.body.style.overflow = "hidden"; setTimeout(() => modal.querySelector("#qcName").focus(), 50); };
+    trigger.addEventListener("click", open);
+    modal.querySelector("#qcClose").addEventListener("click", close);
+    modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+    document.addEventListener("keydown", (e) => { if (!modal.hidden && e.key === "Escape") close(); });
+
+    modal.querySelector("#qcSend").addEventListener("click", () => {
+      const status = modal.querySelector("#qcStatus");
+      const name = modal.querySelector("#qcName").value.trim();
+      const email = modal.querySelector("#qcEmail").value.trim();
+      const message = modal.querySelector("#qcMessage").value.trim();
+      status.style.color = "";
+      if (!name || !email || !message) { status.style.color = "#B00020"; status.textContent = "Please fill in your name, email and message."; return; }
+      const payload = { kind: "quick_contact", name, email, message, page: location.href };
+      const done = () => {
+        close(); toast("Thanks — your message is on its way.");
+        modal.querySelector("#qcName").value = ""; modal.querySelector("#qcEmail").value = ""; modal.querySelector("#qcMessage").value = "";
+      };
+      const btn = modal.querySelector("#qcSend");
+      if (typeof INQUIRY_ENDPOINT !== "undefined" && INQUIRY_ENDPOINT) {
+        btn.disabled = true; const orig = btn.textContent; btn.textContent = "Sending…";
+        fetch(INQUIRY_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(payload) })
+          .then((r) => { if (!r.ok) throw new Error(); done(); })
+          .catch(() => { status.style.color = "#B00020"; status.textContent = "Couldn't send — please try again."; })
+          .finally(() => { btn.disabled = false; btn.textContent = orig; });
+      } else { done(); }
+    });
+  }
+
   /* ================================================================
      Gallery strip, nav logo, footer  (shared)
      ================================================================ */
@@ -1714,18 +1781,20 @@
      solidifies once you pass the hero (unchanged), but scrolling back UP
      stays solid all the way until you're essentially back at the very top
      of the page — not the moment you cross back over that same threshold.
-     Without that gap, the bar would flicker transparent early on the way
-     up; this way the white bar (and the logo sitting flush inside it, see
-     below) hold until the hero is genuinely about to show through again.
+     Without that gap, the bar would flicker transparent early on the way up.
 
-     .brand-float (the logo) gets the same vertical offset sync .nav gets,
-     plus its own .brand-float--card class mirroring whether the nav is
-     currently solid — see the big comment on .brand-float in styles.css
-     for why toggling the CARD (not the background) is what's safe here.
-     On non-overlay pages the nav is always solid, so `solid` just starts
-     true and never changes — the logo sits flush there from the first
-     paint. Its .nav--hidden class is also mirrored: inert on desktop, but
-     on mobile it makes the centered logo hide/reappear with the bar. */
+     .brand-float (the logo) gets the same vertical offset sync .nav gets.
+     Its card look (rounded/padded/shadowed) is now PERMANENT — always on,
+     matching how it looks at the very top of the page — see the
+     .brand-float comment in styles.css for why the earlier melt-into-the-
+     solid-bar behavior was reverted: melting only when `solid` is true
+     meant the logo lost its card for the ENTIRE rest of a scrolled page (on
+     non-overlay pages, `solid` never even turns off, so the card never
+     showed at all there), which read as the logo losing all separation
+     from whatever content happened to be behind it. Don't reintroduce a
+     `solid`-driven card toggle without re-reading that note. Its
+     .nav--hidden class is still mirrored: inert on desktop, but on mobile
+     it makes the centered logo hide/reappear with the bar. */
   function initNavScroll() {
     const nav = $(".nav");
     if (!nav) return;
@@ -1757,7 +1826,6 @@
         nav.classList.toggle("nav--solid", solid);
         nav.style.top = topOffset + "px";
       }
-      if (brandFloat) brandFloat.classList.toggle("brand-float--card", !solid);
       if (!reduceMotion) {
         const hide = y > lastY && y > 140;
         nav.classList.toggle("nav--hidden", hide);
@@ -1777,15 +1845,24 @@
     measure(); update();
   }
 
-  /* Scroll-reveal: sections fade/slide into place every time you reach
-     them — not just the first time. Originally one-shot (revealed once,
-     then left alone), which read as "already done" if you scrolled away
-     and back; toggling .is-revealed on both enter AND exit instead of only
-     ever adding it means the animation replays each time a section crosses
-     into view, in either scroll direction, which is what actually reads as
-     "here's a new section" rather than a one-time page-load flourish.
-     Progressive enhancement — the .reveal class (which starts things at
-     opacity:0) is only ever added by this function, so a page never gets
+  /* Scroll-reveal: sections build themselves in every time you reach them —
+     not just the first time. Originally one-shot (revealed once, then left
+     alone), which read as "already done" if you scrolled away and back;
+     toggling .is-revealed on both enter AND exit instead of only ever
+     adding it means the animation replays each time a section crosses into
+     view, in either scroll direction.
+
+     The visual motion itself lives on each section's .reveal-item children
+     (its .wrap's own direct children — heading block, then a grid/list,
+     then a CTA, etc.), staggered via a --reveal-i custom property, rather
+     than moving the whole section as one flat block — a client request for
+     something "bold... almost like we're explaining this is a new section,"
+     since the original single 30px fade read as too subtle to notice. The
+     observer itself still watches the outer .section/.agentbar elements
+     unchanged (same threshold/rootMargin as before) — only how the reveal
+     is visually distributed changed, not what triggers it.
+     Progressive enhancement — the .reveal-item class (which starts things
+     at opacity:0) is only ever added by this function, so a page never gets
      stuck invisible if JS fails or IntersectionObserver isn't supported.
      Hero bands are intentionally excluded (above the fold, already have
      their own Ken Burns motion). */
@@ -1806,7 +1883,19 @@
         entry.target.classList.toggle("is-revealed", entry.isIntersecting);
       });
     }, { threshold: 0, rootMargin: "0px 0px -60px 0px" });
-    targets.forEach((elm) => { elm.classList.add("reveal"); io.observe(elm); });
+    targets.forEach((elm) => {
+      elm.classList.add("reveal");
+      // Some sections have .wrap as a direct child (most); properties.html's
+      // <main class="section wrap"> has .section and .wrap on the SAME
+      // element — fall back to the element itself so that case still finds
+      // its own direct children rather than finding nothing.
+      const wrap = elm.querySelector(":scope > .wrap") || elm;
+      Array.from(wrap.children).slice(0, 6).forEach((child, i) => {
+        child.classList.add("reveal-item");
+        child.style.setProperty("--reveal-i", i);
+      });
+      io.observe(elm);
+    });
     // Safety net: this is progressive enhancement, so nothing should ever
     // stay invisible — force-reveal anything still waiting after 2.5s
     // (e.g. an element that never intersects because it's inside a hidden
@@ -1845,30 +1934,97 @@
   /* Desktop top nav — built from NAV_MENU so items with `children` get a
      hover/click dropdown. Mobile hides #navLinks entirely (see styles.css);
      the same NAV_MENU data drives the hamburger's accordion instead
-     (buildMenuSiteNav) so nothing is lost, it just moves. */
+     (buildMenuSiteNav) so nothing is lost, it just moves.
+
+     Dropdown panels are deliberately moved OUT of .nav-item (which lives
+     inside .nav__right-track, a horizontally-scrollable strip) and appended
+     directly to .nav instead — see the .nav-dropdown comment in styles.css
+     for why: overflow-x:auto on the track silently clips vertically too, so
+     a dropdown left nested inside it never actually shows. Because that
+     breaks the plain-CSS `.nav-item:hover .nav-dropdown` cascade (they're no
+     longer ancestor/descendant), show/hide + position are handled here in
+     JS instead, keyed by a shared data-idx between each .nav-item and its
+     .nav-dropdown. */
   function buildTopNav() {
     const box = $("#navLinks");
-    if (!box || typeof NAV_MENU === "undefined") return;
+    const nav = $(".nav");
+    if (!box || !nav || typeof NAV_MENU === "undefined") return;
     box.innerHTML = NAV_MENU.map((item, i) => {
       if (!item.children || !item.children.length) return `<span class="nav-item"><a href="${item.href}">${item.label}</a></span>`;
       return `
         <span class="nav-item" data-idx="${i}">
           <a href="${item.href}">${item.label}</a>
           <button type="button" class="nav-item__caret" aria-expanded="false" aria-label="${item.label} submenu">${GLYPH.chevron}</button>
-          <span class="nav-dropdown">${item.children.map((c) => `<a href="${c.href}">${c.label}</a>`).join("")}</span>
         </span>`;
     }).join("");
-    box.querySelectorAll(".nav-item__caret").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+
+    // build dropdown panels as siblings appended to .nav (not .nav-item)
+    nav.querySelectorAll(".nav-dropdown").forEach((n) => n.remove());
+    NAV_MENU.forEach((item, i) => {
+      if (!item.children || !item.children.length) return;
+      const dd = el("span", "nav-dropdown");
+      dd.dataset.idx = i;
+      dd.innerHTML = item.children.map((c) => `<a href="${c.href}">${c.label}</a>`).join("");
+      nav.appendChild(dd);
+    });
+
+    const dropdownFor = (item) => nav.querySelector(`.nav-dropdown[data-idx="${item.dataset.idx}"]`);
+    function position(item, dd) {
+      const ir = item.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+      dd.style.left = (ir.left - nr.left + ir.width / 2) + "px";
+      dd.style.top = (ir.bottom - nr.top + 14) + "px";
+    }
+    function openItem(item) {
+      const dd = dropdownFor(item);
+      if (!dd) return;
+      box.querySelectorAll(".nav-item.is-open").forEach((n) => closeItem(n));
+      position(item, dd);
+      item.classList.add("is-open");
+      dd.classList.add("is-open");
+      const caret = item.querySelector(".nav-item__caret");
+      if (caret) caret.setAttribute("aria-expanded", "true");
+    }
+    function closeItem(item) {
+      const dd = dropdownFor(item);
+      if (dd) dd.classList.remove("is-open");
+      item.classList.remove("is-open");
+      const caret = item.querySelector(".nav-item__caret");
+      if (caret) caret.setAttribute("aria-expanded", "false");
+    }
+    function closeAll() { box.querySelectorAll(".nav-item.is-open").forEach(closeItem); }
+
+    // Small close-delay shared between the trigger and its (now-detached)
+    // dropdown panel: moving the mouse from .nav-item down into
+    // .nav-dropdown necessarily fires mouseleave on the item first, since
+    // the two are siblings, not ancestor/descendant, now that the dropdown
+    // lives outside .nav__right-track (see buildTopNav's opening comment).
+    // Closing immediately on that mouseleave meant the panel vanished
+    // before the cursor ever reached it. A short pending-close timer,
+    // cancelled by mouseenter on EITHER element, keeps it open across that
+    // gap without needing a real hover-intent library.
+    let closeTimer = null;
+    const cancelClose = () => { clearTimeout(closeTimer); closeTimer = null; };
+    const scheduleClose = (item) => { cancelClose(); closeTimer = setTimeout(() => closeItem(item), 200); };
+
+    box.querySelectorAll(".nav-item[data-idx]").forEach((item) => {
+      const dd = dropdownFor(item);
+      item.addEventListener("mouseenter", () => { cancelClose(); openItem(item); });
+      item.addEventListener("mouseleave", () => scheduleClose(item));
+      if (dd) {
+        dd.addEventListener("mouseenter", cancelClose);
+        dd.addEventListener("mouseleave", () => scheduleClose(item));
+      }
+      const caret = item.querySelector(".nav-item__caret");
+      caret.addEventListener("click", (e) => {
         e.stopPropagation();
-        const item = btn.closest(".nav-item");
-        const open = item.classList.contains("is-open");
-        box.querySelectorAll(".nav-item.is-open").forEach((n) => { n.classList.remove("is-open"); n.querySelector(".nav-item__caret").setAttribute("aria-expanded", "false"); });
-        if (!open) { item.classList.add("is-open"); btn.setAttribute("aria-expanded", "true"); }
+        cancelClose();
+        if (item.classList.contains("is-open")) closeItem(item); else openItem(item);
       });
     });
-    document.addEventListener("click", () => box.querySelectorAll(".nav-item.is-open").forEach((n) => { n.classList.remove("is-open"); n.querySelector(".nav-item__caret").setAttribute("aria-expanded", "false"); }));
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") box.querySelectorAll(".nav-item.is-open").forEach((n) => n.classList.remove("is-open")); });
+    document.addEventListener("click", closeAll);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAll(); });
+    window.addEventListener("resize", closeAll);
+    window.addEventListener("scroll", closeAll, { passive: true });
   }
 
   function ehoIcon() {
@@ -2372,6 +2528,7 @@
     buildFooter();
     buildMenu();
     initReport();
+    initQuickContact();
     initPreferences();
     initPrivacy();
     initEditMode();               // before render: page rewrites its own URL

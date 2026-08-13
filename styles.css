@@ -98,9 +98,28 @@ strong, b { font-weight: 600; }
 #about-nl { padding-bottom: 0; }
 
 /* Scroll-reveal — .reveal is only ever added by JS (initScrollReveal), so a
-   page with no JS or an older browser never gets stuck with hidden content. */
-.reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s cubic-bezier(.2,.6,.2,1), transform .7s cubic-bezier(.2,.6,.2,1); }
-.reveal.is-revealed { opacity: 1; transform: translateY(0); }
+   page with no JS or an older browser never gets stuck with hidden content.
+   .reveal itself is just a state hook now (always visible) — the actual
+   motion lives on .reveal-item, applied by JS to each section's own direct
+   content chunks (its .wrap's direct children: typically the heading block,
+   then a grid/list, then a CTA) so a section visibly builds itself in piece
+   by piece rather than arriving as one flat block. This replaced a single
+   30px fade+rise on the whole section, which client feedback called too
+   subtle to notice — bigger travel (56px), a touch slower, and staggered
+   per chunk (--reveal-i, set by JS) reads as an unmistakable "new section"
+   cue instead. The eyebrow's accent line (below) growing in alongside the
+   first chunk reinforces the same cue. */
+.reveal-item {
+  opacity: 0; transform: translateY(56px);
+  transition: opacity .8s cubic-bezier(.2,.6,.2,1), transform .8s cubic-bezier(.2,.6,.2,1);
+  transition-delay: calc(var(--reveal-i, 0) * 110ms);
+}
+.reveal.is-revealed .reveal-item { opacity: 1; transform: translateY(0); }
+/* the eyebrow's leading accent line grows in from 0 width instead of just
+   sitting there — scoped to .reveal so hero/always-visible eyebrows (never
+   wrapped in .reveal) are untouched and keep their static full-width line. */
+.reveal .eyebrow::before { width: 0; transition: width .5s cubic-bezier(.2,.6,.2,1) 80ms; }
+.reveal.is-revealed .eyebrow::before { width: 26px; }
 .section__head { max-width: 720px; margin-bottom: clamp(28px, 4vw, 52px); }
 .section__head .eyebrow { margin-bottom: 16px; }
 .stack > * + * { margin-top: 1rem; }
@@ -173,48 +192,70 @@ strong, b { font-weight: 600; }
    The logo PNG is fully opaque (baked-in white background, see CLAUDE.md),
    so its background is ALWAYS white — never toggle that off, that's the
    earlier "fades to transparent" bug (raw white PNG pixels landing on
-   non-white content with nothing to blend into). What DOES toggle is the
-   card treatment around it (rounded corners, padding, shadow — the
-   .brand-float--card modifier below, mirrored from the nav's own solid
-   state by initNavScroll): when the nav bar itself isn't solid white (over
-   a transparent hero), the logo needs its own visibly separate card so it
-   reads against whatever's behind it. When the nav bar IS solid white —
-   either because the page's nav is always-solid (every non-overlay page)
-   or because an overlay page has scrolled past its hero — the logo instead
-   drops the card and sits flush: same white, same flat edge, so it reads
-   as part of the one continuous bar instead of a separate panel stacked on
-   top of it. This is safe specifically because in that state the surface
-   behind the logo is guaranteed to be the same solid white as the nav —
-   unlike the old bug, where "solid" briefly meant "who knows what's back
-   there." */
+   non-white content with nothing to blend into).
+
+   The card treatment around it (rounded corners, padding, shadow) is now
+   PERMANENT, matching how it always looked at the very top of the page —
+   this used to melt away (flush edges, no shadow) whenever the nav bar
+   itself was solid white, on the theory that a solid bar directly behind
+   the logo made a separate card redundant. In practice that meant the card
+   was gone for the ENTIRE rest of a scrolled page (on every non-overlay
+   page — about/team/services/etc. — the nav is *always* solid, so the card
+   never showed there at all), which read as the logo losing any visual
+   separation from whatever content happened to be behind it — exactly the
+   "no distinction from the background" complaint that got this reverted.
+   Keep the card unconditional; don't reintroduce a nav-solid-driven toggle
+   here without checking the app.js comment on initNavScroll first. */
 .brand-float {
   position: fixed; top: 0; left: 0; z-index: 45;
   height: 90px; display: inline-flex; align-items: center;
   padding-left: clamp(14px, 3vw, 32px);
-  text-decoration: none;
+  text-decoration: none;             /* set here on the anchor itself, not just a child — see .contact-float__wa comment */
   transition: transform .35s ease;
 }
 .brand-float:hover .brand__logo-slot { transform: scale(1.04); }
-.brand-float .brand__logo-slot { background: var(--true-white); border-radius: 0; padding: 0; box-shadow: none; transition: border-radius .3s ease, padding .3s ease, box-shadow .3s ease, transform .15s ease; }
-.brand-float--card .brand__logo-slot { border-radius: 10px; padding: 8px 16px; box-shadow: 0 3px 14px rgba(0,0,0,.18); }
+.brand-float .brand__logo-slot { background: var(--true-white); border-radius: 10px; padding: 8px 16px; box-shadow: 0 3px 14px rgba(0,0,0,.18); transition: transform .15s ease; }
 
-/* Mirrors .brand-float on the right — a persistent "reach out" pill that
+/* Mirrors .brand-float on the right — a persistent "reach out" cluster that
    lives outside the nav bar entirely, on every page except contact.html
    itself. The point: a way to get in touch is always one click away
    without adding another item to the nav (which is exactly what we're
    trying not to crowd). Desktop only — on mobile there's no margin room
    for a second floating element alongside the logo and hamburger, and
-   Contact is still reachable from the hamburger menu there. */
+   Contact is still reachable from the hamburger menu there.
+
+   Two elements now, not one: a round WhatsApp icon (matches the .float-wa
+   button property.html already uses, so the visual language is consistent
+   site-wide) plus the "Get in Touch" button — clicking it opens a quick
+   inline contact panel (initQuickContact() in app.js) rather than always
+   navigating to contact.html, so a visitor can send a message without
+   losing their place on the page. */
 .contact-float {
   position: fixed; top: 0; right: 0; z-index: 44;
-  height: 90px; display: inline-flex; align-items: center;
+  height: 90px; display: inline-flex; align-items: center; gap: 10px;
   padding-right: clamp(14px, 3vw, 32px);
   transition: transform .35s ease;
 }
+.contact-float__wa {
+  flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #25D366; color: #06301a; text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.contact-float__wa:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.22); }
+/* text-decoration:none set directly on the anchors themselves (.contact-float__wa
+   here, .contact-float__btn below), not just an inner child — an ancestor
+   <a>'s default underline still gets drawn across a descendant that sets its
+   own text-decoration:none, since the line belongs to the ancestor's box, not
+   the child's. That mismatch was the "black line under the button on hover"
+   bug: the anchor's underline sat at its original baseline, invisible behind
+   the pill until :hover's translateY(-2px) moved the pill up and exposed it. */
 .contact-float__btn {
+  flex: 0 0 auto;
   font-family: var(--font-display); font-weight: 600; font-size: .86rem;
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--ink); color: #fff; text-decoration: none;
+  background: var(--ink); color: #fff; text-decoration: none; border: none; cursor: pointer;
   padding: 12px 22px; border-radius: 100px;
   box-shadow: 0 8px 24px rgba(0,0,0,.18);
   transition: background .15s ease, transform .15s ease, box-shadow .15s ease;
@@ -544,20 +585,32 @@ strong, b { font-weight: 600; }
 .nav__links a { font-family: var(--font-display); font-weight: 600; font-size: .92rem; text-decoration: none; color: var(--ink); }
 .nav__links a:hover { color: var(--green-deep); }
 
-/* nav items with a dropdown (desktop) — hover OR click the caret opens it */
+/* nav items with a dropdown (desktop) — hover OR click the caret opens it.
+   .nav-dropdown is NOT a descendant of .nav-item in the DOM (see buildTopNav
+   in app.js) — it's moved to be a direct child of .nav itself, positioned
+   via JS (left/top computed from the trigger's own rect) rather than pure
+   CSS :hover cascade. That's required because .nav-item lives inside
+   .nav__right-track, which has overflow-x:auto — and per the CSS overflow
+   spec, setting only overflow-x on an element silently forces overflow-y to
+   'auto' too (never stays 'visible'), which clipped the dropdown panel
+   entirely since it extends below the track's own ~26px height. Portaling
+   the dropdown out to .nav (which has no overflow set, and is itself
+   position:sticky/fixed so it's still a valid containing block for an
+   absolutely-positioned dropdown) sidesteps that clipping. Don't renest the
+   dropdown back inside .nav-item/.nav__right-track without re-solving this. */
 .nav-item { position: relative; display: inline-flex; align-items: center; gap: 3px; }
 .nav-item__caret { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; padding: 0; border: none; background: none; color: var(--muted); cursor: pointer; }
 .nav-item__caret svg { width: 13px; height: 13px; transition: transform .15s ease; }
 .nav-item:hover .nav-item__caret, .nav-item.is-open .nav-item__caret { color: var(--ink); }
 .nav-item.is-open .nav-item__caret svg { transform: rotate(180deg); }
 .nav-dropdown {
-  display: none; position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-50%);
+  display: none; position: absolute; top: 0; left: 0; transform: translateX(-50%);
   min-width: 220px; background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius);
   box-shadow: var(--shadow); padding: 8px; flex-direction: column; z-index: 60;
 }
 .nav-dropdown a { display: block; padding: 9px 12px; border-radius: 8px; font-family: var(--font-display); font-weight: 600; font-size: .88rem; text-decoration: none; color: var(--ink); white-space: nowrap; }
 .nav-dropdown a:hover { background: var(--green-tint); color: var(--green-deep); }
-.nav-item:hover .nav-dropdown, .nav-item:focus-within .nav-dropdown, .nav-item.is-open .nav-dropdown { display: flex; }
+.nav-dropdown.is-open { display: flex; }
 
 /* prominent nav language switcher — visible on the page, not buried in the footer */
 .nav__lang { display: flex; align-items: center; gap: 6px; margin-left: 22px; padding-left: 22px; border-left: 1px solid var(--line); }
