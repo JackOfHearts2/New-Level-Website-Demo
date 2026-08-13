@@ -23,10 +23,16 @@
     <span class="brand__logo-slot" id="navMark"></span>
   </a>
 
-  <!-- persistent "reach out" pill, mirrors the logo on the right -->
-  <a class="contact-float" href="contact.html">
-    <span class="contact-float__btn">Get in Touch</span>
-  </a>
+  <!-- persistent "reach out" cluster, mirrors the logo on the right -->
+  <div class="contact-float">
+    <a class="contact-float__wa" data-wa href="#" target="_blank" rel="noopener" aria-label="Message us on WhatsApp">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.004c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.42 1.32-1.95 1.36-.5.04-.98.22-3.3-.69-2.78-1.1-4.56-3.94-4.7-4.12-.14-.18-1.13-1.5-1.13-2.87 0-1.36.72-2.03.97-2.31.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17.01.4-.06.62.48.24.55.8 1.9.87 2.04.07.14.11.3.02.48-.09.18-.14.29-.27.45-.14.16-.29.36-.41.48-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.18-.2.69-.8.87-1.08.18-.28.36-.23.6-.14.25.09 1.57.74 1.84.87.27.14.45.2.51.32.07.11.07.66-.17 1.34Z"/></svg>
+    </a>
+    <button type="button" class="contact-float__btn" id="quickContactBtn">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Get in Touch
+    </button>
+  </div>
 
   <!-- top nav — floats transparent over the hero, solidifies on scroll -->
   <div class="nav nav--overlay">
