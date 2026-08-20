@@ -302,6 +302,31 @@ const EVENT_CTA = {
   cta: "See event venues",
 };
 
+/* Featured-property showcase card — a bold bordered image panel right
+   under the search bar. Visual device borrowed from a client-shared design
+   reference (see "Working with design references" in CLAUDE.md); adapted
+   to feature the one real listing instead of a decorative screenshot. */
+const SHOWCASE = {
+  eyebrow: "Featured Property",
+  title: "1331 NW 87th Street, Miami",
+  cta: "View the property",
+  href: "property.html",
+};
+
+/* Trust stats strip beneath the showcase card — a "Meet our clients" link
+   fades in over the row on hover. Same design reference as SHOWCASE above;
+   this demo has no real client logos to show, so it's adapted into
+   headline-stat placeholders rather than a customer-logo wall. Figures are
+   illustrative, same as every other number on the site (flagged via the
+   ph-caption line rendered under the row). */
+const TRUST_STATS = [
+  { value: "$120M+", label: "In closed transactions" },
+  { value: "250+",   label: "Properties represented" },
+  { value: "15+",    label: "Years combined experience" },
+  { value: "98%",    label: "Client satisfaction" },
+];
+const TRUST_LINK = { label: "Meet our clients", href: "testimonials.html" };
+
 /* FAQs — real copy, shown as a dedicated page (faq.html) and again inline
    on contact.html so the answer is right where someone's about to reach
    out. Same list both places, one source. */

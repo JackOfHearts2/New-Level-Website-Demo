@@ -251,6 +251,8 @@
     const about = $("#aboutShortText");
     if (about) about.textContent = NLG_BRAND.aboutShort;
     buildSearchBox();
+    buildShowcase();
+    buildTrustStrip();
     buildEventCta();
     buildTeam();
     buildServices();
@@ -350,6 +352,29 @@
       Object.keys(decorMap).forEach((elId) => { const sel = document.getElementById(elId); if (sel) sel.selectedIndex = 0; });
       if (firstTab) selectTab(firstTab.getAttribute("data-id"), firstTab);
     });
+  }
+
+  /* Featured-property showcase card — see SHOWCASE in content.js. Reuses
+     realPhoto("00"), the same key the property card elsewhere already
+     targets, so an uploaded override for that photo applies here too. */
+  function buildShowcase() {
+    if (typeof SHOWCASE === "undefined") return;
+    const img = $("#showcaseImg"); if (img) img.src = realPhoto("00");
+    const eb = $("#showcaseEyebrow"), t = $("#showcaseTitle"), cta = $("#showcaseCta"), card = $("#showcaseCard");
+    if (eb) eb.textContent = SHOWCASE.eyebrow;
+    if (t) t.textContent = SHOWCASE.title;
+    if (cta) cta.textContent = SHOWCASE.cta + " ›";
+    if (card) card.href = SHOWCASE.href;
+  }
+
+  /* Trust stats strip — see TRUST_STATS/TRUST_LINK in content.js. */
+  function buildTrustStrip() {
+    const grid = $("#trustStatsGrid");
+    if (!grid || typeof TRUST_STATS === "undefined") return;
+    grid.innerHTML = TRUST_STATS.map((s) =>
+      `<div class="trust-stat"><div class="trust-stat__value">${s.value}</div><div class="trust-stat__label">${s.label}</div></div>`).join("");
+    const link = $("#trustStripLink");
+    if (link && typeof TRUST_LINK !== "undefined") { link.textContent = TRUST_LINK.label + " ›"; link.href = TRUST_LINK.href; }
   }
 
   function buildEventCta() {
