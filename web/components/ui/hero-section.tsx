@@ -1,0 +1,256 @@
+"use client";
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, Menu, X } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { AnimatedGroup } from "@/components/ui/animated-group";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { cn } from "@/lib/utils";
+
+const transitionVariants = {
+  item: {
+    hidden: {
+      opacity: 0,
+      filter: "blur(12px)",
+      y: 12,
+    },
+    visible: {
+      opacity: 1,
+      filter: "blur(0px)",
+      y: 0,
+      transition: {
+        type: "spring" as const,
+        bounce: 0.3,
+        duration: 1.5,
+      },
+    },
+  },
+};
+
+export function HeroSection() {
+  return (
+    <>
+      <HeroHeader />
+      <main className="overflow-hidden">
+        {/* Decorative depth layer — the original reference used a stock night-sky
+            photo here; swapped for a brand-green glow (same AnimatedGroup
+            mechanism/timing, New Level content instead of stock imagery). */}
+        <div
+          aria-hidden
+          className="z-[2] absolute inset-0 pointer-events-none isolate opacity-60 contain-strict hidden lg:block"
+        >
+          <div className="w-[35rem] h-[50rem] -translate-y-[250px] absolute left-0 top-0 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(102,60%,60%,.14)_0,hsla(102,60%,40%,.04)_50%,hsla(102,60%,30%,0)_80%)]" />
+          <div className="h-[50rem] absolute left-0 top-0 w-56 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(102,60%,60%,.1)_0,hsla(102,60%,30%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
+        </div>
+        <section>
+          <div className="relative pt-24 md:pt-36">
+            <div
+              aria-hidden
+              className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--background)_75%)]"
+            />
+            <div className="mx-auto max-w-7xl px-6">
+              <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
+                <AnimatedGroup variants={transitionVariants}>
+                  <Link
+                    href="/about"
+                    className="hover:bg-background bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300"
+                  >
+                    <span className="text-foreground font-heading text-sm font-semibold">
+                      New Level · Real Estate. Redefined.
+                    </span>
+                    <span className="border-background block h-4 w-0.5 border-l bg-white"></span>
+
+                    <div className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
+                      <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
+                        <span className="flex size-6">
+                          <ArrowRight className="m-auto size-3" />
+                        </span>
+                        <span className="flex size-6">
+                          <ArrowRight className="m-auto size-3" />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <h1 className="font-heading mt-8 max-w-4xl mx-auto text-balance text-6xl font-bold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                    Spaces for the moments that matter.
+                  </h1>
+                  <p className="mx-auto mt-8 max-w-2xl text-balance text-lg text-muted-foreground">
+                    A South Florida real estate group matching standout
+                    properties to the moments they&apos;re made for —
+                    corporate offsites, family gatherings, private events,
+                    retreats and extended stays.
+                  </p>
+                </AnimatedGroup>
+
+                <AnimatedGroup
+                  variants={{
+                    container: {
+                      visible: {
+                        transition: {
+                          staggerChildren: 0.05,
+                          delayChildren: 0.75,
+                        },
+                      },
+                    },
+                    ...transitionVariants,
+                  }}
+                  className="mt-12 flex flex-col items-center justify-center gap-3 md:flex-row"
+                >
+                  <Link href="/properties">
+                    {/* Default classes (bg-black text-white) left as-is rather
+                        than the original demo's light-mode bg-white — matches
+                        this site's existing primary-CTA convention (.btn--solid:
+                        black fill, white text) instead of reading as a faint
+                        outline against the page's own white background. */}
+                    <HoverBorderGradient
+                      as="div"
+                      containerClassName="rounded-full"
+                      className="font-heading flex items-center space-x-2 font-semibold cursor-pointer"
+                    >
+                      <span className="text-nowrap">Explore Properties</span>
+                    </HoverBorderGradient>
+                  </Link>
+                  {/* A link styled as a button, not a Button rendered as a
+                      link — Base UI's own docs are explicit that <a> has its
+                      own semantics and shouldn't go through Button's render
+                      prop; style the anchor directly with buttonVariants(). */}
+                  <Link
+                    href="/contact"
+                    className={cn(
+                      buttonVariants({ size: "lg", variant: "ghost" }),
+                      "font-heading h-10.5 rounded-xl px-5 font-semibold"
+                    )}
+                  >
+                    <span className="text-nowrap">Request a Tour</span>
+                  </Link>
+                </AnimatedGroup>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </>
+  );
+}
+
+const menuItems = [
+  { name: "Properties", href: "/properties" },
+  { name: "About", href: "/about" },
+  { name: "Services", href: "/services" },
+  { name: "Testimonials", href: "/testimonials" },
+  { name: "Events", href: "/events" },
+  { name: "Contact", href: "/contact" },
+];
+
+const HeroHeader = () => {
+  const [menuState, setMenuState] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  return (
+    <header>
+      <nav
+        data-state={menuState ? "active" : undefined}
+        className="fixed z-20 w-full px-2 group"
+      >
+        <div
+          className={cn(
+            "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
+            isScrolled &&
+              "bg-background/70 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5"
+          )}
+        >
+          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
+            <div className="flex w-full justify-between lg:w-auto">
+              <Link
+                href="/"
+                aria-label="home"
+                className="flex items-center space-x-2"
+              >
+                <Image
+                  src="/logo.png"
+                  alt="New Level"
+                  width={160}
+                  height={53}
+                  priority
+                  className="h-9 w-auto"
+                />
+              </Link>
+
+              <button
+                onClick={() => setMenuState(!menuState)}
+                aria-label={menuState ? "Close Menu" : "Open Menu"}
+                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
+              >
+                <Menu className="in-data-[state=active]:rotate-180 group-data-[state=active]:scale-0 group-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
+                <X className="group-data-[state=active]:rotate-0 group-data-[state=active]:scale-100 group-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
+              </button>
+            </div>
+
+            <div className="absolute inset-0 m-auto hidden size-fit lg:block">
+              <ul className="flex gap-8 text-sm">
+                {menuItems.map((item, index) => (
+                  <li key={index}>
+                    <Link
+                      href={item.href}
+                      className="text-muted-foreground hover:text-foreground font-heading block font-medium duration-150"
+                    >
+                      <span>{item.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
+              <div className="lg:hidden">
+                <ul className="space-y-6 text-base">
+                  {menuItems.map((item, index) => (
+                    <li key={index}>
+                      <Link
+                        href={item.href}
+                        className="text-muted-foreground hover:text-foreground font-heading block font-medium duration-150"
+                      >
+                        <span>{item.name}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+                <Link
+                  href="/contact"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "font-heading",
+                    isScrolled && "lg:hidden"
+                  )}
+                >
+                  <span>Contact</span>
+                </Link>
+                <Link
+                  href="/properties"
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "font-heading",
+                    isScrolled ? "lg:inline-flex" : "hidden"
+                  )}
+                >
+                  <span>View Properties</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+  );
+};
