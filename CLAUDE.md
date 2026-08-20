@@ -12,6 +12,40 @@ NOT live, and every fake number is deliberately marked as a placeholder.
 Static, dependency-free HTML/CSS/JS. No framework, no build step for the site itself.
 One Netlify Function provides shared image storage.
 
+## Migration in progress: Next.js rebuild in `web/`
+
+As of 2026-08-20, the client decided to fully replace this static site with a Next.js rebuild —
+**not** run both permanently side by side. The plan is one clean cutover once the rebuild covers
+everything the static site does, not an incremental swap page-by-page. Until then:
+
+- The static site described in the rest of this file (root `index.html`/`app.js`/`content.js`/
+  etc.) is still what's live in production and still gets no further feature work beyond what's
+  needed to keep it running — new work goes into `web/` from here on.
+- `web/` is a separate Next.js 16 + Tailwind v4 + shadcn/base-ui app. Brand tokens (black/white/
+  `#72D35B` green, Poppins/DM Sans) are already mapped into its `globals.css`. So far it only has
+  the homepage (hero, about, services, event CTA, team, testimonials, footer) — none of the other
+  ten pages, the booking/pricing logic, image uploads, i18n, or forms have been ported yet. The
+  "no framework, no build step" rule above describes the *current production site only* — it does
+  not apply inside `web/`, which is the intended replacement for all of it.
+- **Two separate Netlify sites exist.** Production (the one described in "Deployment" near the
+  bottom of this file) builds the repo root from `main`. A second, separate Netlify site was added
+  as a preview-only deploy target for this rebuild — it watches the `claude/nextjs-foundation`
+  branch directly (no PR needed for that one), with base directory `web`, and has its own
+  `web/netlify.toml` + `web/.nvmrc` (Next 16 requires Node ≥20.9, newer than Netlify's default).
+  Don't let the two configs blend — `web/netlify.toml`'s `[build] command` must stay scoped to
+  `web/`, and must never fall back to the root `netlify.toml`'s `command = "npm install"` (which
+  has no actual build step and would silently produce a broken/blank deploy for the Next app).
+
+**Workflow / autonomy, confirmed with the client 2026-08-20:** Claude pushes commits to branches
+and can push directly to `main` only when explicitly told to for that specific change. The default
+is to keep the existing human-review checkpoint — push to a branch, client reviews the diff and
+merges the PR themselves — because the production Netlify site auto-deploys the instant something
+lands on `main`, with no staging pause. A Netlify MCP connector is available (`claude mcp list`
+should show `claude.ai Netlify` as Connected) for checking deploy status/logs/env vars directly
+instead of relaying through the client — note a fresh session may be needed after the connector is
+first added before its tools actually appear (confirmed via `ToolSearch`, not just `claude mcp
+list`, since the two can disagree during the same session the connector was added in).
+
 ## Architecture
 
 ```
