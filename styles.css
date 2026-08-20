@@ -115,6 +115,15 @@ strong, b { font-weight: 600; }
   transition-delay: calc(var(--reveal-i, 0) * 110ms);
 }
 .reveal.is-revealed .reveal-item { opacity: 1; transform: translateY(0); }
+/* Hero-only variant: initHeroReveal() (app.js) plays a one-time staggered
+   entrance for the homepage hero's own content on page load — the hero is
+   already in view at load (no IntersectionObserver involved) and its
+   pieces span two separate DOM subtrees (.nl-hero__inner and .search-bar,
+   which aren't ancestor/descendant of each other), so there's no single
+   .reveal wrapper to toggle .is-revealed on the way scroll-reveal does.
+   Toggling is-revealed directly on each .reveal-item sidesteps that while
+   reusing the exact same timing/easing. */
+.reveal-item.is-revealed { opacity: 1; transform: translateY(0); }
 /* the eyebrow's leading accent line grows in from 0 width instead of just
    sitting there — scoped to .reveal so hero/always-visible eyebrows (never
    wrapped in .reveal) are untouched and keep their static full-width line. */
@@ -167,12 +176,29 @@ strong, b { font-weight: 600; }
 
 .nav--overlay { position: fixed; left: 0; right: 0; top: 0; background: transparent; border-bottom-color: transparent; }
 .nav--overlay.nav--solid { background: var(--true-white); border-bottom-color: var(--line); box-shadow: 0 2px 16px rgba(0,0,0,.06); }
-.nav--overlay .nav__back, .nav--overlay .nav-item > a, .nav--overlay .nav-item__caret,
-.nav--overlay .nav__lang select, .nav--overlay .nav__lang-ic { color: #fff; }
-.nav--overlay .menu-btn span { background: #fff; }
-.nav--overlay.nav--solid .nav__back, .nav--overlay.nav--solid .nav-item > a, .nav--overlay.nav--solid .nav-item__caret,
-.nav--overlay.nav--solid .nav__lang select, .nav--overlay.nav--solid .nav__lang-ic { color: var(--ink); }
-.nav--overlay.nav--solid .menu-btn span { background: var(--ink); }
+/* Text stays ink (the base .nav__links a etc. color) in BOTH states now —
+   the overlay state used to force white, for legibility against a dark
+   hero photo with no bar behind the text at all. Now that the overlay
+   state renders .nav__inner as its own floating glass pill (below), ink
+   text is legible on that light pill regardless of what's behind it, so
+   there's no more direct dependency on the hero image being dark enough. */
+
+/* Floating glass pill while over the (transparent) hero — richer than
+   plain white text with nothing behind it. Scoped to .nav__inner (not
+   .nav-overlay itself) so the pill is inset within the page's centered
+   column rather than edge-to-edge; collapses back to the plain
+   edge-to-edge .nav--solid bar (unchanged) once scrolled past the hero. */
+.nav--overlay .nav__inner {
+  transition: background .3s ease, border-color .3s ease, box-shadow .3s ease, border-radius .3s ease, margin-top .3s ease;
+}
+.nav--overlay:not(.nav--solid) .nav__inner {
+  margin-top: 16px;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.6);
+  border-radius: 100px;
+  box-shadow: 0 10px 34px rgba(0,0,0,.16);
+}
 
 /* Logo — pinned near the TRUE left edge of the viewport (outside the nav's
    centered max-width column, not just the left end of it) on desktop, so it
@@ -277,8 +303,7 @@ strong, b { font-weight: 600; }
 .nav-scroll__arrow svg { width: 15px; height: 15px; }
 .nav-scroll__arrow:hover { color: var(--ink); }
 .nav-scroll__arrow.is-active { display: inline-flex; }
-.nav--overlay .nav-scroll__arrow { color: rgba(255,255,255,.8); }
-.nav--overlay.nav--solid .nav-scroll__arrow { color: var(--muted); }
+.nav--overlay .nav-scroll__arrow { color: var(--muted); }
 .brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; }
 .brand__name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
 .brand__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; align-self: center; }
@@ -652,11 +677,31 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
   animation: heroKenBurns 26s ease-in-out infinite alternate; }
 .nl-hero__bg::after { content:""; position:absolute; inset:0; background:
   repeating-linear-gradient(45deg, rgba(255,255,255,.02) 0 2px, transparent 2px 22px); }
+/* Soft blurred glow shapes — pure CSS (radial-gradient + blur), no image
+   assets — layered behind the hero content for depth on what was otherwise
+   a flat dark gradient + stripe texture. Purely decorative (aria-hidden). */
+.nl-hero__glow { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
+.nl-hero__glow--a { top: -12%; left: -10%; width: 46vw; height: 46vw; max-width: 560px; max-height: 560px; background: radial-gradient(circle, var(--green) 0%, transparent 70%); opacity: .5; }
+.nl-hero__glow--b { top: 34%; right: -14%; width: 34vw; height: 34vw; max-width: 420px; max-height: 420px; background: radial-gradient(circle, var(--green-deep) 0%, transparent 70%); opacity: .3; }
 .nl-hero__placeholder { position: relative; z-index: 1; font-family: var(--font-display); font-weight: 600; font-size: .74rem; letter-spacing: .12em; color: rgba(255,255,255,.34); border: 1px solid rgba(255,255,255,.2); padding: 7px 16px; border-radius: 100px; background: rgba(0,0,0,.25); }
 .nl-hero__inner { position: relative; z-index: 2; padding-block: clamp(48px, 8vw, 96px); display: flex; flex-direction: column; align-items: center; }
-.nl-hero .eyebrow { color: #fff; justify-content: center; }
-.nl-hero .eyebrow::before { background: var(--green); }
-.nl-hero__title { max-width: 16ch; margin-top: 18px; }
+/* Badge (replaces a plain text eyebrow on the homepage hero only — other
+   pages' section heads keep the standard .eyebrow dash+label treatment,
+   this is a hero-specific device) — a white pill with a green tag chip,
+   reusing the brand name + tagline rather than inventing new copy. */
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--true-white); color: var(--ink);
+  padding: 6px 18px 6px 6px; border-radius: 100px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.22);
+}
+.hero-badge__chip {
+  background: linear-gradient(135deg, var(--green), var(--green-deep));
+  color: #fff; font-family: var(--font-display); font-weight: 700; font-size: .7rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 6px 14px; border-radius: 100px;
+}
+.hero-badge__text { font-family: var(--font-display); font-weight: 600; font-size: .92rem; }
+.nl-hero__title { max-width: 16ch; margin-top: 20px; font-size: clamp(2.6rem, 7vw, 5.6rem); }
 .nl-hero__line { max-width: 60ch; margin-top: 18px; font-size: clamp(1.05rem, 1.7vw, 1.3rem); color: rgba(255,255,255,.9); }
 .nl-hero__inner .btn { margin-top: 30px; }
 
@@ -670,7 +715,11 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
    hero keeps the bar from covering the headline/subhead text. */
 .nl-hero--search { padding-bottom: clamp(90px, 11vw, 150px); }
 .search-overlay { position: relative; z-index: 3; margin-top: clamp(-86px, -9vw, -60px); padding-inline: 0; }
-.search-bar { max-width: 1180px; margin-inline: auto; background: var(--paper); border-radius: var(--radius-lg); box-shadow: 0 24px 60px -20px rgba(0,0,0,.35); overflow: hidden; }
+/* Translucent + blurred rather than flat solid white — since the card sits
+   directly on the hero/glow seam, glass reads as tied to the hero rather
+   than a plain slab dropped on top of it. Internal controls (tabs, fields)
+   stay opaque for legibility; only the outer card gets the glass look. */
+.search-bar { max-width: 1180px; margin-inline: auto; background: rgba(255,255,255,.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: var(--radius-lg); box-shadow: 0 24px 60px -20px rgba(0,0,0,.4); overflow: hidden; }
 .search-bar__tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
 .search-tab { font-family: var(--font-display); font-weight: 600; font-size: .92rem; padding: 16px 26px; border: none; background: var(--paper-2); color: var(--muted); cursor: pointer; border-right: 1px solid var(--line); transition: background .15s ease, color .15s ease; }
 .search-tab:hover { color: var(--ink); background: var(--paper); }

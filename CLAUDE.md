@@ -168,6 +168,43 @@ These came from the client brief and were corrected several times. Don't "improv
 
 ## Key subsystems
 
+**Homepage hero redesign** (`.hero-badge`/`.nl-hero__glow` in styles.css, `initHeroReveal()` in
+app.js) A "borrow the design feel, not the literal code" pass in response to client feedback that
+the site read as flat — the client shared a 21st.dev React/Tailwind reference component and was
+explicit that only its overall visual composition should carry over, reskinned in our brand, not
+its markup/stack/copy (this project stays framework-free — see "What this is" above; that's a
+locked decision, not something a reference component changes). What got adapted, all scoped to
+index.html's `.nl-hero` (property.html's differently-structured `.a-hero` wasn't touched):
+- The plain-text eyebrow became `.hero-badge` — a white pill with a green gradient chip (brand
+  name) + supporting text (tagline), reusing existing copy rather than inventing new marketing
+  lines. This is a hero-specific device, not a change to `.eyebrow` used elsewhere.
+- `.nl-hero__glow` — two blurred CSS radial-gradient circles (no image assets) layered behind the
+  hero content for depth, replacing what was a flat dark gradient + stripe texture.
+- `.nl-hero__title` got a bigger clamp (was inheriting `.display`'s `clamp(2.4rem,6vw,4.6rem)`,
+  now its own `clamp(2.6rem,7vw,5.6rem)`) for more visual weight.
+- `.search-bar` went from solid `var(--paper)` to a translucent `rgba(255,255,255,.88)` +
+  `backdrop-filter: blur(20px)` background, so the card reads as tied to the hero/glow it overlaps
+  rather than a flat slab dropped on top. Internal controls (tabs, fields) stay opaque.
+- `initHeroReveal()` — a one-time staggered entrance for the hero's own content on page load
+  (badge → headline → subtext → search bar), reusing `.reveal-item`'s timing/easing from
+  `initScrollReveal()` but triggered directly rather than via IntersectionObserver, since the hero
+  is already in view at load. It needed its own CSS hook (`.reveal-item.is-revealed`, applied
+  directly per-item) rather than the scroll-reveal pattern's shared `.reveal` ancestor wrapper,
+  because `.nl-hero__inner` and `.search-bar` are separate DOM subtrees with no close common
+  ancestor to toggle. `initScrollReveal()` itself still deliberately skips hero bands — unrelated,
+  unchanged.
+- The nav bar's transparent-over-hero state (`.nav--overlay:not(.nav--solid)`) changed from plain
+  edge-to-edge transparent white text to a floating glass pill: `.nav__inner` gets a translucent
+  white background, `backdrop-filter: blur(16px)`, rounded corners and a shadow, inset within the
+  page's centered column rather than spanning edge-to-edge. Text switched from forced white (needed
+  when there was nothing but the raw hero photo behind it) to the normal ink color, since the glass
+  pill itself now provides a light backdrop regardless of what's behind it. The solidified state
+  (`.nav--solid`, scrolled past the hero) is completely unchanged — same full-width white bar the
+  client already confirmed they like; only the pre-scroll appearance changed.
+If you're asked to pull in another visual reference later: extract the composition/feel (layering,
+motion, depth, boldness) and rebuild it with our existing tokens/markup patterns, the way this
+round did — don't add a second framework or copy foreign markup wholesale.
+
 **Pricing** (`RATE_TIERS`, `EVENT_ADDONS`, `EVENT_PACKAGES`, `SECURITY_DEPOSIT` in content.js)
 Two tiers, chosen by the guest — **not** derived from which audience icon they clicked:
 - *Event*: full **24-hour** rental, $1,000 flat. Has check-in AND check-out **date + time**, with a
@@ -368,7 +405,21 @@ Verified this session via a headless-Chromium/Playwright smoke pass across every
 flow end-to-end including package selection + currency + language switch, plus a console-error
 sweep) — see "Testing on this machine" above for how to repeat it.
 
-**Most recent session:** a client feedback/bugfix round on the live-pushed site (Netlify still not
+**Most recent session:** a homepage hero visual-depth pass (see "Homepage hero redesign" above) —
+badge pill, blurred glow shapes, a bigger headline, a glass-effect search bar, a staggered
+load-time entrance for the hero content, and a floating glass-pill treatment for the nav while it's
+transparent over the hero. Prompted by the client sharing a 21st.dev component and clarifying they
+wanted the overall visual feel adapted to our brand, not the literal React/Tailwind code or exact
+layout/copy — a standing instruction for how to handle any future design references they share.
+Verified via Playwright: all hero content reaches `is-revealed` after load, the dropdown nav still
+opens correctly on the new glass pill, the solidified (scrolled-past-hero) nav bar is pixel-clean
+with no leftover pill styling once actually revealed (a transient "hump" only showed up in a
+synthetic test that scrolled too fast and caught the nav mid-`nav--hidden`, not a real bug), the
+properties.html tall-section scroll regression check (0 stuck/low-opacity elements, since this
+touched reveal-related CSS), an 11-page real-`pageerror` sweep (all clean), and a mobile-viewport
+check (no horizontal overflow, badge/headline/pill-nav all render correctly at 390px).
+
+**Previous session:** a client feedback/bugfix round on the live-pushed site (Netlify still not
 connected, so "live" here means the client pulled the branch locally and ran it). Four real
 findings: (1) the desktop dropdown nav (About/Services) never actually opened — root-caused to the
 `overflow-x`/`overflow-y` CSS gotcha documented above, fixed by portaling dropdown panels out of

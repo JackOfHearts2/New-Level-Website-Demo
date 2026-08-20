@@ -36,7 +36,7 @@
   function translatePage(lang) {
     if (typeof I18N === "undefined") return;
     currentLang = lang;
-    document.querySelectorAll(".nav__links a,.nav-dropdown a,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab,.search-tab")
+    document.querySelectorAll(".nav__links a,.nav-dropdown a,h1,h2,h3,.menu-nav-link,.menu-label,.menu-panel__ctx,.menu-sec-link,.menu-sitenav__link,.menu-sitenav__children a,.foot-col h4,.foot-col a,.foot-pref span,.link-arrow,.audience-card__label,.tier-opt__t,.fees-col__title,.nearby__title,#navBackLabel,#saveLabel,.purpose-switch__btn,.event-type__chip,.package-card__t,.package-card__tagline,.package-card__badge,.quote__currency span,.category-tab,.search-tab,.hero-badge__chip,.hero-badge__text")
       .forEach((e) => { if (e.childElementCount === 0) translateEl(e, lang); });
     document.querySelectorAll(".eyebrow,.field label,.search-bar__field label,.btn,.search-bar__reset,.sticky-book__cta,.report-trigger,.nav__back,.hero-tour-btn,.hero-tour-link,.hero-exit,.legdot").forEach((e) => translateEl(e, lang));
     const kw = $("#searchKeyword");
@@ -258,6 +258,27 @@
     initCarousel("#teamGrid", "#teamPrev", "#teamNext", "#teamDots");
     initCarousel("#testimonialsGrid", "#testimonialsPrev", "#testimonialsNext", "#testimonialsDots");
     translatePage(currentLang);
+    initHeroReveal();
+  }
+
+  /* Homepage hero content stagger-in on page load — badge, headline,
+     subtext, then the search bar, entering a beat apart instead of just
+     appearing instantly. Separate from initScrollReveal() (which
+     deliberately skips hero bands, since they're already in view at load
+     and have their own Ken Burns motion) — this is a one-time load
+     animation, no IntersectionObserver, reusing .reveal-item's timing via
+     the .reveal-item.is-revealed variant in styles.css (needed because
+     .nl-hero__inner and .search-bar are separate DOM subtrees with no
+     shared .reveal ancestor to toggle the way scroll-reveal does). */
+  function initHeroReveal() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const heroInner = $(".nl-hero__inner");
+    if (!heroInner) return;
+    const items = [...Array.from(heroInner.children), $(".search-bar")].filter(Boolean);
+    items.forEach((elm, i) => { elm.classList.add("reveal-item"); elm.style.setProperty("--reveal-i", i); });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      items.forEach((elm) => elm.classList.add("is-revealed"));
+    }));
   }
 
   /* Homepage search bar — overlaid on the hero image. Tabs (For Sale/For
