@@ -152,6 +152,66 @@ strong, b { font-weight: 600; }
 .btn--full { width: 100%; }
 .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 
+/* ---------- Animated gradient border ----------
+   Rebuilt from a client-shared React reference (Aceternity's
+   HoverBorderGradient — Framer Motion + a setInterval cycling four
+   radial-gradient positions around the edge) as a framework-free CSS
+   equivalent, per the "Working with design references" rule in CLAUDE.md:
+   keep the visual feel (a dim light slowly tracing the border, flaring
+   into a brighter highlight on hover), not the literal component/stack.
+
+   Technique: an ::before ring, sized by inset+padding rather than
+   border-width, filled with a conic-gradient that sweeps as --border-angle
+   animates (the @property below is what makes an animated custom property
+   interpolate smoothly instead of snapping). The double-mask/
+   mask-composite:exclude pair punches the ring's own interior out, so only
+   a thin band shows — border-radius:inherit means the same rule works
+   unmodified on a pill button, a rounded card, or a circular avatar photo.
+   Applied to .prop-card / .team-card__photo / .testimonial / .showcase__card
+   and the main CTA buttons — see each usage site for why that one and not
+   every button/card sitewide. */
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.glow-border { position: relative; border-color: transparent; }
+.glow-border::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--border-angle),
+    transparent 0deg, var(--green) 40deg, transparent 100deg,
+    transparent 220deg, var(--green-deep) 280deg, transparent 340deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: .5;
+  pointer-events: none;
+  animation: glow-border-spin 5s linear infinite;
+  transition: opacity .3s ease;
+}
+.glow-border:hover::before, .glow-border:focus-within::before { opacity: 1; animation-duration: 2.2s; }
+@keyframes glow-border-spin { to { --border-angle: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .glow-border::before { animation: none; opacity: .7; } }
+/* Cards that already carry their own flat border + hover border-color
+   (.prop-card, .testimonial, .showcase__card) would otherwise fight the
+   ring for the same visual real estate on hover — the pseudo-element's ring
+   sits just outside the box while the real border sits on it, so both were
+   visible together, a solid green line right next to a rotating gradient
+   one. Keeping border-color transparent through :hover too (beats the
+   plain .prop-card:hover rule on specificity) lets the ring be the only
+   border treatment, at rest and on hover alike. */
+.prop-card.glow-border:hover, .testimonial.glow-border:hover, .showcase__card.glow-border:hover { border-color: transparent; }
+/* #searchSubmit starts disabled (see buildSearchBox() in app.js — enabled
+   once a tab is picked); an animated ring on a button you can't yet click
+   reads as broken, not inviting, so mute it in step with .btn:disabled's
+   existing opacity drop instead of leaving it spinning at full brightness. */
+.glow-border:disabled::before { opacity: .12; animation-play-state: paused; }
+
 /* ---------- Demo banner ---------- */
 .demo-banner {
   background: var(--ink); color: #fff; text-align: center;
@@ -760,7 +820,10 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
 .nl-hero__beam--b { top: -20%; left: 46%; width: 9vw; max-width: 140px; height: 130vh; background: radial-gradient(closest-side, var(--green-deep) 0%, transparent 72%); opacity: .1; transform: rotate(-26deg); }
 @media (min-width: 1024px) { .nl-hero__beam { display: block; } }
 .nl-hero__placeholder { position: relative; z-index: 1; font-family: var(--font-display); font-weight: 600; font-size: .74rem; letter-spacing: .12em; color: rgba(255,255,255,.34); border: 1px solid rgba(255,255,255,.2); padding: 7px 16px; border-radius: 100px; background: rgba(0,0,0,.25); }
-.nl-hero__inner { position: relative; z-index: 2; padding-block: clamp(48px, 8vw, 96px); display: flex; flex-direction: column; align-items: center; }
+/* gap (not per-child margin-top) spaces the badge/headline/subtext evenly —
+   client feedback that the hero read as crowded, wanted equal breathing
+   room between all three rather than the tight ~20px stack it had. */
+.nl-hero__inner { position: relative; z-index: 2; padding-block: clamp(48px, 8vw, 96px); display: flex; flex-direction: column; align-items: center; gap: clamp(28px, 6vw, 64px); }
 /* Badge (replaces a plain text eyebrow on the homepage hero only — other
    pages' section heads keep the standard .eyebrow dash+label treatment,
    this is a hero-specific device) — a white pill with a green tag chip,
@@ -789,9 +852,8 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
 .hero-badge__arrow svg { transition: transform .3s ease; }
 .hero-badge:hover .hero-badge__arrow { background: var(--green-tint); }
 .hero-badge:hover .hero-badge__arrow svg { transform: translateX(3px); }
-.nl-hero__title { max-width: 16ch; margin-top: 20px; font-size: clamp(2.6rem, 7vw, 5.6rem); }
-.nl-hero__line { max-width: 60ch; margin-top: 18px; font-size: clamp(1.05rem, 1.7vw, 1.3rem); color: rgba(255,255,255,.9); }
-.nl-hero__inner .btn { margin-top: 30px; }
+.nl-hero__title { max-width: 16ch; font-size: clamp(2.6rem, 7vw, 5.6rem); }
+.nl-hero__line { max-width: 60ch; font-size: clamp(1.05rem, 1.7vw, 1.3rem); color: rgba(255,255,255,.9); }
 
 /* =========================================================================
    SEARCH BOX (index.html) — the primary "what are you here for" entry

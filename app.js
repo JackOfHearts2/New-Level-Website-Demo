@@ -641,7 +641,7 @@
       const initials = m.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
       const card = el("div", "team-card");
       card.innerHTML = `
-        <div class="team-card__photo${m.placeholder ? " is-ph" : ""}" data-img-key="team:${i}"><span>${m.placeholder ? "Photo" : initials}</span></div>
+        <div class="team-card__photo glow-border${m.placeholder ? " is-ph" : ""}" data-img-key="team:${i}"><span>${m.placeholder ? "Photo" : initials}</span></div>
         <div class="team-card__name">${m.name}</div>
         <div class="team-card__role">${m.role}</div>
         ${m.motto ? `<p class="team-card__motto">“${m.motto}”</p>` : ""}`;
@@ -745,7 +745,7 @@
     grid.innerHTML = "";
     TESTIMONIALS.forEach((tm) => {
       const initials = tm.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-      grid.appendChild(el("figure", "testimonial",
+      grid.appendChild(el("figure", "testimonial glow-border",
         `<div class="testimonial__stars">★★★★★</div>
          <blockquote class="testimonial__text">“${tm.text}”</blockquote>
          <figcaption class="testimonial__by"><span class="testimonial__avatar">${initials}</span>
@@ -759,7 +759,7 @@
      ================================================================ */
   function realPropertyCard(hrefId) {
     const href = hrefId ? `property.html?a=${hrefId}` : "property.html";
-    const card = el("a", "prop-card");
+    const card = el("a", "prop-card glow-border");
     card.href = href;
     card.innerHTML = `
       <div class="prop-card__media"><img data-img-key="photo:00" src="${realPhoto("00")}" alt="1331 NW 87th Street, Miami" loading="lazy"></div>
