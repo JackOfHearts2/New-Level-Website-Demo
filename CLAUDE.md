@@ -166,6 +166,20 @@ These came from the client brief and were corrected several times. Don't "improv
 - Long-form content (property descriptions, reviews, house rules) stays English even when the UI
   is translated.
 
+## Working with design references (21st.dev etc.)
+
+The client periodically pastes a component's full source — a 21st.dev "integrate this React
+component" prompt has come up more than once — as a way to communicate a *visual direction* they
+want, not as literal code to run. **Standing instruction from the client: extract the design
+feel (layering, motion, depth, boldness, composition) and rebuild it with this project's existing
+tokens/markup patterns — never the literal code, exact layout, copy, or stack.** This project
+stays framework-free (see "What this is" above) — that's a locked decision a pasted reference
+doesn't override, even when the reference's own instructions explicitly ask for shadcn/Tailwind/
+TypeScript setup steps. If the literal ask genuinely can't be done as written (e.g. it assumes a
+project structure this one doesn't have), say so plainly and explain what it would actually take —
+don't just silently reinterpret and also don't flatly refuse; see "Homepage hero redesign" below
+for a worked example of this exact pattern end to end.
+
 ## Key subsystems
 
 **Homepage hero redesign** (`.hero-badge`/`.nl-hero__glow` in styles.css, `initHeroReveal()` in
