@@ -214,6 +214,17 @@ project structure this one doesn't have), say so plainly and explain what it wou
 don't just silently reinterpret and also don't flatly refuse; see "Homepage hero redesign" below
 for a worked example of this exact pattern end to end.
 
+**This "extract the feel, don't copy the code" rule applies to the static root site only.**
+Confirmed with the client 2026-08-20: inside `web/` (the Next.js rebuild — see "Migration in
+progress" above), the constraint that forced hand-rebuilding no longer exists, because `web/` is
+already React + Tailwind + shadcn/base-ui — the same stack 21st.dev outputs. For any work inside
+`web/`, use the pasted component's actual code directly (install whatever packages it needs) rather
+than reinterpreting it by hand — that's what the client is paying 21st.dev for and what they now
+expect. What still gets swapped, because these stay locked regardless of stack: brand colors/fonts
+(mostly automatic — `web/app/globals.css` already maps New Level's palette onto the same CSS
+variables shadcn components read, so most pasted components inherit the brand for free) and any
+placeholder copy/stock imagery (real New Level content, same as always).
+
 ## Key subsystems
 
 **Homepage hero redesign** (`.hero-badge`/`.nl-hero__glow` in styles.css, `initHeroReveal()` in
