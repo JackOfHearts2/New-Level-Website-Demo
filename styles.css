@@ -184,15 +184,29 @@ strong, b { font-weight: 600; }
    there's no more direct dependency on the hero image being dark enough. */
 
 /* Floating glass pill while over the (transparent) hero — richer than
-   plain white text with nothing behind it. Scoped to .nav__inner (not
-   .nav-overlay itself) so the pill is inset within the page's centered
-   column rather than edge-to-edge; collapses back to the plain
-   edge-to-edge .nav--solid bar (unchanged) once scrolled past the hero. */
-.nav--overlay .nav__inner {
-  transition: background .3s ease, border-color .3s ease, box-shadow .3s ease, border-radius .3s ease, margin-top .3s ease;
+   plain white text with nothing behind it. Collapses back to the plain
+   edge-to-edge .nav--solid bar (unchanged) once scrolled past the hero.
+
+   The pill background/blur/border live on .nav__right (the actual link
+   cluster), NOT .nav__inner (the full .wrap-width row) — .nav__inner spans
+   the whole centered column edge-to-edge regardless of how its flex-end
+   content is aligned, so painting the pill there stretched a translucent
+   background all the way to the column's own left edge. On desktop that
+   left edge sits well inside .brand-float's footprint (the logo is pinned
+   further left still, flush to the true viewport edge — see .brand-float
+   below), so the pill's left portion rendered UNDER the opaque logo card,
+   poking out from behind/around it. Scoping the pill to .nav__right (which
+   only ever spans its own content's width, right-aligned) means it can
+   never reach further left than the nav links themselves — confirmed by
+   measuring both rects: at 1440px wide there was a genuine 132×74px
+   overlap before this change. */
+.nav--overlay .nav__inner { transition: margin-top .3s ease; }
+.nav--overlay:not(.nav--solid) .nav__inner { margin-top: 16px; }
+.nav--overlay .nav__right {
+  transition: background .3s ease, border-color .3s ease, box-shadow .3s ease, border-radius .3s ease, padding .3s ease;
 }
-.nav--overlay:not(.nav--solid) .nav__inner {
-  margin-top: 16px;
+.nav--overlay:not(.nav--solid) .nav__right {
+  padding: 10px 22px;
   background: rgba(255,255,255,.82);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255,255,255,.6);
@@ -289,13 +303,67 @@ strong, b { font-weight: 600; }
 .contact-float__btn:hover { background: var(--green-deep); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.22); }
 @media (max-width: 640px) { .contact-float { display: none; } }
 
+/* Reserve room for .contact-float on the right — same problem .brand-float
+   caused on the left (see the nav__right comment below and its overlap
+   fix), just on the opposite edge. .contact-float is fixed flush to the
+   TRUE right edge with its own ~14-32px inset (clamp above), for a max
+   rendered width around 243px; .wrap's own right gutter is only
+   clamp(20px,5vw,72px) — far short of that — so nav content, which
+   right-aligns to .wrap's edge, sat partly underneath contact-float at
+   every measured width (a 158px overlap ≤1200px, where nav shows just the
+   language pill; 51px even at 1440px with the full link row visible).
+   Selector reads "a .nav that has an earlier .contact-float sibling" (CSS
+   has no previous-sibling combinator, so it's written from
+   .contact-float's side) — on contact.html, which renders no
+   .contact-float, this simply never matches and nav keeps its normal
+   .wrap gutter. 260px comfortably clears the ~243px max with a visible
+   gap; zeroed out below 640px, where .contact-float itself is display:none
+   and reserving space for it would just crush the mobile nav for nothing. */
+.contact-float ~ .nav .nav__inner { padding-right: 260px; }
+@media (max-width: 640px) { .contact-float ~ .nav .nav__inner { padding-right: var(--gutter); } }
+/* Same reservation, mirrored for .brand-float on the left. Without this,
+   the right-side reservation above alone could still push nav content
+   (flex-end-aligned) leftward into the logo's ~240-252px footprint at
+   viewport widths where .wrap itself is narrow but not yet at the 640px
+   breakpoint — confirmed at 641px specifically: a 16px overlap with the
+   logo appeared only after the right reservation was added, since nav
+   content had nowhere else to go but left. Reserving the left side too
+   means nav content can never render there regardless of how much of the
+   row the right reservation eats into. */
+.brand-float ~ .nav .nav__inner { padding-left: 270px; }
+/* Below 640px .brand-float switches from flush-left to CENTERED
+   (left:50%; transform:translateX(-50%) — see that breakpoint further
+   down), so a flat px reservation like the desktop one above would drift
+   out of sync with the logo as viewport width changes. .nav__right still
+   lives in this same row on mobile (the hamburger button is appended
+   straight into it — see buildMenu() in app.js, "keeps the logo alone and
+   unchallenged on the left", written back when the logo really was
+   always on the left) and holds the language <select>, so without a
+   matching reservation here that select rendered half-hidden behind the
+   now-centered logo card — confirmed at 390px: logo spanned x118-272,
+   language select x235-299, a real ~37px overlap of a live control, not
+   just a cosmetic one. calc(50% + 85px) tracks the same 50%-center point
+   the logo itself uses, with 85px covering half its own widest measured
+   footprint (154px) plus a small gap, so nav content can only ever start
+   to the right of the logo, regardless of exact viewport width. */
+@media (max-width: 640px) { .brand-float ~ .nav .nav__inner { padding-left: calc(50% + 85px); } }
+
 .nav__inner { display: flex; align-items: center; justify-content: flex-end; gap: 16px; min-height: 90px; }
 /* .nav__right is the one allowed to run out of room — min-width:0 lets it
    actually shrink below its content size (flex items don't by default),
    at which point .nav__right-track scrolls horizontally instead of
    pushing on the logo. Tiny arrows (JS-shown only when there's overflow
-   to scroll to) make that discoverable rather than just a hidden scrollbar. */
-.nav__right { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; justify-content: flex-end; }
+   to scroll to) make that discoverable rather than just a hidden scrollbar.
+   flex-grow is 0, not 1: this is the one flex child of .nav__inner, so a
+   grow:1 here expanded the box to the FULL row width regardless of how
+   little content it held — harmless while the box was invisible, but once
+   the overlay state started painting a background directly on this element
+   (see the .nav--overlay:not(.nav--solid) .nav__right pill above) that
+   stretched box is exactly what bled the pill under .brand-float's card on
+   the left. grow:0 + .nav__inner's justify-content:flex-end still pins it
+   flush right; shrink:1 + min-width:0 (unchanged) still let it give way to
+   .nav__right-track's horizontal scroll when the row is genuinely tight. */
+.nav__right { display: flex; align-items: center; gap: 6px; flex: 0 1 auto; min-width: 0; justify-content: flex-end; }
 .nav__right-track { display: flex; align-items: center; gap: 22px; overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
 .nav__right-track::-webkit-scrollbar { display: none; }
 .nav__right-track > * { flex: 0 0 auto; }
@@ -683,6 +751,14 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
 .nl-hero__glow { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
 .nl-hero__glow--a { top: -12%; left: -10%; width: 46vw; height: 46vw; max-width: 560px; max-height: 560px; background: radial-gradient(circle, var(--green) 0%, transparent 70%); opacity: .5; }
 .nl-hero__glow--b { top: 34%; right: -14%; width: 34vw; height: 34vw; max-width: 420px; max-height: 420px; background: radial-gradient(circle, var(--green-deep) 0%, transparent 70%); opacity: .3; }
+/* Extra diagonal "beam" shapes — desktop only, a second subtle depth layer
+   behind the circular glows above. Borrowed from a client-shared design
+   reference (see "Working with design references" in CLAUDE.md); kept to
+   two, very low opacity, so they read as depth, not stripes. */
+.nl-hero__beam { position: absolute; display: none; pointer-events: none; filter: blur(90px); border-radius: 50%; }
+.nl-hero__beam--a { top: -45%; left: 30%; width: 14vw; max-width: 220px; height: 130vh; background: radial-gradient(closest-side, var(--green) 0%, transparent 72%); opacity: .14; transform: rotate(-26deg); }
+.nl-hero__beam--b { top: -20%; left: 46%; width: 9vw; max-width: 140px; height: 130vh; background: radial-gradient(closest-side, var(--green-deep) 0%, transparent 72%); opacity: .1; transform: rotate(-26deg); }
+@media (min-width: 1024px) { .nl-hero__beam { display: block; } }
 .nl-hero__placeholder { position: relative; z-index: 1; font-family: var(--font-display); font-weight: 600; font-size: .74rem; letter-spacing: .12em; color: rgba(255,255,255,.34); border: 1px solid rgba(255,255,255,.2); padding: 7px 16px; border-radius: 100px; background: rgba(0,0,0,.25); }
 .nl-hero__inner { position: relative; z-index: 2; padding-block: clamp(48px, 8vw, 96px); display: flex; flex-direction: column; align-items: center; }
 /* Badge (replaces a plain text eyebrow on the homepage hero only — other
@@ -692,15 +768,27 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
 .hero-badge {
   display: inline-flex; align-items: center; gap: 10px;
   background: var(--true-white); color: var(--ink);
-  padding: 6px 18px 6px 6px; border-radius: 100px;
+  padding: 6px; border-radius: 100px; text-decoration: none; cursor: pointer;
   box-shadow: 0 10px 30px rgba(0,0,0,.22);
+  transition: transform .2s ease, box-shadow .2s ease;
 }
+.hero-badge:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(0,0,0,.28); }
 .hero-badge__chip {
   background: linear-gradient(135deg, var(--green), var(--green-deep));
   color: #fff; font-family: var(--font-display); font-weight: 700; font-size: .7rem;
   letter-spacing: .06em; text-transform: uppercase; padding: 6px 14px; border-radius: 100px;
 }
 .hero-badge__text { font-family: var(--font-display); font-weight: 600; font-size: .92rem; }
+/* Sliding-arrow chip, mirroring the brand chip on the opposite end — a
+   small nudge on hover, echoing the reference component's arrow device. */
+.hero-badge__arrow {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%; background: var(--paper-2); color: var(--ink);
+  overflow: hidden; transition: background .2s ease;
+}
+.hero-badge__arrow svg { transition: transform .3s ease; }
+.hero-badge:hover .hero-badge__arrow { background: var(--green-tint); }
+.hero-badge:hover .hero-badge__arrow svg { transform: translateX(3px); }
 .nl-hero__title { max-width: 16ch; margin-top: 20px; font-size: clamp(2.6rem, 7vw, 5.6rem); }
 .nl-hero__line { max-width: 60ch; margin-top: 18px; font-size: clamp(1.05rem, 1.7vw, 1.3rem); color: rgba(255,255,255,.9); }
 .nl-hero__inner .btn { margin-top: 30px; }
@@ -742,6 +830,50 @@ button.audience-card { font: inherit; text-align: center; width: 100%; -webkit-a
   .search-bar__actions { margin-left: 0; width: 100%; }
   .search-bar__reset, .search-bar__submit { flex: 1 1 auto; }
 }
+#choose { scroll-margin-top: 100px; }
+
+/* Featured-property showcase card — a bold bordered/shadowed image panel
+   with a bottom gradient caption, sitting right under the search bar.
+   Adapted from a client-shared design reference's "app screenshot" panel
+   (see "Working with design references" in CLAUDE.md) into an actual
+   listing teaser rather than a decorative screenshot. */
+.showcase__card { position: relative; display: block; max-width: 1180px; margin-inline: auto; border-radius: var(--radius-lg); overflow: hidden; border: 1.5px solid var(--line); box-shadow: var(--shadow); text-decoration: none; color: #fff; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.showcase__card:hover { transform: translateY(-6px); box-shadow: 0 30px 70px -20px rgba(0,0,0,.35); border-color: var(--green); }
+.showcase__card img { display: block; width: 100%; aspect-ratio: 16 / 7; object-fit: cover; transition: transform .6s ease; background: var(--paper-2); }
+.showcase__card:hover img { transform: scale(1.05); }
+.showcase__overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 10px; padding: clamp(20px, 4vw, 44px); background: linear-gradient(0deg, rgba(0,0,0,.75) 0%, rgba(0,0,0,.18) 55%, transparent 100%); }
+.showcase__eyebrow { font-family: var(--font-display); font-weight: 700; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--green); }
+.showcase__title { display: block; color: #fff; margin: 0; }
+.showcase__cta { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; }
+@media (max-width: 640px) { .showcase__card img { aspect-ratio: 4 / 5; } }
+
+/* Trust stats strip — a row of headline figures with a "Meet our clients"
+   link that fades in over the row on hover (a plain CSS descendant
+   selector off the shared hover target stands in for group-hover — no JS
+   needed). Borrowed from a client-shared design reference's customer-logo
+   strip (see "Working with design references" in CLAUDE.md); this demo has
+   no real client logos to show, so it's adapted into stat placeholders,
+   flagged via the ph-caption line beneath the row — same convention as
+   team photos / the event gallery elsewhere on the site. */
+/* .trust-strip__body (not the .wrap itself) is the hover target and the
+   positioning context — it's ALSO the direct .wrap child that
+   initScrollReveal() auto-tags as a .reveal-item, so .trust-strip__reveal
+   must live one level deeper than the reveal system reaches. Otherwise the
+   global ".reveal.is-revealed .reveal-item { opacity: 1 }" rule (higher
+   specificity than a plain single-class opacity:0 rule) would force this
+   panel to full opacity — and it to stay covering the grid — the instant
+   the section scrolls into view, not just on hover. */
+.trust-strip__body { position: relative; }
+.trust-strip__reveal { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(.94); transition: opacity .35s ease, transform .35s ease; pointer-events: none; }
+.trust-strip__body:hover .trust-strip__reveal { opacity: 1; transform: scale(1); pointer-events: auto; }
+.trust-strip__link { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-weight: 600; font-size: .95rem; color: var(--ink); text-decoration: none; background: var(--paper); padding: 12px 24px; border-radius: 100px; box-shadow: var(--shadow); border: 1.5px solid var(--line); transition: color .15s ease, border-color .15s ease; }
+.trust-strip__link:hover { color: var(--green-deep); border-color: var(--green); }
+.trust-strip__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; max-width: 900px; margin-inline: auto; transition: opacity .35s ease, filter .35s ease; }
+.trust-strip__body:hover .trust-strip__grid { opacity: .35; filter: blur(2px); }
+.trust-stat { text-align: center; }
+.trust-stat__value { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.5rem, 3vw, 2.2rem); color: var(--ink); }
+.trust-stat__label { margin-top: 6px; font-size: .84rem; color: var(--muted); }
+@media (max-width: 640px) { .trust-strip__grid { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; } }
 
 /* "Hosting an event?" — deliberately separate from the search box above,
    not a 4th chip, since it answers a different question. */

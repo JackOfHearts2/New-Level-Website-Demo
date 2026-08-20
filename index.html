@@ -59,15 +59,20 @@
   <!-- 1. HERO -->
   <header class="nl-hero nl-hero--search">
     <div class="nl-hero__bg" data-img-key="brand-hero" aria-hidden="true">
+      <span class="nl-hero__beam nl-hero__beam--a" aria-hidden="true"></span>
+      <span class="nl-hero__beam nl-hero__beam--b" aria-hidden="true"></span>
       <span class="nl-hero__glow nl-hero__glow--a" aria-hidden="true"></span>
       <span class="nl-hero__glow nl-hero__glow--b" aria-hidden="true"></span>
       <span class="nl-hero__placeholder">▶ &nbsp;Brand film / imagery — placeholder</span>
     </div>
     <div class="nl-hero__inner wrap">
-      <div class="hero-badge" id="heroBadge">
+      <a class="hero-badge" id="heroBadge" href="#choose">
         <span class="hero-badge__chip">New Level</span>
         <span class="hero-badge__text" id="heroEyebrow">Real Estate. Redefined.</span>
-      </div>
+        <span class="hero-badge__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
       <h1 class="display nl-hero__title">Spaces for the moments that matter.</h1>
       <p class="nl-hero__line" id="heroLine"></p>
     </div>
@@ -115,6 +120,35 @@
       </div>
     </div>
   </main>
+
+  <!-- 1c. FEATURED PROPERTY SHOWCASE — bold image panel teasing the one
+       real listing, sitting right under the search bar. -->
+  <section class="section" id="showcase">
+    <div class="wrap">
+      <a class="showcase__card" id="showcaseCard" href="property.html" aria-label="View 1331 NW 87th Street, Miami">
+        <img data-img-key="photo:00" id="showcaseImg" alt="1331 NW 87th Street, Miami">
+        <span class="showcase__overlay">
+          <span class="showcase__eyebrow" id="showcaseEyebrow"></span>
+          <span class="showcase__title h-lg" id="showcaseTitle"></span>
+          <span class="btn btn--solid showcase__cta" id="showcaseCta"></span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 1d. TRUST STATS STRIP — hover the row to reveal a link through to
+       testimonials; figures are illustrative placeholders (see ph-caption). -->
+  <section class="section section--alt trust-strip">
+    <div class="wrap" id="trustStripInner">
+      <div class="trust-strip__body">
+        <span class="trust-strip__reveal">
+          <a class="trust-strip__link" id="trustStripLink"></a>
+        </span>
+        <div class="trust-strip__grid" id="trustStatsGrid"></div>
+      </div>
+      <p class="ph-caption" style="text-align:center">Figures shown are illustrative placeholders for this demo.</p>
+    </div>
+  </section>
 
   <!-- 2. ABOUT NEW LEVEL (short) -->
   <section class="section" id="about-nl">
