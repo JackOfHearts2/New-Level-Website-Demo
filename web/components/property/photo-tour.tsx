@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X, Images } from "lucide-react";
-import { GALLERY_STRIP, TOTAL_PROPERTY_PHOTOS } from "@/lib/content";
+import { TOTAL_PROPERTY_PHOTOS } from "@/lib/content";
+import { PhotoGrid } from "@/components/property/photo-grid";
 
 function photoUrl(idx: number) {
   return `/photos/${String(idx).padStart(2, "0")}.jpg`;
@@ -124,26 +125,7 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-4">
-        <div className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {GALLERY_STRIP.map((idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => setLightboxIndex(parseInt(idx, 10))}
-              className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg"
-            >
-              <Image
-                src={photoUrl(parseInt(idx, 10))}
-                alt=""
-                fill
-                sizes="112px"
-                className="object-cover"
-              />
-            </button>
-          ))}
-        </div>
-      </div>
+      <PhotoGrid />
 
       {lightboxIndex !== null && (
         <div

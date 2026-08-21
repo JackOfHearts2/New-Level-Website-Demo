@@ -8,7 +8,12 @@ import { FanReveal } from "@/components/ui/fan-reveal";
 
 export function TeamSection({ team }: { team: typeof TEAM }) {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-24">
+    // min-w-0 overrides the flex-item default of min-width:auto — body is
+    // `flex flex-col` (for sticky-footer layout), so without this, this
+    // section refuses to shrink below the FanReveal row's full unscrolled
+    // content width, forcing horizontal overflow on the whole page instead
+    // of letting FanReveal's own overflow-x-auto clip/scroll it.
+    <section className="mx-auto w-full min-w-0 max-w-7xl px-6 py-24">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
