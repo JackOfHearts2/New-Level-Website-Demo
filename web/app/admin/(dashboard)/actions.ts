@@ -82,11 +82,13 @@ export async function saveContent(
       d: field(formData, `services.${i}.d`, LONG),
     })),
     testimonials: current.testimonials.map((testimonial, i) => ({
+      ...testimonial,
       name: field(formData, `testimonials.${i}.name`, SHORT),
       role: field(formData, `testimonials.${i}.role`, SHORT),
       text: field(formData, `testimonials.${i}.text`, LONG),
     })),
     team: current.team.map((member, i) => ({
+      ...member,
       name: field(formData, `team.${i}.name`, SHORT),
       role: field(formData, `team.${i}.role`, SHORT),
       motto: field(formData, `team.${i}.motto`, MEDIUM),

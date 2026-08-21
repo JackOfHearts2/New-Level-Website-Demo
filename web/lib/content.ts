@@ -275,21 +275,31 @@ export const SERVICES = [
   },
 ];
 
+// `photo` fields below are demo placeholders (stock portraits), not real
+// photos of these people — the client explicitly confirmed 2026-08-21 this
+// is fine for a demo site, since the whole site is marked not-live and every
+// fake number/name is already a flagged placeholder.
 export const TESTIMONIALS = [
   {
     name: "Sandra L.",
     role: "Property Owner",
     text: "None compare to the consistency and communication I've experienced here.",
+    photo:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=533&fit=crop&crop=faces&auto=format",
   },
   {
     name: "Marcus W.",
     role: "Investor",
     text: "New Level made investing in real estate feel straightforward and stress-free.",
+    photo:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&h=533&fit=crop&crop=faces&auto=format",
   },
   {
     name: "David R.",
     role: "Licensed Agent",
     text: "The support, mentorship, and collaborative environment here are unmatched.",
+    photo:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&h=533&fit=crop&crop=faces&auto=format",
   },
 ];
 
@@ -299,24 +309,32 @@ export const TEAM = [
     role: "Founder & Principal Broker",
     motto: "Every detail, followed through.",
     placeholder: false,
+    photo:
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
   },
   {
     name: "Team Member",
     role: "Broker · Partner",
     motto: "Real estate is relationships first.",
     placeholder: true,
+    photo:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
   },
   {
     name: "Team Member",
     role: "Sales Associate",
     motto: "Find the space that fits the moment.",
     placeholder: true,
+    photo:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
   },
   {
     name: "Team Member",
     role: "Property Management",
     motto: "Protect the property, protect the peace of mind.",
     placeholder: true,
+    photo:
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
   },
 ];
 
@@ -446,11 +464,15 @@ export const PROPERTY_CATEGORIES = [
   { id: "investment", label: "Investment", blurb: "Opportunities for portfolio growth." },
 ];
 
+// `photo` fields reuse the real 87th St. property's own photo set as demo
+// placeholder imagery for these "coming soon" listings (client confirmed
+// 2026-08-21 this is fine for a demo — each card is still clearly labeled
+// "Coming soon", it's just not a bare gray box anymore).
 export const OTHER_PROPERTIES = [
-  { title: "Bay Harbor villa", meta: "Sleeps 10 · Waterfront", rate: "from $600 / night", soon: true, categories: ["luxury-short-term", "short-term"] },
-  { title: "Wynwood loft", meta: "Sleeps 6 · Events", rate: "from $900 / day", soon: true, categories: ["events", "short-term"] },
-  { title: "Coral Gables estate", meta: "Sleeps 20 · Retreats", rate: "from $750 / night", soon: true, categories: ["extended-stay", "events", "long-term"] },
-  { title: "Brickell Skyline Residence", meta: "3 BR · Downtown", rate: "Listed at $1.4M", soon: true, categories: ["for-sale", "investment"] },
+  { title: "Bay Harbor villa", meta: "Sleeps 10 · Waterfront", rate: "from $600 / night", soon: true, categories: ["luxury-short-term", "short-term"], photo: "05" },
+  { title: "Wynwood loft", meta: "Sleeps 6 · Events", rate: "from $900 / day", soon: true, categories: ["events", "short-term"], photo: "14" },
+  { title: "Coral Gables estate", meta: "Sleeps 20 · Retreats", rate: "from $750 / night", soon: true, categories: ["extended-stay", "events", "long-term"], photo: "22" },
+  { title: "Brickell Skyline Residence", meta: "3 BR · Downtown", rate: "Listed at $1.4M", soon: true, categories: ["for-sale", "investment"], photo: "30" },
 ];
 
 // Agent contact info and inquiry inbox live in POINT_OF_CONTACT (used

@@ -64,8 +64,17 @@ function RealPropertyCard({ href }: { href: string }) {
 function OtherPropertyCard({ p }: { p: (typeof OTHER_PROPERTIES)[number] }) {
   return (
     <GlowCard className="overflow-hidden p-0">
-      <div className="bg-muted flex aspect-[4/3] items-center justify-center">
-        <span className="text-muted-foreground text-sm">Coming soon</span>
+      <div className="relative aspect-[4/3]">
+        <Image
+          src={`/photos/${p.photo}.jpg`}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover"
+        />
+        <span className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase">
+          Coming soon
+        </span>
       </div>
       <div className="p-4">
         <h3 className="font-heading font-semibold">{p.title}</h3>

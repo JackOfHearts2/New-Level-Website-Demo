@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import type { TEAM } from "@/lib/content";
@@ -31,18 +32,8 @@ export function TeamSection({ team }: { team: typeof TEAM }) {
       <FanReveal className="mt-16 justify-center">
         {team.slice(0, 4).map((member, i) => (
           <GlowCard key={i} className="w-64 shrink-0 p-6 text-center">
-            <div
-              className={cn(
-                "font-heading mx-auto flex size-16 items-center justify-center rounded-full text-xl font-bold",
-                member.placeholder
-                  ? "bg-muted text-muted-foreground"
-                  : "bg-primary text-primary-foreground"
-              )}
-            >
-              {member.name
-                .split(" ")
-                .map((w) => w[0])
-                .join("")}
+            <div className="border-border relative mx-auto size-16 overflow-hidden rounded-full border">
+              <Image src={member.photo} alt="" fill sizes="64px" className="object-cover" />
             </div>
             <h3 className="font-heading mt-4 font-semibold">{member.name}</h3>
             <p className="text-muted-foreground mt-1 text-sm">

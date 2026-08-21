@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Star, MapPin } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
@@ -221,8 +222,17 @@ export default async function PropertyPage({
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {OTHER_PROPERTIES.map((p) => (
             <GlowCard key={p.title} className="overflow-hidden p-0">
-              <div className="bg-muted flex aspect-[4/3] items-center justify-center">
-                <span className="text-muted-foreground text-sm">Coming soon</span>
+              <div className="relative aspect-[4/3]">
+                <Image
+                  src={`/photos/${p.photo}.jpg`}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover"
+                />
+                <span className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase">
+                  Coming soon
+                </span>
               </div>
               <div className="p-4">
                 <h3 className="font-heading font-semibold">{p.title}</h3>

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { Carousel, CarouselItem } from "@/components/ui/carousel";
 import { GlowCard } from "@/components/ui/glow-card";
-import { cn } from "@/lib/utils";
 import { PAGES, TEAM } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -27,18 +27,8 @@ export default function TeamPage() {
           {TEAM.map((member, i) => (
             <CarouselItem key={i}>
               <GlowCard className="h-full p-6 text-center">
-                <div
-                  className={cn(
-                    "font-heading mx-auto flex size-16 items-center justify-center rounded-full text-xl font-bold",
-                    member.placeholder
-                      ? "bg-muted text-muted-foreground"
-                      : "bg-primary text-primary-foreground"
-                  )}
-                >
-                  {member.name
-                    .split(" ")
-                    .map((w) => w[0])
-                    .join("")}
+                <div className="border-border relative mx-auto size-16 overflow-hidden rounded-full border">
+                  <Image src={member.photo} alt="" fill sizes="64px" className="object-cover" />
                 </div>
                 <h3 className="font-heading mt-4 font-semibold">{member.name}</h3>
                 <p className="text-muted-foreground mt-1 text-sm">{member.role}</p>
