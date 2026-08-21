@@ -1,2 +1,10 @@
 [build]
   command = "npm run build"
+
+# Without this, Netlify has no way to understand a Next.js build's output —
+# it just publishes the raw source as static files, so every route 404s.
+# This was silently broken since the site's first deploy (see git history);
+# framework auto-detection apparently didn't attach the plugin on its own
+# for this site, so it's declared explicitly here instead of relied on.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
