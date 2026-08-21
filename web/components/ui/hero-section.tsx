@@ -184,7 +184,7 @@ const HeroHeader = ({
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
             isScrolled &&
-              "bg-background/70 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5"
+              "bg-background/70 max-w-5xl rounded-2xl border backdrop-blur-lg lg:px-5"
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
@@ -228,7 +228,7 @@ const HeroHeader = ({
               </button>
             </div>
 
-            <div className="absolute inset-0 m-auto hidden size-fit lg:block">
+            <div className="hidden lg:flex lg:flex-1 lg:justify-center">
               <NavMenu />
             </div>
 

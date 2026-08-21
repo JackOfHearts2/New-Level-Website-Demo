@@ -24,7 +24,7 @@ export function SiteHeader({
       <nav data-state={menuState ? "active" : undefined} className="fixed z-20 w-full px-2 group">
         {/* Always the "scrolled" glass-pill treatment from the homepage nav —
             there's no hero to be transparent over on these pages. */}
-        <div className="bg-background/70 mx-auto mt-2 max-w-4xl rounded-2xl border px-6 backdrop-blur-lg transition-all duration-300 lg:px-5">
+        <div className="bg-background/70 mx-auto mt-2 max-w-5xl rounded-2xl border px-6 backdrop-blur-lg transition-all duration-300 lg:px-5">
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" aria-label="home" className="flex items-center space-x-2">
@@ -56,7 +56,7 @@ export function SiteHeader({
               </button>
             </div>
 
-            <div className="absolute inset-0 m-auto hidden size-fit lg:block">
+            <div className="hidden lg:flex lg:flex-1 lg:justify-center">
               <NavMenu />
             </div>
 
