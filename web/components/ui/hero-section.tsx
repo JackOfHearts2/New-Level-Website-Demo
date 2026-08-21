@@ -28,11 +28,27 @@ const transitionVariants = {
   },
 };
 
-export function HeroSection() {
+export function HeroSection({
+  logoUrl,
+  heroBgUrl,
+}: {
+  logoUrl: string;
+  heroBgUrl: string | null;
+}) {
   return (
     <>
-      <HeroHeader />
+      <HeroHeader logoUrl={logoUrl} />
       <main className="overflow-hidden">
+        {heroBgUrl && (
+          // Optional admin-uploaded photo, layered under the existing glow —
+          // absent by default, so the hero renders identically to before
+          // until someone actually uploads one via /admin/images.
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 size-full bg-cover bg-center opacity-25"
+            style={{ backgroundImage: `url(${heroBgUrl})` }}
+          />
+        )}
         {/* Decorative depth layer — the original reference used a stock night-sky
             photo here; swapped for a brand-green glow (same AnimatedGroup
             mechanism/timing, New Level content instead of stock imagery). */}
@@ -144,7 +160,7 @@ const menuItems = [
   { name: "Contact", href: "/contact" },
 ];
 
-const HeroHeader = () => {
+const HeroHeader = ({ logoUrl }: { logoUrl: string }) => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
 
@@ -175,14 +191,20 @@ const HeroHeader = () => {
                 aria-label="home"
                 className="flex items-center space-x-2"
               >
-                <Image
-                  src="/logo.png"
-                  alt="New Level"
-                  width={160}
-                  height={53}
-                  priority
-                  className="h-9 w-auto"
-                />
+                <div className="relative h-9 w-40">
+                  {/* fill + object-contain instead of fixed width/height —
+                      an admin-uploaded logo isn't guaranteed to match the
+                      original asset's aspect ratio, and fixed dimensions
+                      would stretch it. */}
+                  <Image
+                    src={logoUrl}
+                    alt="New Level"
+                    fill
+                    sizes="160px"
+                    priority
+                    className="object-contain object-left"
+                  />
+                </div>
               </Link>
 
               <button

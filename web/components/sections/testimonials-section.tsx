@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { TESTIMONIALS } from "@/lib/content";
+import type { TESTIMONIALS } from "@/lib/content";
 
-export function TestimonialsSection() {
+export function TestimonialsSection({
+  testimonials,
+}: {
+  testimonials: typeof TESTIMONIALS;
+}) {
   return (
     <section className="bg-muted/50 py-24">
       <div className="mx-auto max-w-7xl px-6">
@@ -17,7 +21,7 @@ export function TestimonialsSection() {
         </div>
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
-          {TESTIMONIALS.map((t) => (
+          {testimonials.map((t) => (
             <figure
               key={t.name}
               className="bg-background border-border flex flex-col rounded-2xl border p-6 shadow-sm"

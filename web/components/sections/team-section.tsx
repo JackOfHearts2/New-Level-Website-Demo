@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { TEAM } from "@/lib/content";
+import type { TEAM } from "@/lib/content";
 
-export function TeamSection() {
+export function TeamSection({ team }: { team: typeof TEAM }) {
   return (
     <section className="mx-auto max-w-7xl px-6 py-24">
       <div className="flex flex-wrap items-end justify-between gap-6">
@@ -27,7 +27,7 @@ export function TeamSection() {
       </div>
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {TEAM.map((member) => (
+        {team.map((member) => (
           <div
             key={member.name}
             className="border-border rounded-2xl border p-6 text-center shadow-sm"

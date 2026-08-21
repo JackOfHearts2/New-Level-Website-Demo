@@ -1,25 +1,36 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FOOTER_NAV, NLG_BRAND, SOCIALS } from "@/lib/content";
+import { FOOTER_NAV, NLG_BRAND } from "@/lib/content";
+import type { SOCIALS } from "@/lib/content";
 
-export function SiteFooter() {
+export function SiteFooter({
+  tagline,
+  socials,
+  logoUrl,
+}: {
+  tagline: string;
+  socials: typeof SOCIALS;
+  logoUrl: string;
+}) {
   return (
     <footer className="border-border bg-muted/30 border-t">
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2fr]">
           <div>
-            <Image
-              src="/logo.png"
-              alt="New Level"
-              width={160}
-              height={53}
-              className="h-9 w-auto"
-            />
+            <div className="relative h-9 w-40">
+              <Image
+                src={logoUrl}
+                alt="New Level"
+                fill
+                sizes="160px"
+                className="object-contain object-left"
+              />
+            </div>
             <p className="text-muted-foreground mt-4 max-w-xs text-sm">
-              {NLG_BRAND.tagline} — a South Florida real estate group.
+              {tagline} — a South Florida real estate group.
             </p>
             <div className="mt-6 flex gap-3">
-              {SOCIALS.map((s) => (
+              {socials.map((s) => (
                 <a
                   key={s.name}
                   href={s.href}

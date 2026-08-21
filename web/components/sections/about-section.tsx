@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { NLG_BRAND, TRUST_STATS } from "@/lib/content";
+import type { TRUST_STATS } from "@/lib/content";
 
-export function AboutSection() {
+export function AboutSection({
+  aboutShort,
+  trustStats,
+}: {
+  aboutShort: string;
+  trustStats: typeof TRUST_STATS;
+}) {
   return (
     <section className="mx-auto max-w-7xl px-6 py-24">
       <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
@@ -15,7 +21,7 @@ export function AboutSection() {
             Real estate, redefined at every level.
           </h2>
           <p className="text-muted-foreground mt-6 max-w-lg text-lg text-balance">
-            {NLG_BRAND.aboutShort}
+            {aboutShort}
           </p>
           <Link
             href="/about"
@@ -29,7 +35,7 @@ export function AboutSection() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {TRUST_STATS.map((stat) => (
+          {trustStats.map((stat) => (
             <div
               key={stat.label}
               className="border-border rounded-2xl border p-6 shadow-sm"

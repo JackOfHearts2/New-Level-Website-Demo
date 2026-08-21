@@ -1,7 +1,11 @@
 import Link from "next/link";
-import { SERVICES } from "@/lib/content";
+import type { SERVICES } from "@/lib/content";
 
-export function ServicesSection() {
+export function ServicesSection({
+  services,
+}: {
+  services: typeof SERVICES;
+}) {
   return (
     <section className="bg-muted/50 py-24">
       <div className="mx-auto max-w-7xl px-6">
@@ -19,7 +23,7 @@ export function ServicesSection() {
         </div>
 
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map((service) => (
+          {services.map((service) => (
             <Link
               key={service.id}
               href={`/services#${service.id}`}
