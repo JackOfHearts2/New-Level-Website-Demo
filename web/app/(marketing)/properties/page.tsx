@@ -1,0 +1,182 @@
+import Link from "next/link";
+import Image from "next/image";
+import type { Metadata } from "next";
+import { PageHero } from "@/components/page-hero";
+import { CrossNav } from "@/components/cross-nav";
+import {
+  PROPERTY_CATEGORIES,
+  OTHER_PROPERTIES,
+  PROPERTY,
+  AUDIENCES,
+  AUDIENCE_ORDER,
+} from "@/lib/content";
+
+export const metadata: Metadata = {
+  title: "Properties · New Level",
+};
+
+type ListingDescriptor =
+  | { kind: "real"; href: string }
+  | { kind: "other"; data: (typeof OTHER_PROPERTIES)[number] };
+
+function listingsForCategory(categoryId: string): ListingDescriptor[] {
+  const items: ListingDescriptor[] = [];
+  if (PROPERTY.categories.includes(categoryId)) {
+    items.push({ kind: "real", href: "/property" });
+  }
+  OTHER_PROPERTIES.filter((p) => p.categories.includes(categoryId)).forEach((data) => {
+    items.push({ kind: "other", data });
+  });
+  return items;
+}
+
+function matchesKeyword(item: ListingDescriptor, q: string) {
+  const text =
+    item.kind === "real"
+      ? `${PROPERTY.siteName} ${PROPERTY.address}`
+      : `${item.data.title} ${item.data.meta}`;
+  return text.toLowerCase().includes(q.toLowerCase());
+}
+
+function RealPropertyCard({ href }: { href: string }) {
+  return (
+    <Link
+      href={href}
+      className="border-border hover:border-primary/50 group block overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1"
+    >
+      <div className="relative aspect-[4/3]">
+        <Image
+          src="/photos/00.jpg"
+          alt={PROPERTY.siteName}
+          fill
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      <div className="p-4">
+        <h3 className="font-heading font-semibold">{PROPERTY.siteName}</h3>
+        <p className="text-muted-foreground text-sm">{PROPERTY.address}</p>
+      </div>
+    </Link>
+  );
+}
+
+function OtherPropertyCard({ p }: { p: (typeof OTHER_PROPERTIES)[number] }) {
+  return (
+    <div className="border-border overflow-hidden rounded-2xl border shadow-sm">
+      <div className="bg-muted flex aspect-[4/3] items-center justify-center">
+        <span className="text-muted-foreground text-sm">Coming soon</span>
+      </div>
+      <div className="p-4">
+        <h3 className="font-heading font-semibold">{p.title}</h3>
+        <p className="text-muted-foreground text-sm">{p.meta}</p>
+        <p className="text-muted-foreground mt-1 text-xs">{p.rate}</p>
+      </div>
+    </div>
+  );
+}
+
+function ListingCard({ item }: { item: ListingDescriptor }) {
+  return item.kind === "real" ? (
+    <RealPropertyCard href={item.href} />
+  ) : (
+    <OtherPropertyCard p={item.data} />
+  );
+}
+
+export default async function PropertiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; q?: string; a?: string }>;
+}) {
+  const { category, q, a } = await searchParams;
+
+  // ?a=<audienceId> — purpose-filtered single-listing view
+  if (a && (AUDIENCE_ORDER as readonly string[]).includes(a)) {
+    const audience = AUDIENCES[a as (typeof AUDIENCE_ORDER)[number]];
+    return (
+      <>
+        <PageHero
+          eyebrow="Properties"
+          heading={audience.cardLabel}
+          sub={`Showing the property that fits: ${audience.cardMeta}`}
+        />
+        <section className="mx-auto max-w-7xl px-6 pb-24">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <RealPropertyCard href={`/property?a=${a}`} />
+          </div>
+        </section>
+        <CrossNav current="properties" />
+      </>
+    );
+  }
+
+  // ?category=<id>[&q=<keyword>] — single filtered grid
+  if (category) {
+    const cat = PROPERTY_CATEGORIES.find((c) => c.id === category);
+    const all = cat ? listingsForCategory(cat.id) : [];
+    const filtered = q ? all.filter((item) => matchesKeyword(item, q)) : all;
+    const showingFallback = !!q && filtered.length === 0 && all.length > 0;
+    const results = showingFallback ? all : filtered;
+
+    return (
+      <>
+        <PageHero
+          eyebrow="Properties"
+          heading={cat?.label ?? "Properties"}
+          sub={cat?.blurb}
+        />
+        <section className="mx-auto max-w-7xl px-6 pb-24">
+          {showingFallback && (
+            <p className="text-muted-foreground mb-6 text-sm">
+              No exact matches for &ldquo;{q}&rdquo; — showing all {cat?.label} listings instead.
+            </p>
+          )}
+          {results.length > 0 ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {results.map((item, i) => (
+                <ListingCard key={i} item={item} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-center">
+              No listings in this category yet.
+            </p>
+          )}
+        </section>
+        <CrossNav current="properties" />
+      </>
+    );
+  }
+
+  // Default — every category with at least one matching listing
+  return (
+    <>
+      <PageHero
+        eyebrow="Properties"
+        heading="Explore the New Level portfolio."
+        sub="Categorized by how you're planning to use the space."
+      />
+      <section className="mx-auto max-w-7xl space-y-16 px-6 pb-24">
+        {PROPERTY_CATEGORIES.map((cat) => {
+          const items = listingsForCategory(cat.id);
+          if (items.length === 0) return null;
+          return (
+            <div key={cat.id}>
+              <div className="flex items-baseline justify-between gap-4">
+                <h2 className="font-heading text-2xl font-bold">{cat.label}</h2>
+                <span className="text-muted-foreground text-sm">{cat.blurb}</span>
+              </div>
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {items.map((item, i) => (
+                  <ListingCard key={i} item={item} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </section>
+      <CrossNav current="properties" />
+    </>
+  );
+}

@@ -421,3 +421,353 @@ export const FOOTER_NAV = [
     ],
   },
 ];
+
+// =============================================================================
+// Properties + the property detail page — ported verbatim from ../content.js.
+// =============================================================================
+
+export const PROPERTY_CATEGORIES = [
+  { id: "luxury-short-term", label: "Luxury Short-Term Rentals", blurb: "High-end stays for discerning guests." },
+  { id: "short-term", label: "Short-Term Rentals", blurb: "Flexible stays, days to a few weeks." },
+  { id: "long-term", label: "Long-Term Rentals", blurb: "Month-to-month and annual leases." },
+  { id: "extended-stay", label: "Extended Stays", blurb: "Weeks to months, fully furnished." },
+  { id: "events", label: "Private Events", blurb: "Venues set up to host, not just sleep." },
+  { id: "for-sale", label: "For Sale", blurb: "Properties available for purchase." },
+  { id: "investment", label: "Investment", blurb: "Opportunities for portfolio growth." },
+];
+
+export const OTHER_PROPERTIES = [
+  { title: "Bay Harbor villa", meta: "Sleeps 10 · Waterfront", rate: "from $600 / night", soon: true, categories: ["luxury-short-term", "short-term"] },
+  { title: "Wynwood loft", meta: "Sleeps 6 · Events", rate: "from $900 / day", soon: true, categories: ["events", "short-term"] },
+  { title: "Coral Gables estate", meta: "Sleeps 20 · Retreats", rate: "from $750 / night", soon: true, categories: ["extended-stay", "events", "long-term"] },
+  { title: "Brickell Skyline Residence", meta: "3 BR · Downtown", rate: "Listed at $1.4M", soon: true, categories: ["for-sale", "investment"] },
+];
+
+export const PROPERTY = {
+  address: "1331 NW 87th Street, Miami, FL",
+  city: "Miami-Dade (outside Miami Beach)",
+  siteName: "New Level Executive House",
+  parentName: "New Level Associates",
+  parentUrl: "https://newlevelassociates.com",
+  agent: {
+    name: "Shelley Lozier",
+    role: "Point of Contact · New Level",
+    phone: "+1 (305) 000-0000",
+    whatsapp: "13050000000",
+    initials: "SL",
+  },
+  // Placeholder demo inbox in the source data itself — swap for the real
+  // team inbox before this goes live.
+  inquiryEmail: "jackbruncoquillon@gmail.com",
+  categories: ["luxury-short-term", "short-term", "events", "extended-stay"],
+};
+
+export const AUDIENCE_ORDER = ["corporate", "family", "events", "ministry", "extended"] as const;
+
+export const AUDIENCE_PHOTOS: Record<(typeof AUDIENCE_ORDER)[number], { hero: string; overview: string }> = {
+  corporate: { hero: "06", overview: "03" },
+  family: { hero: "00", overview: "09" },
+  events: { hero: "11", overview: "09" },
+  ministry: { hero: "12", overview: "16" },
+  extended: { hero: "02", overview: "34" },
+};
+
+export const AUDIENCES = {
+  corporate: {
+    id: "corporate",
+    navLabel: "Corporate Retreats",
+    cardLabel: "Corporate Retreats & Business Meetings",
+    cardMeta: "Offsites · strategy sessions",
+    headline: "A private base for the work that moves the company forward.",
+    heroSub: "Host the offsite, the board session, or the leadership reset in a full residence built for focus — not a hotel conference floor.",
+    rate: 1850,
+    overview: "Executive House gives your team a single private setting for multi-day work: room to break out, room to reconvene, and space to actually think between sessions. Fast connectivity, defined work zones, and full-house privacy mean the day runs on your agenda, not a venue's timetable.",
+    facts: [
+      { k: "Sleeps", v: "Up to 16" },
+      { k: "Work zones", v: "3 breakout areas" },
+      { k: "Connectivity", v: "Business fiber" },
+      { k: "Ideal length", v: "2–5 nights" },
+    ],
+    included: [
+      { t: "Dedicated work zones", d: "Boardroom-style table plus two breakout areas for parallel sessions." },
+      { t: "Business-grade Wi-Fi", d: "Fiber connection sized for full-team video calls at once." },
+      { t: "Presentation display", d: "Large screen with HDMI / wireless casting for decks and demos." },
+      { t: "Catering-ready kitchen", d: "Full kitchen and prep space for on-site catering or a private chef." },
+      { t: "Quiet call corners", d: "Separate rooms for 1:1s and calls away from the main group." },
+      { t: "On-site parking", d: "Private parking for the team — no garage runs mid-day." },
+    ],
+    steps: [
+      { t: "Pick your dates", d: "Choose the range on the calendar. Availability shown is illustrative for this demo." },
+      { t: "See the quote", d: "Total updates live with a full tax breakdown — nothing hidden." },
+      { t: "Send the inquiry", d: "Your dates, group size and quote come attached automatically." },
+      { t: "We confirm", d: "We follow up to confirm availability and finalize the retreat details." },
+    ],
+    faqs: [
+      { q: "Can we run multi-day sessions with breakouts?", a: "Yes — the house is set up for a main working space plus separate breakout areas, so parallel groups don't compete for the same room." },
+      { q: "Is the Wi-Fi sufficient for a full team on video?", a: "The property runs on a business-grade fiber connection intended to carry simultaneous video calls. Exact throughput can be confirmed for your group size." },
+      { q: "Can we bring in catering or a private chef?", a: "Absolutely. The kitchen and prep areas are catering-ready, and we can point you to vetted local options on request." },
+      { q: "Is this a booking or an inquiry?", a: "An inquiry. Submitting sends us your details so we can confirm availability and pricing — no payment is collected and nothing is auto-confirmed." },
+    ],
+  },
+  family: {
+    id: "family",
+    navLabel: "Family Gatherings",
+    cardLabel: "Family Gatherings",
+    cardMeta: "Reunions · holidays",
+    headline: "Room for the whole family under one roof, finally.",
+    heroSub: "Reunions, holidays, and milestone weekends where everyone stays together instead of scattering across three hotels.",
+    rate: 1450,
+    overview: "When the whole family comes together, the house matters. Executive House keeps everyone in one place — shared meals, open common space, and enough bedrooms that no one draws the short straw. Kids have room to play, grandparents have quiet corners, and the kitchen is big enough to actually cook in.",
+    facts: [
+      { k: "Sleeps", v: "Up to 16" },
+      { k: "Bedrooms", v: "Multiple suites" },
+      { k: "Kitchen", v: "Full chef's kitchen" },
+      { k: "Outdoor", v: "Pool & patio" },
+    ],
+    included: [
+      { t: "Space for everyone", d: "Multiple bedrooms and suites so the whole family stays under one roof." },
+      { t: "Chef's kitchen", d: "Room to cook big shared meals together, not just reheat." },
+      { t: "Open common areas", d: "Large living and dining space designed for the group to gather." },
+      { t: "Pool & patio", d: "Outdoor space for the afternoon and slow evenings together." },
+      { t: "Family-friendly layout", d: "Quiet corners for grandparents, open room for the kids." },
+      { t: "Parking for the crew", d: "On-site parking for multiple vehicles arriving together." },
+    ],
+    steps: [
+      { t: "Pick your dates", d: "Choose the weekend or week on the calendar. Availability is illustrative in this demo." },
+      { t: "See the quote", d: "The total updates live, with every tax line shown plainly." },
+      { t: "Send the inquiry", d: "Your dates and group size are attached automatically." },
+      { t: "We confirm", d: "We follow up to confirm availability and help plan the stay." },
+    ],
+    faqs: [
+      { q: "How many people can actually stay comfortably?", a: "The layout is built to keep a large family group together comfortably. Share your group size in the inquiry and we'll confirm the fit for your dates." },
+      { q: "Is it suitable for kids and grandparents together?", a: "Yes — there's open common space for the group plus quieter rooms, so different generations each have their own space." },
+      { q: "Can we cook for a big group?", a: "The full chef's kitchen is designed for real cooking, not just reheating, so shared family meals work well here." },
+      { q: "Is this a confirmed booking?", a: "No — it's an inquiry. We follow up to confirm availability. No payment is collected in this step." },
+    ],
+  },
+  events: {
+    id: "events",
+    navLabel: "Private Events",
+    cardLabel: "Private Events",
+    cardMeta: "Celebrations · milestones",
+    headline: "A private setting for the moments worth gathering for.",
+    heroSub: "Milestone celebrations, intimate receptions, and private dinners in a residence that feels designed for the occasion.",
+    rate: 2200,
+    overview: "Some occasions deserve more than a banquet room. Executive House offers a private, full-property setting for celebrations — open indoor-outdoor flow, room to host, and the discretion of a residence rather than a rented hall. You set the guest list and the tone; the house holds it.",
+    facts: [
+      { k: "Event capacity", v: "By arrangement" },
+      { k: "Flow", v: "Indoor / outdoor" },
+      { k: "Catering", v: "Full prep kitchen" },
+      { k: "Setting", v: "Full private home" },
+    ],
+    included: [
+      { t: "Indoor-outdoor flow", d: "Open living space that connects to the patio and pool for hosting." },
+      { t: "Catering-ready kitchen", d: "Full prep space for caterers or a private chef to work from." },
+      { t: "Private setting", d: "The discretion of a full residence rather than a public venue." },
+      { t: "Room to host", d: "Generous common areas that hold a gathering without feeling packed." },
+      { t: "Evening ambiance", d: "Patio and pool space that carries a celebration into the night." },
+      { t: "On-site parking", d: "Parking for guests arriving to the property." },
+    ],
+    steps: [
+      { t: "Pick your dates", d: "Choose your event date on the calendar. Availability is illustrative in this demo." },
+      { t: "See the quote", d: "The estimate updates live, with a full tax breakdown." },
+      { t: "Send the inquiry", d: "Tell us your guest count — your date and quote attach automatically." },
+      { t: "We confirm", d: "We follow up to confirm availability and talk through event details." },
+    ],
+    faqs: [
+      { q: "What kind of events suit the property?", a: "Intimate celebrations, milestone gatherings, private dinners and receptions. Share what you're planning in the inquiry and we'll confirm fit." },
+      { q: "Is there a guest capacity for events?", a: "Event capacity is handled case by case depending on the format. Tell us your expected guest count and we'll advise for your dates." },
+      { q: "Can we bring our own caterer and vendors?", a: "Yes — the kitchen is set up as a prep base for caterers, and you're welcome to bring your own vendors." },
+      { q: "Does submitting confirm the event date?", a: "No — it's an inquiry. We follow up to confirm availability and details. No payment is collected here." },
+    ],
+  },
+  ministry: {
+    id: "ministry",
+    navLabel: "Church & Ministry",
+    cardLabel: "Church & Ministry Retreats",
+    cardMeta: "Retreats · gatherings",
+    headline: "A quiet place set apart for your community to gather.",
+    heroSub: "Leadership retreats, ministry planning, and small-group gatherings in a calm, private residence away from the everyday.",
+    rate: 1500,
+    overview: "Executive House offers ministry groups a private, unhurried setting to gather, plan, and rest. Room to meet as a whole group and space to break into smaller circles; a full kitchen for shared meals; and the quiet of a residence rather than a conference center. A welcoming space for retreats across traditions.",
+    facts: [
+      { k: "Sleeps", v: "Up to 16" },
+      { k: "Gathering", v: "Full-group room" },
+      { k: "Meals", v: "Shared kitchen" },
+      { k: "Setting", v: "Quiet & private" },
+    ],
+    included: [
+      { t: "Room to gather", d: "A common space large enough for the whole group to meet together." },
+      { t: "Breakout circles", d: "Smaller rooms for prayer, discussion, or small-group time." },
+      { t: "Shared meals", d: "Full kitchen and dining space for cooking and eating together." },
+      { t: "Quiet & privacy", d: "A calm, private residence set apart from the everyday." },
+      { t: "Overnight space", d: "Room for the group to stay together across a multi-day retreat." },
+      { t: "On-site parking", d: "Parking for the group arriving together." },
+    ],
+    steps: [
+      { t: "Pick your dates", d: "Choose the retreat dates on the calendar. Availability is illustrative in this demo." },
+      { t: "See the quote", d: "The total updates live, with every tax line shown plainly." },
+      { t: "Send the inquiry", d: "Your dates and group size are attached automatically." },
+      { t: "We confirm", d: "We follow up to confirm availability and help with the details." },
+    ],
+    faqs: [
+      { q: "Is the space suitable for a whole-group gathering?", a: "Yes — there's a common area for the full group to meet, plus smaller rooms for breakout circles and quieter time." },
+      { q: "Can the group stay overnight together?", a: "The house is set up for a group to stay together across a multi-day retreat. Share your numbers and we'll confirm the fit." },
+      { q: "Can we prepare meals together?", a: "The full kitchen and dining space are made for shared meals — cooking and eating together as a group works well here." },
+      { q: "Is this a booking?", a: "No — it's an inquiry. We follow up to confirm availability for your retreat. No payment is collected in this step." },
+    ],
+  },
+  extended: {
+    id: "extended",
+    navLabel: "Extended Stays",
+    cardLabel: "Extended & Vacation Stays",
+    cardMeta: "Long stays · relocations",
+    headline: "Settle in for the season, not just the weekend.",
+    heroSub: "Extended vacations, seasonal stays, and relocations where you want the comfort of a full home, ready to live in from day one.",
+    rate: 1250,
+    overview: "For longer stays, a hotel wears thin fast. Executive House lives like a home from the first night — a full kitchen, real living space, and room to settle into a routine. Whether you're between homes, working remotely for a stretch, or spending the season in Miami, it's set up for weeks, not just nights.",
+    facts: [
+      { k: "Min. stay", v: "Weekly+" },
+      { k: "Kitchen", v: "Full & equipped" },
+      { k: "Workspace", v: "Remote-ready" },
+      { k: "Rates", v: "Long-stay pricing" },
+    ],
+    included: [
+      { t: "Move-in ready", d: "A fully equipped home you can live in from the first night." },
+      { t: "Full kitchen", d: "Everything you need to cook and eat in through a long stay." },
+      { t: "Remote-work ready", d: "Reliable connectivity and space to work from home comfortably." },
+      { t: "Real living space", d: "Room to settle into a routine, not just pass through." },
+      { t: "Pool & outdoor", d: "Private outdoor space for the everyday, not just the visit." },
+      { t: "Long-stay pricing", d: "Rates structured for weekly and monthly stays (placeholder in this demo)." },
+    ],
+    steps: [
+      { t: "Pick your dates", d: "Choose your stay length on the calendar. Availability is illustrative in this demo." },
+      { t: "See the quote", d: "The total updates live, with the full tax breakdown shown." },
+      { t: "Send the inquiry", d: "Your dates and details are attached automatically." },
+      { t: "We confirm", d: "We follow up to confirm availability and long-stay terms." },
+    ],
+    faqs: [
+      { q: "What counts as an extended stay?", a: "Weekly and longer stays. Share your intended length in the inquiry and we'll confirm availability and the right rate structure." },
+      { q: "Is it set up for remote work?", a: "Yes — there's reliable connectivity and dedicated space to work from home comfortably over a longer stay." },
+      { q: "Are long-stay rates different?", a: "Long stays are priced differently from nightly bookings. Note that all pricing in this demo is placeholder and not final." },
+      { q: "Is this a confirmed booking?", a: "No — it's an inquiry. We follow up to confirm availability and terms. No payment is collected in this step." },
+    ],
+  },
+} satisfies Record<(typeof AUDIENCE_ORDER)[number], unknown>;
+
+export const HIGHLIGHTS = [
+  "Full private residence — the whole house is yours, not a shared venue",
+  "Sleeps up to 16 across multiple bedrooms",
+  "Chef's kitchen plus an entertainer's bar",
+  "Pool, patio and mature tropical grounds",
+  "Gated frontage with on-site parking",
+  "Works for a single-day event or a multi-night stay",
+];
+
+export const RATE_TIERS = {
+  event: { id: "event", label: "Single day / night rental", base: 1000, blurb: "Flat rate for the day/night when you provide your own services." },
+  stay: { id: "stay", label: "Multi-night stay", perNight: 500, blurb: "Per night, plus taxes. Clean nights × rate." },
+};
+
+export const EVENT_MIN_HOURS = 24;
+export const EVENT_DEFAULT_CHECKIN_MIN = 15 * 60; // 3:00 PM
+export const EVENT_DEFAULT_CHECKOUT_MIN = 15 * 60; // 3:00 PM
+
+export const EVENT_ADDONS = [
+  { id: "catering", label: "Catering", desc: "Food & beverage service", price: 850 },
+  { id: "dj", label: "Entertainment / DJ", desc: "DJ or live entertainment", price: 650 },
+  { id: "sound", label: "Sound system", desc: "PA / speakers / mics", price: 400 },
+  { id: "content", label: "Content creation", desc: "Photography / videography", price: 550 },
+];
+
+export const EVENT_PACKAGES = [
+  { id: "self", label: "Self-Provided", price: 0, tagline: "You bring your own services", includes: [] as string[] },
+  { id: "essentials", label: "Essentials", price: 900, tagline: "The basics, handled", includes: ["sound", "catering"] },
+  { id: "signature", label: "Signature", price: 1800, tagline: "Our most popular package", popular: true, includes: ["catering", "dj", "sound"] },
+  { id: "allInclusive", label: "All-Inclusive", price: 2400, tagline: "Every service, fully handled", includes: ["catering", "dj", "sound", "content"] },
+];
+
+export const EVENT_TYPES = [
+  "Birthday",
+  "Baby Shower",
+  "Wedding / Anniversary",
+  "Graduation",
+  "Religious Retreat / Gathering",
+  "Corporate Celebration",
+  "Other Private Event",
+];
+
+export const TAX = {
+  lines: [
+    { key: "fl_sales", label: "Florida sales tax", rate: 0.06 },
+    { key: "surtax", label: "Miami-Dade discretionary surtax", rate: 0.01 },
+    { key: "tdt", label: "Miami-Dade Tourist Development Tax", rate: 0.06 },
+  ],
+  baselineRate: 0.13,
+  cdt: { label: "Convention Development Tax (unresolved)", rate: 0.03 },
+};
+
+export const SECURITY_DEPOSIT = {
+  amount: 500,
+  appliesTo: "event",
+  blurb: "A refundable hold placed before your event date and released after check-out — not a charge today. Applies to event rentals only.",
+};
+
+export const FEES_POLICIES = {
+  included: [
+    "The full private residence for your dates",
+    "Wi-Fi and utilities",
+    "On-site parking",
+    "Starter linens & essentials",
+  ],
+  extra: [
+    { t: "Refundable security deposit", v: "$500 · event rentals only" },
+    { t: "Cleaning fee", v: "$150" },
+    { t: "Event package (if New Level provides services)", v: "$900–$2,400" },
+    { t: "Lodging taxes", v: "13% (shown in quote)" },
+  ],
+  houseRules: [
+    { t: "Occupancy", d: "The home is rented for the group size agreed in your inquiry. Additional overnight guests aren't permitted without prior written approval." },
+    { t: "Smoking & vaping", d: "Not permitted indoors anywhere. A designated outdoor area can be arranged on request." },
+    { t: "Events & noise", d: "Amplified music must respect neighborhood quiet hours — after 10:00 PM on weekdays and 11:00 PM on weekends. Keep doors and windows closed during amplified sound." },
+    { t: "Parking", d: "Use the driveway and on-site spaces first and keep neighbors' frontage and driveways clear. Overflow or valet parking can be arranged for larger events." },
+    { t: "Pool & outdoor areas", d: "No lifeguard on duty — children must be supervised at all times, and glassware is discouraged poolside." },
+    { t: "Pets", d: "By prior arrangement only. Service animals are always welcome." },
+    { t: "Care of the home", d: "Please treat furnishings and finishes with care. Damage beyond normal wear may be applied to the security deposit." },
+    { t: "Prohibited", d: "No illegal substances, no firearms, and no unpermitted commercial activity on the property." },
+    { t: "Check-in & check-out", d: "Access runs only within your confirmed window; late departures may incur an additional charge." },
+  ],
+  rulesNote: "House rules shown here are typical examples for this kind of property — the final set is confirmed with your New Level contact before any booking.",
+  cancellation: "Cancellation terms are being finalized — placeholder for this demo. Inquiries are not bookings; nothing is charged until terms are agreed in writing.",
+};
+
+export const NEIGHBORHOOD = {
+  blurb: "The home sits in a quiet Miami-Dade residential pocket with quick access to the airport, highways and the city — easy for guests arriving from anywhere.",
+  mapQuery: "1331 NW 87th St, Miami, FL 33147",
+  nearby: {
+    corporate: ["Meeting / coworking space", "Business dining & catering", "Airport ~15 min", "Hotels for overflow staff"],
+    family: ["Parks & kid-friendly spots", "Family dining", "Grocery & pharmacy", "Beaches ~25 min"],
+    events: ["Event rentals & vendors", "Florists & catering", "Guest & overflow parking", "Nearby hotels for guests"],
+    ministry: ["Overflow lodging for groups", "Group-friendly dining", "Ample parking", "Quiet green space"],
+    extended: ["Groceries & everyday errands", "Coffee & coworking", "Gym & pharmacy", "Transit & highways"],
+  } as Record<(typeof AUDIENCE_ORDER)[number], string[]>,
+};
+
+export const REVIEWS = {
+  rating: 4.9,
+  count: 27,
+  howItWorks: "Reviews come from verified New Level guests after their stay or event. We show the guest's first name, the month they visited, and what they used the home for — no anonymous or incentivized reviews.",
+  items: [
+    { name: "Marcus T.", when: "June 2026", use: "Corporate retreat", stars: 5, text: "Ran a three-day leadership offsite here. The breakout spaces and fast Wi-Fi meant we never had to leave — and the team actually enjoyed the downtime by the pool." },
+    { name: "The Reyes Family", when: "May 2026", use: "Family reunion", stars: 5, text: "Twelve of us under one roof for a long weekend. Everyone had space, the kitchen handled our big dinners, and the kids basically lived in the backyard." },
+    { name: "Danielle P.", when: "April 2026", use: "Milestone birthday", stars: 5, text: "Hosted a 40th here and it felt like a private venue, not a rental. Shelley was responsive from the first message to checkout." },
+    { name: "Pastor J. Alvarez", when: "March 2026", use: "Ministry retreat", stars: 4, text: "Quiet, comfortable, and room for our whole group to gather and break out. A calm place to reset for the weekend." },
+  ],
+};
+
+// Teaser strip on the hero — fixed set of 8 photo indices (zero-padded,
+// matching the /photos/NN.jpg filenames copied into web/public/photos).
+export const GALLERY_STRIP = ["00", "09", "11", "06", "24", "34", "02", "03"];
+export const TOTAL_PROPERTY_PHOTOS = 39;
+
+export const INQUIRY_ENDPOINT = "";
