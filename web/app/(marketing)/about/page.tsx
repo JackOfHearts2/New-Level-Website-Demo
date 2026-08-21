@@ -4,11 +4,49 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { ShinePill } from "@/components/ui/shine-shape";
-import { NLG_BRAND, VALUES, SERVICES } from "@/lib/content";
+import { CtaLink } from "@/components/ui/cta-link";
+import { Timeline } from "@/components/ui/timeline";
+import { NLG_BRAND, VALUES, SERVICES, BROKERS_CORNER } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "About Us · New Level",
 };
+
+// Real milestones only — the founding year is confirmed content (migrated
+// from the live site, see NLG_BRAND.story), but no specific in-between
+// dates exist yet, so those entries stay era-labeled rather than inventing
+// fake years/numbers to fill the gap.
+const TIMELINE = [
+  {
+    title: "2003",
+    content: (
+      <p className="text-muted-foreground text-sm md:text-base">
+        {NLG_BRAND.story}
+      </p>
+    ),
+  },
+  {
+    title: "Growing the Team",
+    content: (
+      <p className="text-muted-foreground text-sm md:text-base">
+        {BROKERS_CORNER.bio}
+      </p>
+    ),
+  },
+  {
+    title: "Today",
+    content: (
+      <div>
+        <p className="text-muted-foreground text-sm md:text-base">
+          {NLG_BRAND.aboutLong}
+        </p>
+        <div className="mt-6">
+          <CtaLink href="/content-library">See our latest posts & videos</CtaLink>
+        </div>
+      </div>
+    ),
+  },
+];
 
 export default function AboutPage() {
   return (
@@ -36,6 +74,18 @@ export default function AboutPage() {
             {NLG_BRAND.story}
           </p>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+            Our History
+          </ShinePill>
+          <h2 className="font-heading mt-6 text-3xl font-bold text-balance md:text-4xl">
+            From one ambitious brokerage to New Level today.
+          </h2>
+        </div>
+        <Timeline data={TIMELINE} />
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-16">

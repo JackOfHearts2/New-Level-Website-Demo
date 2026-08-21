@@ -2,8 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
-import { buttonVariants } from "@/components/ui/button";
 import { ShinePill } from "@/components/ui/shine-shape";
+import { CtaLink } from "@/components/ui/cta-link";
 import { cn } from "@/lib/utils";
 import { PAGES, EVENTS_CALENDAR } from "@/lib/content";
 
@@ -111,10 +111,10 @@ export default function EventsPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
-        <div className="bg-foreground text-background relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16">
+        <div className="group bg-foreground text-background relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16">
           <div
             aria-hidden
-            className="bg-primary/20 pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-3xl"
+            className="animate-event-glow bg-primary/45 pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-2xl transition-[opacity,transform] duration-500 group-hover:scale-125 group-hover:opacity-90"
           />
           <h2 className="font-heading relative text-3xl font-bold text-balance md:text-4xl">
             Hosting an event?
@@ -123,15 +123,11 @@ export default function EventsPage() {
             Milestone celebrations, private dinners, corporate gatherings — see
             venues set up to host, not just sleep.
           </p>
-          <Link
-            href="/properties?category=events"
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "font-heading relative mt-8 rounded-xl px-6 font-semibold"
-            )}
-          >
-            See event venues
-          </Link>
+          <div className="relative mt-8 flex justify-center">
+            <CtaLink href="/properties?category=events" variant="light">
+              See event venues
+            </CtaLink>
+          </div>
         </div>
       </section>
 

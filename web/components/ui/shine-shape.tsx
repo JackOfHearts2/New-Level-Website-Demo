@@ -41,6 +41,13 @@ export function ShinePill({
   );
 }
 
+// Same div-based wrapper as ShineCircle — aliased for call sites wrapping a
+// rectangular block (fact tiles, bordered boxes) where "Circle" would read
+// oddly, without duplicating the implementation.
+export function ShineBox(props: Parameters<typeof ShineCircle>[0]) {
+  return <ShineCircle {...props} />;
+}
+
 export function ShineCircle({
   children,
   className,

@@ -309,8 +309,7 @@ export const TEAM = [
     role: "Founder & Principal Broker",
     motto: "Every detail, followed through.",
     placeholder: false,
-    photo:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
+    photo: "/team/shelley-lozier.png",
   },
   {
     name: "Team Member",

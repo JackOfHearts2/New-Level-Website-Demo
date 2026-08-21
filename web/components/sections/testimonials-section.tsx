@@ -1,7 +1,5 @@
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { ShinePill } from "@/components/ui/shine-shape";
+import { CtaLink } from "@/components/ui/cta-link";
 import type { TESTIMONIALS } from "@/lib/content";
 import { TestimonialCarousel } from "@/components/ui/testimonial-carousel";
 
@@ -33,16 +31,8 @@ export function TestimonialsSection({
           className="mx-auto mt-16 max-w-2xl"
         />
 
-        <div className="mt-10 text-center">
-          <Link
-            href="/testimonials"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "lg" }),
-              "font-heading rounded-xl px-6 font-semibold"
-            )}
-          >
-            Read more testimonials
-          </Link>
+        <div className="mt-10 flex justify-center">
+          <CtaLink href="/testimonials">Read more testimonials</CtaLink>
         </div>
       </div>
     </section>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { CircleCheck } from "lucide-react";
 import { AUDIENCES, AUDIENCE_PHOTOS } from "@/lib/content";
 import { FaqList } from "@/components/faq-list";
+import { ShineBox } from "@/components/ui/shine-shape";
 import { useBooking } from "./booking-context";
 
 export function AudienceContent() {
@@ -33,10 +34,10 @@ export function AudienceContent() {
           <p className="text-muted-foreground mt-4 text-balance">{a.overview}</p>
           <div className="mt-6 grid grid-cols-2 gap-4">
             {a.facts.map((fact) => (
-              <div key={fact.k} className="border-border rounded-xl border p-4">
+              <ShineBox key={fact.k} className="border-border rounded-xl border p-4">
                 <div className="text-muted-foreground text-xs">{fact.k}</div>
                 <div className="font-heading font-semibold">{fact.v}</div>
-              </div>
+              </ShineBox>
             ))}
           </div>
         </div>

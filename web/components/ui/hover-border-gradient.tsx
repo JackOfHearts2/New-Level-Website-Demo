@@ -13,6 +13,11 @@ export function HoverBorderGradient({
   as: Tag = "button",
   duration = 1,
   clockwise = true,
+  // "dark" (default): black pill, white text — for use on light/photo
+  // backgrounds. "light": white pill, black text — for the site's own dark
+  // banners (event CTAs etc.), where a black pill would blend into the
+  // background instead of reading as a button.
+  variant = "dark",
   ...props
 }: React.PropsWithChildren<
   {
@@ -21,6 +26,7 @@ export function HoverBorderGradient({
     className?: string;
     duration?: number;
     clockwise?: boolean;
+    variant?: "dark" | "light";
   } & React.HTMLAttributes<HTMLElement>
 >) {
   const [hovered, setHovered] = useState<boolean>(false);
@@ -62,14 +68,16 @@ export function HoverBorderGradient({
       }}
       onMouseLeave={() => setHovered(false)}
       className={cn(
-        "relative flex rounded-full border  content-center bg-black/20 hover:bg-black/10 transition duration-500 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-px decoration-clone w-fit",
+        "relative flex rounded-full border  content-center transition duration-500 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-px decoration-clone w-fit",
+        variant === "light" ? "bg-white/20 hover:bg-white/10" : "bg-black/20 hover:bg-black/10",
         containerClassName
       )}
       {...props}
     >
       <div
         className={cn(
-          "w-auto text-white z-10 bg-black px-4 py-2 rounded-[inherit]",
+          "w-auto z-10 px-4 py-2 rounded-[inherit]",
+          variant === "light" ? "text-black bg-white" : "text-white bg-black",
           className
         )}
       >
@@ -93,7 +101,12 @@ export function HoverBorderGradient({
         }}
         transition={{ ease: "linear", duration: duration ?? 1 }}
       />
-      <div className="bg-black absolute z-1 flex-none inset-[2px] rounded-[100px]" />
+      <div
+        className={cn(
+          "absolute z-1 flex-none inset-[2px] rounded-[100px]",
+          variant === "light" ? "bg-white" : "bg-black"
+        )}
+      />
     </Tag>
   );
 }

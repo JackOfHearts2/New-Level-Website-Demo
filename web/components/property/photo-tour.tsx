@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { motion, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, Images, ExternalLink } from "lucide-react";
 import { TOTAL_PROPERTY_PHOTOS, PROPERTY_ALBUM_URL } from "@/lib/content";
 import { PhotoGrid } from "@/components/property/photo-grid";
@@ -11,6 +12,17 @@ function photoUrl(idx: number) {
 }
 
 const IDLE_MS = 180000;
+// A swipe has to clear one of these to count as intentional navigation
+// rather than an incidental drag/scroll touch — offset covers a slow
+// deliberate drag, velocity covers a quick flick that doesn't travel far.
+const SWIPE_OFFSET = 60;
+const SWIPE_VELOCITY = 400;
+
+function swipeDirection(info: PanInfo): -1 | 0 | 1 {
+  if (info.offset.x < -SWIPE_OFFSET || info.velocity.x < -SWIPE_VELOCITY) return 1;
+  if (info.offset.x > SWIPE_OFFSET || info.velocity.x > SWIPE_VELOCITY) return -1;
+  return 0;
+}
 
 export function PhotoTour({ children }: { children?: React.ReactNode }) {
   const [heroIndex, setHeroIndex] = useState(0);
@@ -75,16 +87,31 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
     setHeroIndex((i) => (i + delta + TOTAL_PROPERTY_PHOTOS) % TOTAL_PROPERTY_PHOTOS);
   }
 
+  function lightboxStep(delta: 1 | -1) {
+    setLightboxIndex((i) =>
+      i === null ? i : (i + delta + TOTAL_PROPERTY_PHOTOS) % TOTAL_PROPERTY_PHOTOS
+    );
+  }
+
   return (
     <>
-      <div className="relative h-[70vh] min-h-[420px] w-full overflow-hidden">
+      <motion.div
+        className="relative h-[70vh] min-h-[420px] w-full touch-pan-y overflow-hidden"
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.15}
+        onDragEnd={(_, info) => {
+          const dir = swipeDirection(info);
+          if (dir !== 0) heroStep(dir);
+        }}
+      >
         <Image
           src={photoUrl(heroIndex)}
           alt="1331 NW 87th Street"
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="pointer-events-none object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
         <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-28 text-white sm:px-10">
@@ -123,7 +150,7 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
             View all photos
           </button>
         </div>
-      </div>
+      </motion.div>
 
       <PhotoGrid />
 
@@ -145,28 +172,33 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
           </button>
           <button
             type="button"
-            onClick={() =>
-              setLightboxIndex((i) =>
-                i === null ? i : (i - 1 + TOTAL_PROPERTY_PHOTOS) % TOTAL_PROPERTY_PHOTOS
-              )
-            }
+            onClick={() => lightboxStep(-1)}
             aria-label="Previous photo"
             className="absolute left-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
           >
             <ChevronLeft className="size-5" />
           </button>
-          <div className="relative h-[80vh] w-full max-w-4xl">
+          <motion.div
+            className="relative h-[80vh] w-full max-w-4xl touch-pan-y"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.15}
+            onDragEnd={(_, info) => {
+              const dir = swipeDirection(info);
+              if (dir !== 0) lightboxStep(dir);
+            }}
+          >
             <Image
               src={photoUrl(lightboxIndex)}
               alt="1331 NW 87th Street"
               fill
               sizes="100vw"
-              className="object-contain"
+              className="pointer-events-none object-contain"
             />
-          </div>
+          </motion.div>
           <button
             type="button"
-            onClick={() => setLightboxIndex((i) => (i === null ? i : (i + 1) % TOTAL_PROPERTY_PHOTOS))}
+            onClick={() => lightboxStep(1)}
             aria-label="Next photo"
             className="absolute right-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
           >

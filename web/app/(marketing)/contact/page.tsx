@@ -1,10 +1,12 @@
-import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Mail, Phone } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { FaqList } from "@/components/faq-list";
 import { buttonVariants } from "@/components/ui/button";
+import { CtaLink } from "@/components/ui/cta-link";
+import { ShineCircle } from "@/components/ui/shine-shape";
 import { cn } from "@/lib/utils";
 import { PAGES, FAQS, POINT_OF_CONTACT } from "@/lib/content";
 import { ContactTopics } from "./contact-topics";
@@ -39,9 +41,15 @@ export default async function ContactPage({
 
       <section className="mx-auto max-w-2xl px-6 pb-24">
         <div className="border-border flex flex-col items-center gap-4 rounded-2xl border p-8 text-center shadow-sm">
-          <div className="bg-primary text-primary-foreground font-heading flex size-16 items-center justify-center rounded-full text-xl font-bold">
-            {POINT_OF_CONTACT.initials}
-          </div>
+          <ShineCircle className="relative size-16 overflow-hidden rounded-full">
+            <Image
+              src="/team/shelley-lozier.png"
+              alt={POINT_OF_CONTACT.name}
+              fill
+              sizes="64px"
+              className="object-cover"
+            />
+          </ShineCircle>
           <div>
             <h2 className="font-heading font-semibold">{POINT_OF_CONTACT.name}</h2>
             <p className="text-muted-foreground text-sm">{POINT_OF_CONTACT.role}</p>
@@ -80,13 +88,8 @@ export default async function ContactPage({
         <div className="mt-8">
           <FaqList faqs={FAQS.slice(0, 3)} />
         </div>
-        <div className="mt-8 text-center">
-          <Link
-            href="/faq"
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "font-heading rounded-xl px-6 font-semibold")}
-          >
-            See the full FAQ
-          </Link>
+        <div className="mt-8 flex justify-center">
+          <CtaLink href="/faq">See the full FAQ</CtaLink>
         </div>
       </section>
 

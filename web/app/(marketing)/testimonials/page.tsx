@@ -1,11 +1,9 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { TestimonialProfileStack } from "@/components/ui/testimonial-profile-stack";
 import { GlowCard } from "@/components/ui/glow-card";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { CtaLink } from "@/components/ui/cta-link";
 import { PAGES, TESTIMONIALS } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -31,15 +29,9 @@ export default function TestimonialsPage() {
           <p className="text-muted-foreground mt-2 text-sm">
             Read verified reviews from stays at our featured Miami property.
           </p>
-          <Link
-            href="/property#reviews"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "lg" }),
-              "font-heading mt-6 rounded-xl px-6 font-semibold"
-            )}
-          >
-            Read guest reviews
-          </Link>
+          <div className="mt-6 flex justify-center">
+            <CtaLink href="/property#reviews">Read guest reviews</CtaLink>
+          </div>
         </GlowCard>
       </section>
 

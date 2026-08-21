@@ -5,8 +5,10 @@ import { ServicesSection } from "@/components/sections/services-section";
 import { EventCtaSection } from "@/components/sections/event-cta-section";
 import { TeamSection } from "@/components/sections/team-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
+import { CtaWithTextMarquee } from "@/components/ui/cta-with-text-marquee";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { MobileDock } from "@/components/mobile-dock";
+import { FloatingActions } from "@/components/floating-actions";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function Home() {
@@ -30,6 +32,7 @@ export default async function Home() {
         <TeamSection team={content.team} />
         <TestimonialsSection testimonials={content.testimonials} />
       </div>
+      <CtaWithTextMarquee />
       <SiteFooter
         tagline={content.brand.tagline}
         socials={content.socials}
@@ -37,6 +40,7 @@ export default async function Home() {
         logoUrlDark={content.images.logoUrlDark}
       />
       <MobileDock />
+      <FloatingActions />
     </>
   );
 }

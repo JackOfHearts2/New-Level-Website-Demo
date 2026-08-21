@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { MobileDock } from "@/components/mobile-dock";
+import { FloatingActions } from "@/components/floating-actions";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function MarketingLayout({
@@ -24,6 +25,7 @@ export default async function MarketingLayout({
         logoUrlDark={content.images.logoUrlDark}
       />
       <MobileDock />
+      <FloatingActions />
     </>
   );
 }

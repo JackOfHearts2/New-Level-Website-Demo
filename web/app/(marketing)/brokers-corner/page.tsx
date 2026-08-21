@@ -1,11 +1,10 @@
-import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Play } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
-import { buttonVariants } from "@/components/ui/button";
 import { ShinePill, ShineCircle } from "@/components/ui/shine-shape";
-import { cn } from "@/lib/utils";
+import { CtaLink } from "@/components/ui/cta-link";
 import { PAGES, BROKERS_CORNER } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -21,22 +20,22 @@ export default function BrokersCornerPage() {
 
       <section className="mx-auto max-w-3xl px-6 pb-16">
         <div className="border-border flex flex-col items-center gap-4 rounded-2xl border p-8 text-center shadow-sm sm:flex-row sm:text-left">
-          <ShineCircle className="bg-primary text-primary-foreground font-heading flex size-16 shrink-0 items-center justify-center rounded-full text-xl font-bold">
-            SL
+          <ShineCircle className="relative size-16 shrink-0 overflow-hidden rounded-full">
+            <Image
+              src="/team/shelley-lozier.png"
+              alt="Shelley Lozier"
+              fill
+              sizes="64px"
+              className="object-cover"
+            />
           </ShineCircle>
           <div>
             <h2 className="font-heading font-semibold">Shelley Lozier</h2>
             <p className="text-muted-foreground text-sm">Founder &amp; Principal Broker</p>
           </div>
-          <Link
-            href="/contact"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "font-heading sm:ml-auto"
-            )}
-          >
-            Ask Shelley a Question
-          </Link>
+          <div className="sm:ml-auto">
+            <CtaLink href="/contact">Ask Shelley a Question</CtaLink>
+          </div>
         </div>
         <p className="text-muted-foreground mt-8 text-balance">{BROKERS_CORNER.bio}</p>
       </section>

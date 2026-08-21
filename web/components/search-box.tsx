@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { GlowCard } from "@/components/ui/glow-card";
+import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
 import { SEARCH_CATEGORIES, SEARCH_FILTERS } from "@/lib/content";
 
 const FILTER_LABELS: Record<keyof typeof SEARCH_FILTERS, string> = {
@@ -52,21 +52,12 @@ export function SearchBox() {
       <GlowCard className="bg-background/95 rounded-3xl p-4 backdrop-blur-xl sm:p-6">
         <div role="tablist" className="flex flex-wrap gap-2">
           {SEARCH_CATEGORIES.map((cat) => (
-            <button
+            <SearchTab
               key={cat.id}
-              type="button"
-              role="tab"
-              aria-selected={activeTop === cat.id}
-              onClick={() => selectTab(cat.id)}
-              className={cn(
-                "font-heading rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                activeTop === cat.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted"
-              )}
-            >
-              {cat.label}
-            </button>
+              label={cat.label}
+              selected={activeTop === cat.id}
+              onSelect={() => selectTab(cat.id)}
+            />
           ))}
         </div>
 
@@ -145,5 +136,33 @@ export function SearchBox() {
         </form>
       </GlowCard>
     </div>
+  );
+}
+
+function SearchTab({
+  label,
+  selected,
+  onSelect,
+}: {
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const ref = useGlowRing<HTMLButtonElement>();
+  return (
+    <button
+      ref={ref}
+      type="button"
+      role="tab"
+      aria-selected={selected}
+      onClick={onSelect}
+      className={cn(
+        "shine-shape font-heading relative rounded-full px-4 py-2 text-sm font-semibold transition-[color,background-color,transform] duration-300 hover:-translate-y-0.5",
+        selected ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+      )}
+    >
+      <span className="glow-card__ring" aria-hidden />
+      {label}
+    </button>
   );
 }

@@ -1,11 +1,9 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { ShinePill } from "@/components/ui/shine-shape";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { CtaLink } from "@/components/ui/cta-link";
 import { PAGES, SERVICES } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -49,15 +47,13 @@ export default function ServicesPage() {
               </div>
             )}
 
-            <Link
-              href="/contact"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "font-heading mt-8 rounded-xl px-6 font-semibold"
+            <div className="mt-8">
+              {service.id === "events" ? (
+                <CtaLink href="/events">See our upcoming events</CtaLink>
+              ) : (
+                <CtaLink href="/contact">Book a Consultation</CtaLink>
               )}
-            >
-              Book a Consultation
-            </Link>
+            </div>
           </GlowCard>
         ))}
       </section>

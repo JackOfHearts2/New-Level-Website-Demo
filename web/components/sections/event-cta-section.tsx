@@ -1,7 +1,5 @@
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { ShinePill } from "@/components/ui/shine-shape";
+import { CtaLink } from "@/components/ui/cta-link";
 import type { EVENT_CTA } from "@/lib/content";
 
 export function EventCtaSection({
@@ -11,10 +9,16 @@ export function EventCtaSection({
 }) {
   return (
     <section className="mx-auto max-w-7xl px-6 py-24">
-      <div className="bg-foreground text-background relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16">
+      <div className="group bg-foreground text-background relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16">
+        {/* Was a flat, near-white wash (bg-primary/20 at blur-3xl reads as
+            pale/gray, not green, against this dark banner) and didn't move
+            at all — bumped saturation, added a continuous breathing pulse
+            (animate-event-glow) so it's a real presence rather than
+            background noise, plus a hover boost so the shape itself
+            responds when a visitor's cursor is over the banner. */}
         <div
           aria-hidden
-          className="bg-primary/20 pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-3xl"
+          className="animate-event-glow bg-primary/45 pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-2xl transition-[opacity,transform] duration-500 group-hover:scale-125 group-hover:opacity-90"
         />
         <ShinePill className="bg-background/10 text-background font-heading relative rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
           {eventCta.eyebrow}
@@ -25,15 +29,11 @@ export function EventCtaSection({
         <p className="text-background/70 relative mx-auto mt-4 max-w-xl text-balance">
           {eventCta.sub}
         </p>
-        <Link
-          href="/properties?category=events"
-          className={cn(
-            buttonVariants({ size: "lg" }),
-            "font-heading relative mt-8 rounded-xl px-6 font-semibold"
-          )}
-        >
-          {eventCta.cta}
-        </Link>
+        <div className="relative mt-8 flex justify-center">
+          <CtaLink href="/properties?category=events" variant="light">
+            {eventCta.cta}
+          </CtaLink>
+        </div>
       </div>
     </section>
   );

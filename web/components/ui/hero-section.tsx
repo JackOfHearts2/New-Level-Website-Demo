@@ -1,32 +1,65 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { AnimatedGroup } from "@/components/ui/animated-group";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { CtaLink } from "@/components/ui/cta-link";
 import { cn } from "@/lib/utils";
 import { NavMenu } from "@/components/nav-menu";
 import { NavMenuMobile } from "@/components/nav-menu-mobile";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProfileMenu } from "@/components/profile-menu";
+import { GALLERY_STRIP } from "@/lib/content";
 
+// How long each hero background image stays up before crossfading to the
+// next — 18s lands in the middle of the "every 15 to 20 seconds" the client
+// asked for. Only images for now (no video source exists yet); each frame
+// is just a URL string, so a video frame type can slot in later without
+// reworking the rotation/crossfade mechanics.
+const HERO_ROTATION_MS = 18000;
+const HERO_FADE_MS = 1500;
+
+function useHeroRotation(images: string[]) {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % images.length);
+    }, HERO_ROTATION_MS);
+    return () => clearInterval(id);
+  }, [images.length]);
+  return index;
+}
+
+// A soft 12px fade+blur read as too subtle to register — replaced with a
+// large-travel spring overshoot (no blur, which softens motion rather than
+// announcing it) so each hero element visibly launches into place instead
+// of quietly appearing.
 const transitionVariants = {
+  container: {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.18, delayChildren: 0.1 },
+    },
+  },
   item: {
     hidden: {
       opacity: 0,
-      filter: "blur(12px)",
-      y: 12,
+      y: 70,
+      scale: 0.85,
     },
     visible: {
       opacity: 1,
-      filter: "blur(0px)",
       y: 0,
+      scale: 1,
       transition: {
         type: "spring" as const,
-        bounce: 0.3,
-        duration: 1.5,
+        stiffness: 260,
+        damping: 18,
+        mass: 0.9,
       },
     },
   },
@@ -41,20 +74,39 @@ export function HeroSection({
   logoUrlDark: string;
   heroBgUrl: string | null;
 }) {
+  // heroBgUrl (the admin-uploadable slot from getSiteContent()) leads the
+  // rotation so an admin upload still visibly matters, followed by the same
+  // curated photo set used elsewhere (GALLERY_STRIP) — deduped in case the
+  // default heroBgUrl already points at one of those files.
+  const rotationImages = React.useMemo(() => {
+    const gallery = GALLERY_STRIP.map((n) => `/photos/${n}.jpg`);
+    const list = heroBgUrl ? [heroBgUrl, ...gallery] : gallery;
+    return Array.from(new Set(list));
+  }, [heroBgUrl]);
+  const activeIndex = useHeroRotation(rotationImages);
+
   return (
     <>
       <HeroHeader logoUrl={logoUrl} logoUrlDark={logoUrlDark} />
       <main className="overflow-hidden">
-        {heroBgUrl && (
+        {rotationImages.length > 0 && (
           // A real property photo by default (see getSiteContent() in
-          // lib/site-content.ts), layered under the existing glow — an
-          // admin can replace it via /admin/images, but this always renders
-          // something rather than needing an upload first.
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 size-full bg-cover bg-center opacity-25"
-            style={{ backgroundImage: `url(${heroBgUrl})` }}
-          />
+          // lib/site-content.ts), layered under the existing glow —
+          // rotates through a curated set of real photos every ~18s
+          // (crossfaded, not a hard cut) rather than staying static.
+          <div aria-hidden className="absolute inset-0 -z-10 size-full overflow-hidden">
+            {rotationImages.map((src, i) => (
+              <div
+                key={src}
+                className="absolute inset-0 size-full bg-cover bg-center opacity-0 transition-opacity ease-in-out"
+                style={{
+                  backgroundImage: `url(${src})`,
+                  opacity: i === activeIndex ? 0.25 : 0,
+                  transitionDuration: `${HERO_FADE_MS}ms`,
+                }}
+              />
+            ))}
+          </div>
         )}
         {/* Decorative depth layer — the original reference used a stock night-sky
             photo here; swapped for a brand-green glow (same AnimatedGroup
@@ -109,45 +161,23 @@ export function HeroSection({
 
                 <AnimatedGroup
                   variants={{
+                    item: transitionVariants.item,
                     container: {
+                      hidden: { opacity: 1 },
                       visible: {
-                        transition: {
-                          staggerChildren: 0.05,
-                          delayChildren: 0.75,
-                        },
+                        opacity: 1,
+                        transition: { staggerChildren: 0.15, delayChildren: 1 },
                       },
                     },
-                    ...transitionVariants,
                   }}
                   className="mt-12 flex flex-col items-center justify-center gap-3 md:flex-row"
                 >
-                  <Link href="/properties">
-                    {/* Default classes (bg-black text-white) left as-is rather
-                        than the original demo's light-mode bg-white — matches
-                        this site's existing primary-CTA convention (.btn--solid:
-                        black fill, white text) instead of reading as a faint
-                        outline against the page's own white background. */}
-                    <HoverBorderGradient
-                      as="div"
-                      containerClassName="rounded-full"
-                      className="font-heading flex items-center space-x-2 font-semibold cursor-pointer"
-                    >
-                      <span className="text-nowrap">Explore Properties</span>
-                    </HoverBorderGradient>
-                  </Link>
-                  {/* A link styled as a button, not a Button rendered as a
-                      link — Base UI's own docs are explicit that <a> has its
-                      own semantics and shouldn't go through Button's render
-                      prop; style the anchor directly with buttonVariants(). */}
-                  <Link
-                    href="/contact"
-                    className={cn(
-                      buttonVariants({ size: "lg", variant: "ghost" }),
-                      "font-heading h-10.5 rounded-xl px-5 font-semibold"
-                    )}
-                  >
+                  <CtaLink href="/properties">
+                    <span className="text-nowrap">Explore Properties</span>
+                  </CtaLink>
+                  <CtaLink href="/contact">
                     <span className="text-nowrap">Request a Tour</span>
-                  </Link>
+                  </CtaLink>
                 </AnimatedGroup>
               </div>
             </div>
@@ -233,8 +263,15 @@ const HeroHeader = ({
               <NavMenu />
             </div>
 
-            <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
-              <div className="lg:hidden">
+            <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden max-h-[70vh] w-full flex-wrap items-center space-y-8 overflow-y-auto rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:max-h-none lg:w-fit lg:justify-end lg:gap-6 lg:space-y-0 lg:overflow-visible lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
+              {/* max-h + overflow-y-auto below lg: an expanded accordion
+                  item can grow tall enough for the fixed MobileDock to
+                  cover the CTA — same fix as SiteHeader's panel (this hero
+                  has its own separate nav markup). w-full on the block
+                  below: it used to size to its own intrinsic content width,
+                  leaving an empty gap on the left half of the phone screen —
+                  it needs to claim the panel's full width itself instead. */}
+              <div className="w-full lg:hidden">
                 <NavMenuMobile onNavigate={() => setMenuState(false)} />
               </div>
               <div className="flex w-full flex-wrap items-center gap-3 sm:flex-nowrap md:w-fit">

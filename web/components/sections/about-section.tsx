@@ -1,8 +1,6 @@
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { GlowCard } from "@/components/ui/glow-card";
 import { ShinePill } from "@/components/ui/shine-shape";
+import { CtaLink } from "@/components/ui/cta-link";
 import type { TRUST_STATS } from "@/lib/content";
 
 export function AboutSection({
@@ -25,15 +23,9 @@ export function AboutSection({
           <p className="text-muted-foreground mt-6 max-w-lg text-lg text-balance">
             {aboutShort}
           </p>
-          <Link
-            href="/about"
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "font-heading mt-8 rounded-xl px-6 font-semibold"
-            )}
-          >
-            Learn about New Level
-          </Link>
+          <div className="mt-8">
+            <CtaLink href="/about">Learn about New Level</CtaLink>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

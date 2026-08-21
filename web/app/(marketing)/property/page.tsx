@@ -1,10 +1,9 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Star, MapPin } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
-import { buttonVariants } from "@/components/ui/button";
+import { CtaLink } from "@/components/ui/cta-link";
 import { cn } from "@/lib/utils";
 import {
   PROPERTY,
@@ -207,12 +206,9 @@ export default async function PropertyPage({
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-heading text-xl font-bold">About {NLG_BRAND.name}</h2>
           <p className="text-muted-foreground mt-3 text-sm">{NLG_BRAND.aboutShort}</p>
-          <Link
-            href="/about"
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "font-heading mt-6 rounded-xl px-6 font-semibold")}
-          >
-            More about New Level
-          </Link>
+          <div className="mt-6 flex justify-center">
+            <CtaLink href="/about">More about New Level</CtaLink>
+          </div>
         </div>
       </section>
 

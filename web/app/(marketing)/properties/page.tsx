@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
+import { ShinePill } from "@/components/ui/shine-shape";
 import {
   PROPERTY_CATEGORIES,
   OTHER_PROPERTIES,
@@ -72,9 +73,9 @@ function OtherPropertyCard({ p }: { p: (typeof OTHER_PROPERTIES)[number] }) {
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover"
         />
-        <span className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase">
+        <ShinePill className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase">
           Coming soon
-        </span>
+        </ShinePill>
       </div>
       <div className="p-4">
         <h3 className="font-heading font-semibold">{p.title}</h3>

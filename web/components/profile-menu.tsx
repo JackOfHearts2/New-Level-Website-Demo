@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { User, LogIn, UserPlus, Heart, HelpCircle, Mail } from "lucide-react";
+import { ShineCircle } from "@/components/ui/shine-shape";
 
 const PANEL_WIDTH = 224; // w-56
 const PANEL_HEIGHT = 284; // approx rendered height, used for flip-up decisions
@@ -99,9 +100,9 @@ export function ProfileMenu() {
             className="bg-popover border-border z-50 rounded-2xl border p-2 shadow-lg"
           >
           <div className="flex items-center gap-3 px-3 py-2">
-            <span className="bg-muted flex size-9 items-center justify-center rounded-full">
+            <ShineCircle className="bg-muted flex size-9 items-center justify-center rounded-full">
               <User className="text-muted-foreground size-4" />
-            </span>
+            </ShineCircle>
             <div>
               <div className="font-heading text-sm font-semibold">Guest</div>
               <div className="text-muted-foreground text-xs">Not signed in</div>
