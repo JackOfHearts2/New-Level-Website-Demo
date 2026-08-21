@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { SERVICES } from "@/lib/content";
+import { GlowCard } from "@/components/ui/glow-card";
 
 export function ServicesSection({
   services,
@@ -24,10 +24,10 @@ export function ServicesSection({
 
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {services.map((service) => (
-            <Link
+            <GlowCard
               key={service.id}
               href={`/services#${service.id}`}
-              className="bg-background border-border hover:border-primary/50 hover:-translate-y-1 flex flex-col rounded-2xl border p-6 shadow-sm transition-all duration-300"
+              className="hover:-translate-y-1 flex flex-col p-6 transition-transform duration-300"
             >
               <h3 className="font-heading text-lg font-semibold">
                 {service.t}
@@ -38,7 +38,7 @@ export function ServicesSection({
               <span className="text-primary font-heading mt-4 text-sm font-semibold">
                 Learn more →
               </span>
-            </Link>
+            </GlowCard>
           ))}
         </div>
       </div>

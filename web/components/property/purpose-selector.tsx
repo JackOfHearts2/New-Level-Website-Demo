@@ -2,6 +2,7 @@
 
 import { Briefcase, Users, PartyPopper, HeartHandshake, CalendarRange } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GlowCard } from "@/components/ui/glow-card";
 import { AUDIENCES, AUDIENCE_ORDER, EVENT_TYPES } from "@/lib/content";
 import { useBooking, type AudienceId } from "./booking-context";
 
@@ -32,16 +33,13 @@ export function PurposeSelector() {
           const Icon = ICONS[id];
           const selected = state.audience === id;
           return (
-            <button
+            <GlowCard
               key={id}
-              type="button"
               onClick={() => dispatch({ type: "SET_AUDIENCE", audience: id })}
               aria-pressed={selected}
               className={cn(
-                "flex flex-col items-center gap-3 rounded-2xl border p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-1",
-                selected
-                  ? "border-primary bg-accent"
-                  : "border-border hover:border-primary/50"
+                "hover:-translate-y-1 flex flex-col items-center gap-3 p-6 text-center transition-transform duration-300",
+                selected && "border-primary bg-accent"
               )}
             >
               <Icon
@@ -51,7 +49,7 @@ export function PurposeSelector() {
                 <div className="font-heading text-sm font-semibold">{a.navLabel}</div>
                 <div className="text-muted-foreground mt-1 text-xs">{a.cardMeta}</div>
               </div>
-            </button>
+            </GlowCard>
           );
         })}
       </div>

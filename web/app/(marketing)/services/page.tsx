@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
+import { GlowCard } from "@/components/ui/glow-card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PAGES, SERVICES } from "@/lib/content";
@@ -24,10 +25,10 @@ export default function ServicesPage() {
 
       <section className="mx-auto max-w-5xl space-y-16 px-6 pb-24">
         {SERVICES.map((service) => (
-          <div
+          <GlowCard
             key={service.id}
             id={service.id}
-            className="border-border scroll-mt-32 rounded-3xl border p-8 shadow-sm md:p-12"
+            className="scroll-mt-32 rounded-3xl p-8 md:p-12"
           >
             <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
               {service.t}
@@ -56,7 +57,7 @@ export default function ServicesPage() {
             >
               Book a Consultation
             </Link>
-          </div>
+          </GlowCard>
         ))}
       </section>
 

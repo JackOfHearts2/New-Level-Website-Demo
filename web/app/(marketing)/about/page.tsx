@@ -1,8 +1,8 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
+import { GlowCard } from "@/components/ui/glow-card";
 import { NLG_BRAND, VALUES, SERVICES } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -75,13 +75,10 @@ export default function AboutPage() {
           </div>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {VALUES.map((value) => (
-              <div
-                key={value.t}
-                className="bg-background border-border rounded-2xl border p-6 shadow-sm"
-              >
+              <GlowCard key={value.t} className="p-6">
                 <h3 className="font-heading font-semibold">{value.t}</h3>
                 <p className="text-muted-foreground mt-2 text-sm">{value.d}</p>
-              </div>
+              </GlowCard>
             ))}
           </div>
         </div>
@@ -98,10 +95,10 @@ export default function AboutPage() {
         </div>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {SERVICES.map((service) => (
-            <Link
+            <GlowCard
               key={service.id}
               href={`/services#${service.id}`}
-              className="bg-background border-border hover:border-primary/50 hover:-translate-y-1 flex flex-col rounded-2xl border p-6 shadow-sm transition-all duration-300"
+              className="hover:-translate-y-1 flex flex-col p-6 transition-transform duration-300"
             >
               <h3 className="font-heading text-lg font-semibold">{service.t}</h3>
               <p className="text-muted-foreground mt-3 flex-1 text-sm">
@@ -110,28 +107,28 @@ export default function AboutPage() {
               <span className="text-primary font-heading mt-4 text-sm font-semibold">
                 Learn more →
               </span>
-            </Link>
+            </GlowCard>
           ))}
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <Link
+          <GlowCard
             href="/team"
-            className="border-border hover:border-primary/50 hover:-translate-y-1 rounded-2xl border px-6 py-4 text-center shadow-sm transition-all duration-300"
+            className="hover:-translate-y-1 px-6 py-4 text-center transition-transform duration-300"
           >
             <span className="font-heading block font-semibold">Meet the Team</span>
             <span className="text-muted-foreground text-sm">
               The agents and partners behind New Level
             </span>
-          </Link>
-          <Link
+          </GlowCard>
+          <GlowCard
             href="/brokers-corner"
-            className="border-border hover:border-primary/50 hover:-translate-y-1 rounded-2xl border px-6 py-4 text-center shadow-sm transition-all duration-300"
+            className="hover:-translate-y-1 px-6 py-4 text-center transition-transform duration-300"
           >
             <span className="font-heading block font-semibold">The Broker&apos;s Corner</span>
             <span className="text-muted-foreground text-sm">
               Insights from our Principal Broker
             </span>
-          </Link>
+          </GlowCard>
         </div>
       </section>
 

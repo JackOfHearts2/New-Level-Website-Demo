@@ -47,7 +47,7 @@ export function SearchBox() {
   }
 
   return (
-    <div className="relative z-10 mx-auto -mt-16 max-w-5xl px-4 sm:px-6">
+    <div className="relative z-10 mx-auto mt-8 max-w-5xl px-4 sm:-mt-16 sm:px-6">
       <div className="bg-background/95 border-border rounded-3xl border p-4 shadow-xl backdrop-blur-xl sm:p-6">
         <div role="tablist" className="flex flex-wrap gap-2">
           {SEARCH_CATEGORIES.map((cat) => (

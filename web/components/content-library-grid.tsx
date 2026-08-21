@@ -5,6 +5,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { CONTENT_LIBRARY_POSTS, SOCIALS } from "@/lib/content";
 import { SOCIAL_ICONS } from "@/components/social-icons";
+import { GlowCard } from "@/components/ui/glow-card";
 
 const FILTERS = [
   { id: "all", label: "All" },
@@ -45,12 +46,12 @@ export function ContentLibraryGrid() {
           const social = SOCIALS.find((s) => s.id === post.platform);
           const Icon = SOCIAL_ICONS[post.platform];
           return (
-            <a
+            <GlowCard
               key={i}
               href={social?.href ?? "#"}
               target="_blank"
               rel="noreferrer"
-              className="border-border hover:border-primary/50 group block overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1"
+              className="group hover:-translate-y-1 block overflow-hidden p-0 transition-transform duration-300"
             >
               <div className="relative aspect-square">
                 <Image
@@ -70,7 +71,7 @@ export function ContentLibraryGrid() {
               <div className="p-4">
                 <p className="text-sm">{post.caption}</p>
               </div>
-            </a>
+            </GlowCard>
           );
         })}
       </div>

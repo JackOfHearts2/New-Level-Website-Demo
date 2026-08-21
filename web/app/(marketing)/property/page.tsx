@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Star, MapPin } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
+import { GlowCard } from "@/components/ui/glow-card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -124,7 +125,7 @@ export default async function PropertyPage({
         <p className="text-muted-foreground mt-2 max-w-2xl text-sm">{REVIEWS.howItWorks}</p>
         <div className="mt-8 grid gap-6 sm:grid-cols-2">
           {REVIEWS.items.map((r) => (
-            <figure key={r.name} className="border-border rounded-2xl border p-6 shadow-sm">
+            <GlowCard key={r.name} className="p-6">
               <div className="flex gap-0.5">
                 {Array.from({ length: 5 }, (_, i) => (
                   <Star
@@ -137,10 +138,10 @@ export default async function PropertyPage({
                 ))}
               </div>
               <blockquote className="mt-3 text-sm text-balance">&ldquo;{r.text}&rdquo;</blockquote>
-              <figcaption className="text-muted-foreground mt-4 text-xs">
+              <div className="text-muted-foreground mt-4 text-xs">
                 {r.name} · {r.use} · {r.when}
-              </figcaption>
-            </figure>
+              </div>
+            </GlowCard>
           ))}
         </div>
       </section>
@@ -219,7 +220,7 @@ export default async function PropertyPage({
         <h2 className="font-heading text-2xl font-bold">More New Level homes</h2>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {OTHER_PROPERTIES.map((p) => (
-            <div key={p.title} className="border-border overflow-hidden rounded-2xl border shadow-sm">
+            <GlowCard key={p.title} className="overflow-hidden p-0">
               <div className="bg-muted flex aspect-[4/3] items-center justify-center">
                 <span className="text-muted-foreground text-sm">Coming soon</span>
               </div>
@@ -228,7 +229,7 @@ export default async function PropertyPage({
                 <p className="text-muted-foreground text-sm">{p.meta}</p>
                 <p className="text-muted-foreground mt-1 text-xs">{p.rate}</p>
               </div>
-            </div>
+            </GlowCard>
           ))}
         </div>
       </section>

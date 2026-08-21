@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import type { TEAM } from "@/lib/content";
+import { GlowCard } from "@/components/ui/glow-card";
 
 export function TeamSection({ team }: { team: typeof TEAM }) {
   return (
@@ -28,10 +29,7 @@ export function TeamSection({ team }: { team: typeof TEAM }) {
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {team.map((member, i) => (
-          <div
-            key={i}
-            className="border-border rounded-2xl border p-6 text-center shadow-sm"
-          >
+          <GlowCard key={i} className="p-6 text-center">
             <div
               className={cn(
                 "font-heading mx-auto flex size-16 items-center justify-center rounded-full text-xl font-bold",
@@ -52,7 +50,7 @@ export function TeamSection({ team }: { team: typeof TEAM }) {
             <p className="text-muted-foreground/80 mt-3 text-xs italic">
               &ldquo;{member.motto}&rdquo;
             </p>
-          </div>
+          </GlowCard>
         ))}
       </div>
     </section>

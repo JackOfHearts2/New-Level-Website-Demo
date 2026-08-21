@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { GlowCard } from "@/components/ui/glow-card";
 import {
   EVENT_MIN_HOURS,
   EVENT_PACKAGES,
@@ -93,19 +94,19 @@ export function BookingWidget() {
   const { state, dispatch } = useBooking();
 
   return (
-    <div className="border-border rounded-2xl border p-6 shadow-sm">
+    <GlowCard className="p-6">
       <h3 className="font-heading text-lg font-bold">Choose your rate</h3>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {(Object.values(RATE_TIERS) as (typeof RATE_TIERS)[keyof typeof RATE_TIERS][]).map((t) => {
           const selected = state.tier === t.id;
           return (
-            <button
+            <GlowCard
               key={t.id}
-              type="button"
               onClick={() => dispatch({ type: "SET_TIER", tier: t.id as Tier })}
+              aria-pressed={selected}
               className={cn(
-                "rounded-xl border p-4 text-left transition-colors",
-                selected ? "border-primary bg-accent" : "border-border hover:border-primary/50"
+                "rounded-xl p-4 text-left",
+                selected && "border-primary bg-accent"
               )}
             >
               <div className="font-heading font-semibold">
@@ -115,7 +116,7 @@ export function BookingWidget() {
               </div>
               <div className="text-muted-foreground text-sm">{t.label}</div>
               <div className="text-muted-foreground/80 mt-1 text-xs">{t.blurb}</div>
-            </button>
+            </GlowCard>
           );
         })}
       </div>
@@ -206,13 +207,13 @@ export function BookingWidget() {
                 {EVENT_PACKAGES.map((pkg) => {
                   const selected = state.packageId === pkg.id;
                   return (
-                    <button
+                    <GlowCard
                       key={pkg.id}
-                      type="button"
                       onClick={() => dispatch({ type: "SET_PACKAGE", id: pkg.id })}
+                      aria-pressed={selected}
                       className={cn(
-                        "relative rounded-xl border p-4 text-left transition-colors",
-                        selected ? "border-primary bg-accent" : "border-border hover:border-primary/50"
+                        "rounded-xl p-4 text-left",
+                        selected && "border-primary bg-accent"
                       )}
                     >
                       {pkg.popular && (
@@ -232,7 +233,7 @@ export function BookingWidget() {
                             .join(", ")}
                         </div>
                       )}
-                    </button>
+                    </GlowCard>
                   );
                 })}
               </div>
@@ -240,6 +241,6 @@ export function BookingWidget() {
           )}
         </>
       )}
-    </div>
+    </GlowCard>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import type { TESTIMONIALS } from "@/lib/content";
+import { GlowCard } from "@/components/ui/glow-card";
 
 export function TestimonialsSection({
   testimonials,
@@ -22,20 +23,17 @@ export function TestimonialsSection({
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
           {testimonials.map((t) => (
-            <figure
-              key={t.name}
-              className="bg-background border-border flex flex-col rounded-2xl border p-6 shadow-sm"
-            >
+            <GlowCard key={t.name} className="flex flex-col p-6">
               <blockquote className="text-foreground flex-1 text-balance">
                 &ldquo;{t.text}&rdquo;
               </blockquote>
-              <figcaption className="border-border mt-6 border-t pt-4">
+              <div className="border-border mt-6 border-t pt-4">
                 <div className="font-heading text-sm font-semibold">
                   {t.name}
                 </div>
                 <div className="text-muted-foreground text-xs">{t.role}</div>
-              </figcaption>
-            </figure>
+              </div>
+            </GlowCard>
           ))}
         </div>
 

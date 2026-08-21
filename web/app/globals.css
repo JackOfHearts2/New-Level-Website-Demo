@@ -123,56 +123,93 @@
   }
   body {
     @apply text-foreground;
-    /* "Jade Sky" mesh gradient (client-supplied, from 21st.dev) — light mode
-       page background. background-attachment: fixed is deliberate: it keeps
-       the gradient's percentage-based positions relative to the viewport
-       instead of the full scrollable page height, so it reads the same on a
-       short page and a very long one (e.g. the property page) instead of
+    /* Mesh gradient — light mode page background. Same "Jade Sky" technique
+       the client referenced (4 layered radial blobs, same positions/falloff
+       shape) but recolored to the actual brand palette instead of the
+       reference's off-brand blues: white, the existing green-tint accent
+       token, and the brand green itself (at reduced peak opacity — a subtle
+       tint, not a vivid wash, since it just needs to read as "designed,"
+       not loud). background-attachment: fixed is deliberate: it keeps the
+       gradient's percentage-based positions relative to the viewport
+       instead of the full scrollable page height, so it reads the same on
+       a short page and a very long one (e.g. the property page) instead of
        being compressed into a sliver at the top. */
-    background-color: #cfe9f0;
+    background-color: #f6f6f3;
     background-image:
       radial-gradient(
         circle at 65.34% 44.62%,
-        rgba(238, 246, 227, 1) 0%,
-        rgba(238, 246, 227, 0.844) 8.53%,
-        rgba(238, 246, 227, 0.5) 17.05%,
-        rgba(238, 246, 227, 0.156) 25.58%,
-        rgba(238, 246, 227, 0) 34.1%
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.844) 8.53%,
+        rgba(255, 255, 255, 0.5) 17.05%,
+        rgba(255, 255, 255, 0.156) 25.58%,
+        rgba(255, 255, 255, 0) 34.1%
       ),
       radial-gradient(
         circle at 28.07% 74.48%,
-        rgba(183, 217, 142, 1) 0%,
-        rgba(183, 217, 142, 0.844) 11.41%,
-        rgba(183, 217, 142, 0.5) 22.83%,
-        rgba(183, 217, 142, 0.156) 34.24%,
-        rgba(183, 217, 142, 0) 45.65%
+        rgba(114, 211, 91, 0.45) 0%,
+        rgba(114, 211, 91, 0.38) 11.41%,
+        rgba(114, 211, 91, 0.225) 22.83%,
+        rgba(114, 211, 91, 0.07) 34.24%,
+        rgba(114, 211, 91, 0) 45.65%
       ),
       radial-gradient(
         circle at 52.42% 19.94%,
-        rgba(127, 191, 154, 1) 0%,
-        rgba(127, 191, 154, 0.844) 14.39%,
-        rgba(127, 191, 154, 0.5) 28.77%,
-        rgba(127, 191, 154, 0.156) 43.16%,
-        rgba(127, 191, 154, 0) 57.55%
+        rgba(233, 247, 227, 1) 0%,
+        rgba(233, 247, 227, 0.844) 14.39%,
+        rgba(233, 247, 227, 0.5) 28.77%,
+        rgba(233, 247, 227, 0.156) 43.16%,
+        rgba(233, 247, 227, 0) 57.55%
       ),
       radial-gradient(
         circle at 80.31% 84.47%,
-        rgba(207, 233, 240, 1) 0%,
-        rgba(207, 233, 240, 0.844) 17.27%,
-        rgba(207, 233, 240, 0.5) 34.55%,
-        rgba(207, 233, 240, 0.156) 51.82%,
-        rgba(207, 233, 240, 0) 69.1%
+        rgba(78, 158, 59, 0.4) 0%,
+        rgba(78, 158, 59, 0.338) 17.27%,
+        rgba(78, 158, 59, 0.2) 34.55%,
+        rgba(78, 158, 59, 0.062) 51.82%,
+        rgba(78, 158, 59, 0) 69.1%
       );
     background-attachment: fixed;
   }
-  /* "Axis Blend" (client-supplied, from 21st.dev) — dark mode page
-     background. Higher specificity than the plain `body` rule above
-     (:root.dark + body) so it wins regardless of source order. */
+  /* Dark mode page background — same technique the client referenced
+     ("Axis Blend"), recolored from off-brand space-blue to the site's own
+     ink → deep-green range so it stays on-brand while still reading as
+     alive rather than flat black. Higher specificity than the plain `body`
+     rule above (:root.dark + body) so it wins regardless of source order. */
   :root.dark body {
-    background-color: #000428;
-    background-image: linear-gradient(130deg, #000428 0%, #004e92 100%);
+    background-color: #0a0a0a;
+    background-image: linear-gradient(130deg, #0a0a0a 0%, #1a3d14 100%);
   }
   html {
     @apply font-sans;
   }
+}
+
+/* GlowCard's cursor-proximity ring — see components/ui/glow-card.tsx.
+   `padding` + the double-mask trick draws the radial-gradient only along a
+   thin ring at the card's own border, never filling the interior and never
+   drawn as a glow attached to the cursor itself. --glow-x/--glow-y/
+   --glow-opacity are set per-card by GlowCard's shared pointermove tracker. */
+.glow-card {
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-opacity: 0;
+}
+.glow-card__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 1.5px;
+  opacity: var(--glow-opacity);
+  transition: opacity 300ms ease;
+  background: radial-gradient(
+    220px circle at var(--glow-x) var(--glow-y),
+    var(--color-green) 0%,
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }

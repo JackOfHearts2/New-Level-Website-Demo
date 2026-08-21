@@ -1,8 +1,8 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
+import { GlowCard } from "@/components/ui/glow-card";
 import {
   PROPERTY_CATEGORIES,
   OTHER_PROPERTIES,
@@ -40,9 +40,9 @@ function matchesKeyword(item: ListingDescriptor, q: string) {
 
 function RealPropertyCard({ href }: { href: string }) {
   return (
-    <Link
+    <GlowCard
       href={href}
-      className="border-border hover:border-primary/50 group block overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1"
+      className="group hover:-translate-y-1 block overflow-hidden p-0 transition-transform duration-300"
     >
       <div className="relative aspect-[4/3]">
         <Image
@@ -57,13 +57,13 @@ function RealPropertyCard({ href }: { href: string }) {
         <h3 className="font-heading font-semibold">{PROPERTY.siteName}</h3>
         <p className="text-muted-foreground text-sm">{PROPERTY.address}</p>
       </div>
-    </Link>
+    </GlowCard>
   );
 }
 
 function OtherPropertyCard({ p }: { p: (typeof OTHER_PROPERTIES)[number] }) {
   return (
-    <div className="border-border overflow-hidden rounded-2xl border shadow-sm">
+    <GlowCard className="overflow-hidden p-0">
       <div className="bg-muted flex aspect-[4/3] items-center justify-center">
         <span className="text-muted-foreground text-sm">Coming soon</span>
       </div>
@@ -72,7 +72,7 @@ function OtherPropertyCard({ p }: { p: (typeof OTHER_PROPERTIES)[number] }) {
         <p className="text-muted-foreground text-sm">{p.meta}</p>
         <p className="text-muted-foreground mt-1 text-xs">{p.rate}</p>
       </div>
-    </div>
+    </GlowCard>
   );
 }
 

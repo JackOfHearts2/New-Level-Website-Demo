@@ -82,12 +82,11 @@ export function SiteFooter({
           </div>
         </div>
 
-        <div className="border-border text-muted-foreground mt-12 flex flex-col gap-2 border-t pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-border text-muted-foreground mt-12 border-t pt-6 text-xs">
           <p>
             &copy; {new Date().getFullYear()} {NLG_BRAND.name}. Demo site —
             not affiliated with any live listings.
           </p>
-          <p>1331 NW 87th Street, Miami, FL</p>
         </div>
       </div>
     </footer>

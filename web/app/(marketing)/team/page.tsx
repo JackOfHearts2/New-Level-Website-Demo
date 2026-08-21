@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { Carousel, CarouselItem } from "@/components/ui/carousel";
+import { GlowCard } from "@/components/ui/glow-card";
 import { cn } from "@/lib/utils";
 import { PAGES, TEAM } from "@/lib/content";
 
@@ -25,7 +26,7 @@ export default function TeamPage() {
         <Carousel>
           {TEAM.map((member, i) => (
             <CarouselItem key={i}>
-              <div className="border-border h-full rounded-2xl border p-6 text-center shadow-sm">
+              <GlowCard className="h-full p-6 text-center">
                 <div
                   className={cn(
                     "font-heading mx-auto flex size-16 items-center justify-center rounded-full text-xl font-bold",
@@ -44,7 +45,7 @@ export default function TeamPage() {
                 <p className="text-muted-foreground/80 mt-3 text-xs italic">
                   &ldquo;{member.motto}&rdquo;
                 </p>
-              </div>
+              </GlowCard>
             </CarouselItem>
           ))}
         </Carousel>
