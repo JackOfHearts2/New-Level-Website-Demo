@@ -1,5 +1,11 @@
 [build]
   command = "npm run build"
+  # The Netlify UI had this site's publish directory set to "web" — the same
+  # as its base directory — which @netlify/plugin-nextjs rejects outright
+  # ("publish directory cannot be the same as the base directory"). Setting
+  # it explicitly here (resolved relative to base, so web/.next) overrides
+  # that UI value and points at the actual Next.js build output instead.
+  publish = ".next"
 
 # Without this, Netlify has no way to understand a Next.js build's output —
 # it just publishes the raw source as static files, so every route 404s.
