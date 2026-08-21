@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { cn } from "@/lib/utils";
+import { NAV_ITEMS } from "@/lib/content";
 
 const transitionVariants = {
   item: {
@@ -151,15 +152,6 @@ export function HeroSection({
   );
 }
 
-const menuItems = [
-  { name: "Properties", href: "/properties" },
-  { name: "About", href: "/about" },
-  { name: "Services", href: "/services" },
-  { name: "Testimonials", href: "/testimonials" },
-  { name: "Events", href: "/events" },
-  { name: "Contact", href: "/contact" },
-];
-
 const HeroHeader = ({ logoUrl }: { logoUrl: string }) => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
@@ -219,7 +211,7 @@ const HeroHeader = ({ logoUrl }: { logoUrl: string }) => {
 
             <div className="absolute inset-0 m-auto hidden size-fit lg:block">
               <ul className="flex gap-8 text-sm">
-                {menuItems.map((item, index) => (
+                {NAV_ITEMS.map((item, index) => (
                   <li key={index}>
                     <Link
                       href={item.href}
@@ -235,7 +227,7 @@ const HeroHeader = ({ logoUrl }: { logoUrl: string }) => {
             <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
               <div className="lg:hidden">
                 <ul className="space-y-6 text-base">
-                  {menuItems.map((item, index) => (
+                  {NAV_ITEMS.map((item, index) => (
                     <li key={index}>
                       <Link
                         href={item.href}

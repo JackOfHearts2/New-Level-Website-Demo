@@ -43,6 +43,7 @@ export function ImageForm({
   const [preview, setPreview] = useState<string | null>(currentUrl);
   const [isPending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
+  const objectUrlRef = useRef<string | null>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -57,7 +58,14 @@ export function ImageForm({
         formData.set("file", resized);
         const result = await saveImage(undefined, formData);
         setState(result);
-        if (result?.ok) setPreview(URL.createObjectURL(resized));
+        if (result?.ok) {
+          // Revoke the previous blob: preview before replacing it — each
+          // upload otherwise leaks the last one for the page's lifetime.
+          if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+          const url = URL.createObjectURL(resized);
+          objectUrlRef.current = url;
+          setPreview(url);
+        }
       } catch {
         setState({ error: "Couldn't process that image." });
       } finally {
