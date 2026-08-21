@@ -443,22 +443,15 @@ export const OTHER_PROPERTIES = [
   { title: "Brickell Skyline Residence", meta: "3 BR · Downtown", rate: "Listed at $1.4M", soon: true, categories: ["for-sale", "investment"] },
 ];
 
+// Agent contact info and inquiry inbox live in POINT_OF_CONTACT (used
+// sitewide on the Contact page) rather than duplicated here — this object
+// only carries what's actually specific to the listing itself.
 export const PROPERTY = {
   address: "1331 NW 87th Street, Miami, FL",
   city: "Miami-Dade (outside Miami Beach)",
   siteName: "New Level Executive House",
   parentName: "New Level Associates",
   parentUrl: "https://newlevelassociates.com",
-  agent: {
-    name: "Shelley Lozier",
-    role: "Point of Contact · New Level",
-    phone: "+1 (305) 000-0000",
-    whatsapp: "13050000000",
-    initials: "SL",
-  },
-  // Placeholder demo inbox in the source data itself — swap for the real
-  // team inbox before this goes live.
-  inquiryEmail: "jackbruncoquillon@gmail.com",
   categories: ["luxury-short-term", "short-term", "events", "extended-stay"],
 };
 
@@ -681,10 +674,35 @@ export const EVENT_ADDONS = [
 ];
 
 export const EVENT_PACKAGES = [
-  { id: "self", label: "Self-Provided", price: 0, tagline: "You bring your own services", includes: [] as string[] },
-  { id: "essentials", label: "Essentials", price: 900, tagline: "The basics, handled", includes: ["sound", "catering"] },
-  { id: "signature", label: "Signature", price: 1800, tagline: "Our most popular package", popular: true, includes: ["catering", "dj", "sound"] },
-  { id: "allInclusive", label: "All-Inclusive", price: 2400, tagline: "Every service, fully handled", includes: ["catering", "dj", "sound", "content"] },
+  {
+    id: "self",
+    label: "Self-Provided",
+    price: 0,
+    tagline: "You bring your own vendors — catering, entertainment, sound and content.",
+    includes: [] as string[],
+  },
+  {
+    id: "essentials",
+    label: "Essentials",
+    price: 900,
+    tagline: "The basics handled for you — sound system and content creation.",
+    includes: ["sound", "content"],
+  },
+  {
+    id: "signature",
+    label: "Signature",
+    price: 1800,
+    popular: true,
+    tagline: "Full-service hosting — catering, entertainment and sound, coordinated for you.",
+    includes: ["catering", "dj", "sound"],
+  },
+  {
+    id: "allInclusive",
+    label: "All-Inclusive",
+    price: 2400,
+    tagline: "Every New Level service in one flat add-on — nothing left to arrange.",
+    includes: ["catering", "dj", "sound", "content"],
+  },
 ];
 
 export const EVENT_TYPES = [

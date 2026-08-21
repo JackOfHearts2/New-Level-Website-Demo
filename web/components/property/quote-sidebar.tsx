@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RATE_TIERS } from "@/lib/content";
 import { useBooking } from "./booking-context";
 
 function money(n: number) {
@@ -45,7 +46,7 @@ export function QuoteSidebar() {
             <span>
               {quote.tier === "event"
                 ? `Venue — ${quote.hours}-hour event rental (flat)`
-                : `$500 × ${quote.nights} night(s)`}
+                : `${money(RATE_TIERS.stay.perNight)} × ${quote.nights} night${quote.nights !== 1 ? "s" : ""}`}
             </span>
             <span className="font-heading font-semibold">{money(quote.rentalBase)}</span>
           </div>
