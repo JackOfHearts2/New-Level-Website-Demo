@@ -2,7 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import type { TESTIMONIALS } from "@/lib/content";
-import { GlowCard } from "@/components/ui/glow-card";
+import { TestimonialCarousel } from "@/components/ui/testimonial-carousel";
 
 export function TestimonialsSection({
   testimonials,
@@ -21,21 +21,10 @@ export function TestimonialsSection({
           </h2>
         </div>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-3">
-          {testimonials.map((t) => (
-            <GlowCard key={t.name} className="flex flex-col p-6">
-              <blockquote className="text-foreground flex-1 text-balance">
-                &ldquo;{t.text}&rdquo;
-              </blockquote>
-              <div className="border-border mt-6 border-t pt-4">
-                <div className="font-heading text-sm font-semibold">
-                  {t.name}
-                </div>
-                <div className="text-muted-foreground text-xs">{t.role}</div>
-              </div>
-            </GlowCard>
-          ))}
-        </div>
+        <TestimonialCarousel
+          testimonials={testimonials}
+          className="mx-auto mt-16 max-w-2xl"
+        />
 
         <div className="mt-10 text-center">
           <Link

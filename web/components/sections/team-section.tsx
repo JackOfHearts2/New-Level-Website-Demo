@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import type { TEAM } from "@/lib/content";
 import { GlowCard } from "@/components/ui/glow-card";
+import { FanReveal } from "@/components/ui/fan-reveal";
 
 export function TeamSection({ team }: { team: typeof TEAM }) {
   return (
@@ -27,9 +28,9 @@ export function TeamSection({ team }: { team: typeof TEAM }) {
         </Link>
       </div>
 
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {team.map((member, i) => (
-          <GlowCard key={i} className="p-6 text-center">
+      <FanReveal className="mt-16 justify-center">
+        {team.slice(0, 4).map((member, i) => (
+          <GlowCard key={i} className="w-64 shrink-0 p-6 text-center">
             <div
               className={cn(
                 "font-heading mx-auto flex size-16 items-center justify-center rounded-full text-xl font-bold",
@@ -52,7 +53,7 @@ export function TeamSection({ team }: { team: typeof TEAM }) {
             </p>
           </GlowCard>
         ))}
-      </div>
+      </FanReveal>
     </section>
   );
 }
