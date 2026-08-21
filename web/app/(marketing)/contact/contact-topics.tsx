@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useGlowRing } from "@/components/ui/glow-card";
 import { CONTACT_TOPICS } from "@/lib/content";
 
 export function ContactTopics({ initialTopic }: { initialTopic?: string }) {
@@ -12,21 +13,42 @@ export function ContactTopics({ initialTopic }: { initialTopic?: string }) {
   return (
     <div className="flex flex-wrap justify-center gap-2">
       {CONTACT_TOPICS.map((topic) => (
-        <button
+        <TopicChip
           key={topic.id}
-          type="button"
-          onClick={() => setSelected(topic.id)}
-          aria-pressed={selected === topic.id}
-          className={cn(
-            "font-heading rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
-            selected === topic.id
-              ? "bg-primary border-primary text-primary-foreground"
-              : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
-          )}
-        >
-          {topic.label}
-        </button>
+          label={topic.label}
+          selected={selected === topic.id}
+          onSelect={() => setSelected(topic.id)}
+        />
       ))}
     </div>
+  );
+}
+
+function TopicChip({
+  label,
+  selected,
+  onSelect,
+}: {
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const ref = useGlowRing<HTMLButtonElement>();
+  return (
+    <button
+      ref={ref}
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={cn(
+        "shine-shape font-heading relative rounded-full border px-4 py-1.5 text-sm font-medium transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-0.5",
+        selected
+          ? "bg-primary border-primary text-primary-foreground"
+          : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+      )}
+    >
+      <span className="glow-card__ring" aria-hidden />
+      {label}
+    </button>
   );
 }

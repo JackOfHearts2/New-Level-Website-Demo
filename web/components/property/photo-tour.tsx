@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, X, Images } from "lucide-react";
-import { TOTAL_PROPERTY_PHOTOS } from "@/lib/content";
+import { ChevronLeft, ChevronRight, X, Images, ExternalLink } from "lucide-react";
+import { TOTAL_PROPERTY_PHOTOS, PROPERTY_ALBUM_URL } from "@/lib/content";
 import { PhotoGrid } from "@/components/property/photo-grid";
 
 function photoUrl(idx: number) {
@@ -90,7 +90,7 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
         <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-28 text-white sm:px-10">
           {children}
         </div>
-        <div className="absolute inset-x-0 bottom-6 flex items-center justify-between px-6 sm:px-10">
+        <div className="absolute inset-x-0 bottom-6 z-20 flex items-center justify-between px-6 sm:px-10">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -172,8 +172,19 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
           >
             <ChevronRight className="size-5" />
           </button>
-          <div className="font-heading absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-xs text-white">
-            {lightboxIndex + 1} / {TOTAL_PROPERTY_PHOTOS}
+          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-3">
+            <span className="font-heading rounded-full bg-white/10 px-3 py-1 text-xs text-white">
+              {lightboxIndex + 1} / {TOTAL_PROPERTY_PHOTOS}
+            </span>
+            <a
+              href={PROPERTY_ALBUM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-heading flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white hover:bg-white/20"
+            >
+              View full album
+              <ExternalLink className="size-3" />
+            </a>
           </div>
         </div>
       )}

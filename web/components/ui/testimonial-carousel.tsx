@@ -51,11 +51,22 @@ function TestimonialFace({
   );
 }
 
+// The reference this is built from uses 14 images around the ring, which is
+// what makes it read as a genuine circular carousel — several faces visible
+// at once, one entering as another exits the side. With only a handful of
+// real testimonials, spacing them at (360 / count) degrees leaves too few
+// faces visible to read as anything but a flat swap. Repeating the real
+// set around the ring (same content, more faces) restores that density
+// without inventing fake testimonials.
+const MIN_FACES = 9;
+
 export function TestimonialCarousel({
   testimonials,
   className,
 }: Readonly<{ testimonials: Testimonial[]; className?: string }>) {
-  const count = testimonials.length;
+  const repeatCount = Math.max(1, Math.ceil(MIN_FACES / testimonials.length));
+  const faces = Array.from({ length: repeatCount }, () => testimonials).flat();
+  const count = faces.length;
   const angleStep = 360 / count;
   const reduceMotion = useReducedMotion();
 
@@ -70,7 +81,10 @@ export function TestimonialCarousel({
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
       const w = entries[0].contentRect.width;
-      setFaceWidth(Math.min(300, Math.max(220, w * 0.42)));
+      // Narrower than a single-flip layout would need — with MIN_FACES
+      // packed around the ring, a wide card would make the cylinder huge
+      // and the "several visible at once" effect harder to read.
+      setFaceWidth(Math.min(260, Math.max(180, w * 0.32)));
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -122,9 +136,9 @@ export function TestimonialCarousel({
             }}
             animate={controls}
           >
-            {testimonials.map((t, i) => (
+            {faces.map((t, i) => (
               <TestimonialFace
-                key={t.name}
+                key={`${t.name}-${i}`}
                 t={t}
                 angle={i * angleStep}
                 radius={radius}

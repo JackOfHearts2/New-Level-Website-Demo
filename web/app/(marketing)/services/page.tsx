@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
+import { ShinePill } from "@/components/ui/shine-shape";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PAGES, SERVICES } from "@/lib/content";
@@ -30,9 +31,9 @@ export default function ServicesPage() {
             id={service.id}
             className="scroll-mt-32 rounded-3xl p-8 md:p-12"
           >
-            <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+            <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
               {service.t}
-            </span>
+            </ShinePill>
             <p className="text-foreground mt-6 max-w-2xl text-lg text-balance">
               {service.long}
             </p>

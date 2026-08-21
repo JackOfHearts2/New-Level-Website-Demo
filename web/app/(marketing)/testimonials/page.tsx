@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
-import { TestimonialCarousel } from "@/components/ui/testimonial-carousel";
+import { TestimonialProfileStack } from "@/components/ui/testimonial-profile-stack";
 import { GlowCard } from "@/components/ui/glow-card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,8 +19,8 @@ export default function TestimonialsPage() {
     <>
       <PageHero eyebrow={page.eyebrow} heading={page.heading} sub={page.sub} />
 
-      <section className="mx-auto max-w-3xl px-6 pb-16">
-        <TestimonialCarousel testimonials={TESTIMONIALS} />
+      <section className="mx-auto max-w-7xl px-6 pb-16">
+        <TestimonialProfileStack testimonials={TESTIMONIALS} />
       </section>
 
       <section className="mx-auto max-w-3xl px-6 pb-24 text-center">

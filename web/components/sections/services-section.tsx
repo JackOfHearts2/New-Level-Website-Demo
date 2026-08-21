@@ -1,5 +1,6 @@
 import type { SERVICES } from "@/lib/content";
 import { GlowCard } from "@/components/ui/glow-card";
+import { ShinePill } from "@/components/ui/shine-shape";
 
 export function ServicesSection({
   services,
@@ -10,9 +11,9 @@ export function ServicesSection({
     <section className="bg-muted/50 py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
             Services
-          </span>
+          </ShinePill>
           <h2 className="font-heading mt-6 text-4xl font-bold text-balance md:text-5xl">
             What we do.
           </h2>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { GlowCard } from "@/components/ui/glow-card";
+import { ShinePill } from "@/components/ui/shine-shape";
 import type { TRUST_STATS } from "@/lib/content";
 
 export function AboutSection({
@@ -15,9 +16,9 @@ export function AboutSection({
     <section className="mx-auto max-w-7xl px-6 py-24">
       <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
         <div>
-          <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
             About New Level
-          </span>
+          </ShinePill>
           <h2 className="font-heading mt-6 max-w-lg text-4xl font-bold text-balance md:text-5xl">
             Real estate, redefined at every level.
           </h2>

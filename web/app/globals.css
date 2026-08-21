@@ -243,3 +243,25 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
+
+/* ShinePill / ShineCircle (components/ui/shine-shape.tsx) — the same
+   .glow-card__ring proximity ring, plus a resting-to-hover shadow bump so
+   small text-in-shape elements (eyebrow pills, avatar/icon circles) read as
+   "lighting up" even before the cursor gets close enough for the ring
+   itself to be visible. */
+.shine-shape {
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-opacity: 0;
+  transition: box-shadow 300ms ease;
+}
+.shine-shape:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-green) 30%, transparent),
+    0 8px 20px -8px color-mix(in srgb, var(--color-green) 45%, transparent);
+}
+:root.dark .shine-shape:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-green) 40%, transparent),
+    0 10px 26px -8px color-mix(in srgb, var(--color-green) 55%, transparent);
+}

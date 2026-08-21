@@ -43,7 +43,7 @@ function ensurePointerListener() {
 // the card itself.
 const FIELD_RADIUS = 120;
 
-function useGlowRing<T extends HTMLElement>() {
+export function useGlowRing<T extends HTMLElement>() {
   const ref = useRef<T>(null);
 
   useEffect(() => {

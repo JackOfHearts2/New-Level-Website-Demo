@@ -820,6 +820,10 @@ export const REVIEWS = {
 export const GALLERY_STRIP = ["00", "09", "11", "06", "24", "34", "02", "03"];
 export const TOTAL_PROPERTY_PHOTOS = 39;
 
+// Full-resolution album hosted by the property photographer.
+export const PROPERTY_ALBUM_URL =
+  "https://la-chatte-productions.client-gallery.com/gallery/1331-nw-87th-st-final";
+
 export const INQUIRY_ENDPOINT = "";
 
 // =============================================================================

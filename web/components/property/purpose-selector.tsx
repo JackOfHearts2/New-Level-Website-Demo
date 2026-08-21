@@ -2,7 +2,8 @@
 
 import { Briefcase, Users, PartyPopper, HeartHandshake, CalendarRange } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { GlowCard } from "@/components/ui/glow-card";
+import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
+import { ShinePill } from "@/components/ui/shine-shape";
 import { AUDIENCES, AUDIENCE_ORDER, EVENT_TYPES } from "@/lib/content";
 import { useBooking, type AudienceId } from "./booking-context";
 
@@ -20,9 +21,9 @@ export function PurposeSelector() {
   return (
     <section id="purpose" className="mx-auto max-w-7xl px-6 py-16">
       <div className="mx-auto max-w-2xl text-center">
-        <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+        <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
           What brings you here?
-        </span>
+        </ShinePill>
         <h2 className="font-heading mt-6 text-3xl font-bold text-balance md:text-4xl">
           Choose the moment you&apos;re planning for.
         </h2>
@@ -60,25 +61,14 @@ export function PurposeSelector() {
             What kind of event?
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
-            {EVENT_TYPES.map((type) => {
-              const selected = state.eventType === type;
-              return (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => dispatch({ type: "SET_EVENT_TYPE", value: type })}
-                  aria-pressed={selected}
-                  className={cn(
-                    "font-heading rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
-                    selected
-                      ? "bg-primary border-primary text-primary-foreground"
-                      : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                  )}
-                >
-                  {type}
-                </button>
-              );
-            })}
+            {EVENT_TYPES.map((type) => (
+              <EventTypeChip
+                key={type}
+                type={type}
+                selected={state.eventType === type}
+                onSelect={() => dispatch({ type: "SET_EVENT_TYPE", value: type })}
+              />
+            ))}
           </div>
           <label className="mt-4 block text-sm">
             <span className="text-muted-foreground font-heading text-xs font-medium">
@@ -97,5 +87,34 @@ export function PurposeSelector() {
         </div>
       )}
     </section>
+  );
+}
+
+function EventTypeChip({
+  type,
+  selected,
+  onSelect,
+}: {
+  type: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const ref = useGlowRing<HTMLButtonElement>();
+  return (
+    <button
+      ref={ref}
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={cn(
+        "shine-shape font-heading relative rounded-full border px-4 py-1.5 text-sm font-medium transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-0.5",
+        selected
+          ? "bg-primary border-primary text-primary-foreground"
+          : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+      )}
+    >
+      <span className="glow-card__ring" aria-hidden />
+      {type}
+    </button>
   );
 }

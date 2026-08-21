@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
+import { ShinePill } from "@/components/ui/shine-shape";
 import { NLG_BRAND, VALUES, SERVICES } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -66,9 +67,9 @@ export default function AboutPage() {
       <section className="bg-muted/50 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+            <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
               What We Stand For
-            </span>
+            </ShinePill>
             <h2 className="font-heading mt-6 text-3xl font-bold text-balance md:text-4xl">
               Our Values
             </h2>
@@ -86,9 +87,9 @@ export default function AboutPage() {
 
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
             What We Do
-          </span>
+          </ShinePill>
           <h2 className="font-heading mt-6 text-3xl font-bold text-balance md:text-4xl">
             The full New Level offering.
           </h2>

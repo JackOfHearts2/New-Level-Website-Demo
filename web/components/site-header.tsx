@@ -61,7 +61,12 @@ export function SiteHeader({
               <NavMenu />
             </div>
 
-            <div className="bg-background group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
+            {/* max-h + overflow-y-auto below lg: with a deep accordion item
+                (Properties/Services) expanded on a short phone viewport,
+                this panel could grow tall enough for the fixed MobileDock
+                to render on top of "View Properties" — it needs to scroll
+                internally instead of growing past the fold. */}
+            <div className="bg-background group-data-[state=active]:flex mb-6 hidden max-h-[70vh] w-full flex-wrap items-center justify-end space-y-8 overflow-y-auto rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:max-h-none lg:w-fit lg:gap-6 lg:space-y-0 lg:overflow-visible lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
               <div className="lg:hidden">
                 <NavMenuMobile onNavigate={() => setMenuState(false)} />
               </div>

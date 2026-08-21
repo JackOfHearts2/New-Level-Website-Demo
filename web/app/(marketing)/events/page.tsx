@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { buttonVariants } from "@/components/ui/button";
+import { ShinePill } from "@/components/ui/shine-shape";
 import { cn } from "@/lib/utils";
 import { PAGES, EVENTS_CALENDAR } from "@/lib/content";
 
@@ -91,9 +92,9 @@ export default function EventsPage() {
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="font-heading font-semibold">{event.title}</h3>
-                <span className="bg-accent text-accent-foreground font-heading rounded-full px-3 py-1 text-xs font-semibold uppercase">
+                <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-3 py-1 text-xs font-semibold uppercase">
                   {event.type}
-                </span>
+                </ShinePill>
               </div>
               <p className="text-muted-foreground mt-2 text-sm">
                 {new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {

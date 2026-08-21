@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { TEAM } from "@/lib/content";
-import { FolderStack } from "@/components/team/folder-stack";
+import { TeamImageAccordion } from "@/components/team/team-image-accordion";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 export function TeamSection({ team }: { team: typeof TEAM }) {
@@ -15,7 +15,7 @@ export function TeamSection({ team }: { team: typeof TEAM }) {
         </h2>
       </div>
 
-      <FolderStack team={team} />
+      <TeamImageAccordion team={team} />
 
       <div className="mt-8 flex justify-center">
         <Link href="/team">
