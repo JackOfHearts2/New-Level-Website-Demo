@@ -122,7 +122,55 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    /* "Jade Sky" mesh gradient (client-supplied, from 21st.dev) — light mode
+       page background. background-attachment: fixed is deliberate: it keeps
+       the gradient's percentage-based positions relative to the viewport
+       instead of the full scrollable page height, so it reads the same on a
+       short page and a very long one (e.g. the property page) instead of
+       being compressed into a sliver at the top. */
+    background-color: #cfe9f0;
+    background-image:
+      radial-gradient(
+        circle at 65.34% 44.62%,
+        rgba(238, 246, 227, 1) 0%,
+        rgba(238, 246, 227, 0.844) 8.53%,
+        rgba(238, 246, 227, 0.5) 17.05%,
+        rgba(238, 246, 227, 0.156) 25.58%,
+        rgba(238, 246, 227, 0) 34.1%
+      ),
+      radial-gradient(
+        circle at 28.07% 74.48%,
+        rgba(183, 217, 142, 1) 0%,
+        rgba(183, 217, 142, 0.844) 11.41%,
+        rgba(183, 217, 142, 0.5) 22.83%,
+        rgba(183, 217, 142, 0.156) 34.24%,
+        rgba(183, 217, 142, 0) 45.65%
+      ),
+      radial-gradient(
+        circle at 52.42% 19.94%,
+        rgba(127, 191, 154, 1) 0%,
+        rgba(127, 191, 154, 0.844) 14.39%,
+        rgba(127, 191, 154, 0.5) 28.77%,
+        rgba(127, 191, 154, 0.156) 43.16%,
+        rgba(127, 191, 154, 0) 57.55%
+      ),
+      radial-gradient(
+        circle at 80.31% 84.47%,
+        rgba(207, 233, 240, 1) 0%,
+        rgba(207, 233, 240, 0.844) 17.27%,
+        rgba(207, 233, 240, 0.5) 34.55%,
+        rgba(207, 233, 240, 0.156) 51.82%,
+        rgba(207, 233, 240, 0) 69.1%
+      );
+    background-attachment: fixed;
+  }
+  /* "Axis Blend" (client-supplied, from 21st.dev) — dark mode page
+     background. Higher specificity than the plain `body` rule above
+     (:root.dark + body) so it wins regardless of source order. */
+  :root.dark body {
+    background-color: #000428;
+    background-image: linear-gradient(130deg, #000428 0%, #004e92 100%);
   }
   html {
     @apply font-sans;

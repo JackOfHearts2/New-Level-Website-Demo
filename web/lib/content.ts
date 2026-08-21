@@ -46,6 +46,13 @@ export const BROKERS_CORNER = {
 };
 
 export const PAGES = {
+  contentLibrary: {
+    eyebrow: "Content Library",
+    heading: "What we're posting, all in one place.",
+    sub: "Follow along on Instagram, Facebook, TikTok and YouTube — or browse a taste of it here.",
+    intro:
+      "Real posts will appear here once each platform is connected — for now, this is a preview of how it'll look.",
+  },
   team: {
     eyebrow: "Agents & Partners",
     heading: "Our Team",
@@ -314,9 +321,10 @@ export const TEAM = [
 ];
 
 export const SOCIALS = [
-  { name: "Instagram", href: "https://newlevelassociates.com" },
-  { name: "Facebook", href: "https://newlevelassociates.com" },
-  { name: "TikTok", href: "https://newlevelassociates.com" },
+  { id: "instagram", name: "Instagram", href: "https://newlevelassociates.com" },
+  { id: "facebook", name: "Facebook", href: "https://newlevelassociates.com" },
+  { id: "tiktok", name: "TikTok", href: "https://newlevelassociates.com" },
+  { id: "youtube", name: "YouTube", href: "https://newlevelassociates.com" },
 ];
 
 // Single source for the top nav — shared by the homepage's HeroHeader and
@@ -342,6 +350,7 @@ export const NAV_MENU = [
       { label: "About New Level", href: "/about" },
       { label: "Team", href: "/team" },
       { label: "The Broker's Corner", href: "/brokers-corner" },
+      { label: "Content Library", href: "/content-library" },
     ],
   },
   {
@@ -416,6 +425,7 @@ export const FOOTER_NAV = [
     title: "Resources",
     links: [
       { label: "The Broker's Corner", href: "/brokers-corner" },
+      { label: "Content Library", href: "/content-library" },
       { label: "FAQs", href: "/faq" },
       { label: "Property Portfolio", href: "/properties" },
     ],
@@ -789,3 +799,53 @@ export const GALLERY_STRIP = ["00", "09", "11", "06", "24", "34", "02", "03"];
 export const TOTAL_PROPERTY_PHOTOS = 39;
 
 export const INQUIRY_ENDPOINT = "";
+
+// =============================================================================
+// Content Library — illustrative example posts only (no platform is actually
+// connected yet, per the client's roadmap). Each entry can carry its own
+// `href` once real per-post links exist (Phase 5); for now they fall back to
+// the platform's own link in SOCIALS above. Not real posts — clearly labeled
+// as a preview on the page itself.
+// =============================================================================
+export const CONTENT_LIBRARY_POSTS = [
+  {
+    platform: "instagram",
+    caption: "A look inside 1331 NW 87th Street",
+    photo: "00",
+  },
+  {
+    platform: "instagram",
+    caption: "Meet the team behind New Level",
+    photo: "10",
+  },
+  {
+    platform: "facebook",
+    caption: "Market update: what we're seeing across South Florida",
+    photo: "20",
+  },
+  {
+    platform: "facebook",
+    caption: "Another closing, another happy client",
+    photo: "35",
+  },
+  {
+    platform: "tiktok",
+    caption: "60-second tour of our featured property",
+    photo: "05",
+  },
+  {
+    platform: "tiktok",
+    caption: "A day in the life at New Level",
+    photo: "25",
+  },
+  {
+    platform: "youtube",
+    caption: "Full property walkthrough",
+    photo: "15",
+  },
+  {
+    platform: "youtube",
+    caption: "What makes New Level different",
+    photo: "30",
+  },
+];

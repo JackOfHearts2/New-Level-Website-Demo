@@ -93,7 +93,7 @@ export async function saveContent(
       placeholder: member.placeholder,
     })),
     socials: current.socials.map((social, i) => ({
-      name: social.name,
+      ...social,
       href: urlField(formData, `socials.${i}.href`, MEDIUM, social.href),
     })),
   };

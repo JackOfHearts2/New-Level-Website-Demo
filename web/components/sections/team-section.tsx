@@ -27,9 +27,9 @@ export function TeamSection({ team }: { team: typeof TEAM }) {
       </div>
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {team.map((member) => (
+        {team.map((member, i) => (
           <div
-            key={member.name}
+            key={i}
             className="border-border rounded-2xl border p-6 text-center shadow-sm"
           >
             <div

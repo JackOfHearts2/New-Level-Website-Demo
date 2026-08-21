@@ -23,8 +23,8 @@ export default function TeamPage() {
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
         <Carousel>
-          {TEAM.map((member) => (
-            <CarouselItem key={member.name}>
+          {TEAM.map((member, i) => (
+            <CarouselItem key={i}>
               <div className="border-border h-full rounded-2xl border p-6 text-center shadow-sm">
                 <div
                   className={cn(

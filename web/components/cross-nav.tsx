@@ -11,6 +11,7 @@ const SITE_PAGES = [
   { key: "events", label: "Events", href: "/events" },
   { key: "contact", label: "Contact", href: "/contact" },
   { key: "brokersCorner", label: "The Broker's Corner", href: "/brokers-corner" },
+  { key: "contentLibrary", label: "Content Library", href: "/content-library" },
   { key: "faq", label: "FAQs", href: "/faq" },
 ] as const;
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FOOTER_NAV, NLG_BRAND } from "@/lib/content";
 import type { SOCIALS } from "@/lib/content";
+import { SOCIAL_ICONS } from "@/components/social-icons";
 
 export function SiteFooter({
   tagline,
@@ -39,17 +40,22 @@ export function SiteFooter({
               {tagline} — a South Florida real estate group.
             </p>
             <div className="mt-6 flex gap-3">
-              {socials.map((s) => (
-                <a
-                  key={s.name}
-                  href={s.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="border-border text-muted-foreground hover:text-foreground hover:border-primary/50 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
-                >
-                  {s.name}
-                </a>
-              ))}
+              {socials.map((s) => {
+                const Icon = "id" in s ? SOCIAL_ICONS[s.id] : undefined;
+                return (
+                  <a
+                    key={s.name}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={s.name}
+                    className="border-border text-muted-foreground hover:text-foreground hover:border-primary/50 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
+                  >
+                    {Icon && <Icon className="size-3.5" />}
+                    {s.name}
+                  </a>
+                );
+              })}
             </div>
           </div>
 
