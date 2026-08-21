@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { NavMenu } from "@/components/nav-menu";
 import { NavMenuMobile } from "@/components/nav-menu-mobile";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ProfileMenu } from "@/components/profile-menu";
 
 const transitionVariants = {
   item: {
@@ -238,6 +239,7 @@ const HeroHeader = ({
               </div>
               <div className="flex w-full flex-wrap items-center gap-3 sm:flex-nowrap md:w-fit">
                 <ThemeToggle />
+                <ProfileMenu />
                 <Link
                   href="/contact"
                   className={cn(
