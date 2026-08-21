@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { GlowCard } from "@/components/ui/glow-card";
 import { SEARCH_CATEGORIES, SEARCH_FILTERS } from "@/lib/content";
 
 const FILTER_LABELS: Record<keyof typeof SEARCH_FILTERS, string> = {
@@ -48,7 +49,7 @@ export function SearchBox() {
 
   return (
     <div className="relative z-10 mx-auto mt-8 max-w-5xl px-4 sm:-mt-16 sm:px-6">
-      <div className="bg-background/95 border-border rounded-3xl border p-4 shadow-xl backdrop-blur-xl sm:p-6">
+      <GlowCard className="bg-background/95 rounded-3xl p-4 backdrop-blur-xl sm:p-6">
         <div role="tablist" className="flex flex-wrap gap-2">
           {SEARCH_CATEGORIES.map((cat) => (
             <button
@@ -142,7 +143,7 @@ export function SearchBox() {
             </button>
           </div>
         </form>
-      </div>
+      </GlowCard>
     </div>
   );
 }

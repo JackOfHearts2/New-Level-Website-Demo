@@ -193,6 +193,36 @@
   --glow-x: 50%;
   --glow-y: 50%;
   --glow-opacity: 0;
+  /* A visibly stronger resting shadow than a typical "subtle card" recipe —
+     the client's explicit complaint was that cards read as flat/part of the
+     background even at rest, not just that they lacked a hover effect. */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 16px 32px -12px rgba(0, 0, 0, 0.18);
+  transition:
+    box-shadow 300ms ease,
+    transform 300ms ease;
+}
+.glow-card:hover {
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 24px 48px -16px rgba(0, 0, 0, 0.22);
+}
+/* A plain black shadow barely reads against an already-dark page, so dark
+   mode gets its own recipe: a faint inset top highlight (light "catching"
+   the card's top edge) plus a darker, more visible drop shadow, rather than
+   just reusing the light-mode values at the same alpha. */
+:root.dark .glow-card {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 20px 40px -16px rgba(0, 0, 0, 0.7);
+}
+:root.dark .glow-card:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 4px 8px rgba(0, 0, 0, 0.45),
+    0 28px 56px -18px rgba(0, 0, 0, 0.75);
 }
 .glow-card__ring {
   position: absolute;

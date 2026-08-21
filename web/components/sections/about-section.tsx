@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { GlowCard } from "@/components/ui/glow-card";
 import type { TRUST_STATS } from "@/lib/content";
 
 export function AboutSection({
@@ -36,17 +37,14 @@ export function AboutSection({
 
         <div className="grid grid-cols-2 gap-4">
           {trustStats.map((stat) => (
-            <div
-              key={stat.label}
-              className="border-border rounded-2xl border p-6 shadow-sm"
-            >
+            <GlowCard key={stat.label} className="p-6">
               <div className="font-heading text-primary text-3xl font-bold md:text-4xl">
                 {stat.value}
               </div>
               <div className="text-muted-foreground mt-2 text-sm">
                 {stat.label}
               </div>
-            </div>
+            </GlowCard>
           ))}
         </div>
       </div>

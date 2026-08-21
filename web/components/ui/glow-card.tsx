@@ -91,8 +91,11 @@ type GlowCardProps = {
   "aria-label"?: string;
 };
 
-const BASE_CLASSES =
-  "glow-card relative rounded-2xl border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_24px_-8px_rgba(0,0,0,0.12)]";
+// Shadow lives in globals.css (.glow-card / :root.dark .glow-card / hover
+// states) instead of a static Tailwind arbitrary value, since dark mode
+// needs a genuinely different shadow recipe (a plain black shadow is
+// invisible against an already-dark page), not just a color-token swap.
+const BASE_CLASSES = "glow-card relative rounded-2xl border border-border bg-card";
 
 export function GlowCard({
   children,

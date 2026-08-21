@@ -21,7 +21,7 @@ export function EventCtaSection({
         <h2 className="font-heading relative mt-6 text-3xl font-bold text-balance md:text-4xl">
           {eventCta.heading}
         </h2>
-        <p className="relative mx-auto mt-4 max-w-xl text-balance text-white/70">
+        <p className="text-background/70 relative mx-auto mt-4 max-w-xl text-balance">
           {eventCta.sub}
         </p>
         <Link
