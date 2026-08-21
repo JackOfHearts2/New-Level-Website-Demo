@@ -1,55 +1,29 @@
 import Link from "next/link";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import type { TEAM } from "@/lib/content";
-import { GlowCard } from "@/components/ui/glow-card";
-import { FanReveal } from "@/components/ui/fan-reveal";
+import { FolderStack } from "@/components/team/folder-stack";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 export function TeamSection({ team }: { team: typeof TEAM }) {
   return (
-    // min-w-0 overrides the flex-item default of min-width:auto — body is
-    // `flex flex-col` (for sticky-footer layout), so without this, this
-    // section refuses to shrink below the FanReveal row's full unscrolled
-    // content width, forcing horizontal overflow on the whole page instead
-    // of letting FanReveal's own overflow-x-auto clip/scroll it.
     <section className="mx-auto w-full min-w-0 max-w-7xl px-6 py-24">
-      <div className="flex flex-wrap items-end justify-between gap-6">
-        <div>
-          <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
-            Agents & Partners
-          </span>
-          <h2 className="font-heading mt-6 text-4xl font-bold text-balance md:text-5xl">
-            Our Team
-          </h2>
-        </div>
-        <Link
-          href="/team"
-          className={cn(
-            buttonVariants({ variant: "outline", size: "lg" }),
-            "font-heading rounded-xl px-6 font-semibold"
-          )}
-        >
-          Meet the full team
-        </Link>
+      <div className="mx-auto max-w-2xl text-center">
+        <span className="bg-accent text-accent-foreground font-heading inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+          Agents & Partners
+        </span>
+        <h2 className="font-heading mt-6 text-4xl font-bold text-balance md:text-5xl">
+          Our Team
+        </h2>
       </div>
 
-      <FanReveal className="mt-16 justify-center">
-        {team.slice(0, 4).map((member, i) => (
-          <GlowCard key={i} className="w-64 shrink-0 p-6 text-center">
-            <div className="border-border relative mx-auto size-16 overflow-hidden rounded-full border">
-              <Image src={member.photo} alt="" fill sizes="64px" className="object-cover" />
-            </div>
-            <h3 className="font-heading mt-4 font-semibold">{member.name}</h3>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {member.role}
-            </p>
-            <p className="text-muted-foreground/80 mt-3 text-xs italic">
-              &ldquo;{member.motto}&rdquo;
-            </p>
-          </GlowCard>
-        ))}
-      </FanReveal>
+      <FolderStack team={team} />
+
+      <div className="mt-8 flex justify-center">
+        <Link href="/team">
+          <HoverBorderGradient as="div" className="font-heading font-semibold">
+            Meet the full team
+          </HoverBorderGradient>
+        </Link>
+      </div>
     </section>
   );
 }

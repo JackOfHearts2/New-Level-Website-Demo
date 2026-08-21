@@ -2,15 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_MENU } from "@/lib/content";
 
 const CLOSE_DELAY_MS = 200;
+const SPRING = { type: "spring" as const, stiffness: 350, damping: 32 };
 
 export function NavMenu() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reduceMotion = useReducedMotion();
 
   function cancelClose() {
     if (closeTimer.current) {
@@ -78,23 +81,29 @@ export function NavMenu() {
                 </button>
               )}
             </div>
-            {hasChildren && openIndex === i && (
-              <div
-                onMouseEnter={cancelClose}
-                onMouseLeave={scheduleClose}
-                className="bg-popover border-border absolute top-full left-1/2 z-30 mt-3 w-56 -translate-x-1/2 rounded-2xl border p-2 shadow-lg"
-              >
-                {item.children!.map((child) => (
-                  <Link
-                    key={child.href}
-                    href={child.href}
-                    className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-sm font-medium"
-                  >
-                    {child.label}
-                  </Link>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {hasChildren && openIndex === i && (
+                <motion.div
+                  onMouseEnter={cancelClose}
+                  onMouseLeave={scheduleClose}
+                  initial={reduceMotion ? false : { opacity: 0, y: -8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, y: -8, scale: 0.96 }}
+                  transition={reduceMotion ? { duration: 0 } : SPRING}
+                  className="bg-popover border-border absolute top-full left-1/2 z-30 mt-3 w-56 -translate-x-1/2 rounded-2xl border p-2 shadow-lg"
+                >
+                  {item.children!.map((child) => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-sm font-medium"
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </li>
         );
       })}

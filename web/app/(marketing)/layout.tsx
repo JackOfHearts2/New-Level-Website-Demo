@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/sections/site-footer";
+import { MobileDock } from "@/components/mobile-dock";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function MarketingLayout({
@@ -15,13 +16,14 @@ export default async function MarketingLayout({
         logoUrl={content.images.logoUrl}
         logoUrlDark={content.images.logoUrlDark}
       />
-      {children}
+      <div className="pb-24 md:pb-0">{children}</div>
       <SiteFooter
         tagline={content.brand.tagline}
         socials={content.socials}
         logoUrl={content.images.logoUrl}
         logoUrlDark={content.images.logoUrlDark}
       />
+      <MobileDock />
     </>
   );
 }
