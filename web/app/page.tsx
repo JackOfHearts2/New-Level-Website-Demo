@@ -1,4 +1,5 @@
 import { HeroSection } from "@/components/ui/hero-section";
+import { SearchBox } from "@/components/search-box";
 import { AboutSection } from "@/components/sections/about-section";
 import { ServicesSection } from "@/components/sections/services-section";
 import { EventCtaSection } from "@/components/sections/event-cta-section";
@@ -14,8 +15,10 @@ export default async function Home() {
     <>
       <HeroSection
         logoUrl={content.images.logoUrl}
+        logoUrlDark={content.images.logoUrlDark}
         heroBgUrl={content.images.heroBgUrl}
       />
+      <SearchBox />
       <AboutSection
         aboutShort={content.brand.aboutShort}
         trustStats={content.trustStats}
@@ -28,6 +31,7 @@ export default async function Home() {
         tagline={content.brand.tagline}
         socials={content.socials}
         logoUrl={content.images.logoUrl}
+        logoUrlDark={content.images.logoUrlDark}
       />
     </>
   );

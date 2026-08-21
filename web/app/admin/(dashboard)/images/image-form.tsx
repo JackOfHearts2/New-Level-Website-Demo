@@ -85,7 +85,9 @@ export function ImageForm({
           className="border-border bg-muted h-24 w-auto rounded-lg border object-contain p-2"
         />
       ) : (
-        <p className="text-muted-foreground text-sm">No image set yet.</p>
+        <p className="text-muted-foreground text-sm">
+          No custom photo uploaded — the live site is showing a built-in default.
+        </p>
       )}
       <input
         ref={inputRef}

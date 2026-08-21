@@ -22,12 +22,22 @@ export const metadata: Metadata = {
     "New Level — a South Florida real estate group matching standout properties to the moments they're made for.",
 };
 
+// Runs before paint to set the dark class synchronously — avoids a flash of
+// the wrong theme on load. Reads a stored preference first, falling back to
+// the OS setting. suppressHydrationWarning on <html> below is required
+// because this script mutates className before React hydrates.
+const themeInitScript = `(function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(s!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark");}catch(e){}})();`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${poppins.variable} ${dmSans.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

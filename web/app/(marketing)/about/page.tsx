@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
@@ -34,6 +35,32 @@ export default function AboutPage() {
             {NLG_BRAND.story}
           </p>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-16">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+            <Image
+              src="/photos/35.jpg"
+              alt="Screened patio at 1331 NW 87th Street"
+              fill
+              sizes="(min-width: 640px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+            <Image
+              src="/photos/10.jpg"
+              alt="Kitchen at 1331 NW 87th Street"
+              fill
+              sizes="(min-width: 640px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+        </div>
+        <p className="text-muted-foreground/70 mt-3 text-center text-xs">
+          A look inside 1331 NW 87th Street, our featured New Level property.
+        </p>
       </section>
 
       <section className="bg-muted/50 py-24">

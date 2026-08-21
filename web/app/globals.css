@@ -46,12 +46,15 @@
 }
 
 /* Brand tokens, mapped from the vanilla site's :root custom properties in
-   ../../styles.css — black / white / one green (#72D35B), no second accent,
-   no dark mode (locked design decisions, see CLAUDE.md). shadcn's semantic
-   vars point at these so pasted shadcn/Aceternity components inherit the
-   brand automatically instead of shadcn's neutral defaults. The .dark
-   block that create-next-app/shadcn scaffold by default is intentionally
-   omitted — this brand is light-only. */
+   ../../styles.css — black / white / one green (#72D35B), no second accent
+   (locked design decision, see CLAUDE.md). shadcn's semantic vars point at
+   these so pasted shadcn/Aceternity components inherit the brand
+   automatically instead of shadcn's neutral defaults.
+
+   Note: the vanilla static site at the repo root is explicitly light-only
+   (a separate, still-current locked decision for that codebase) — the dark
+   mode below applies only to this Next.js rebuild, added at the client's
+   request once this app existed independently of that constraint. */
 :root {
   --background: #ffffff; /* --paper */
   --foreground: #0a0a0a; /* --ink */
@@ -79,6 +82,38 @@
   --sidebar-accent: #e9f7e3;
   --sidebar-accent-foreground: #0a0a0a;
   --sidebar-border: #e6e6e1;
+  --sidebar-ring: #72d35b;
+}
+
+/* Dark mode — same three-color system (black / white / #72D35B green), just
+   inverted: near-black background instead of paper-white, near-white text
+   instead of ink. No new hues introduced. */
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #f5f5f5;
+  --card: #141414;
+  --card-foreground: #f5f5f5;
+  --popover: #141414;
+  --popover-foreground: #f5f5f5;
+  --primary: #72d35b;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #0a0a0a;
+  --muted: #1c1c1c;
+  --muted-foreground: #a3a3a3;
+  --accent: #16241a;
+  --accent-foreground: #d7f5cd;
+  --destructive: #ff6b6b;
+  --border: #2a2a2a;
+  --input: #2a2a2a;
+  --ring: #72d35b;
+  --sidebar: #141414;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #72d35b;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #16241a;
+  --sidebar-accent-foreground: #d7f5cd;
+  --sidebar-border: #2a2a2a;
   --sidebar-ring: #72d35b;
 }
 

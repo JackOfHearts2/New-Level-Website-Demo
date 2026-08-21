@@ -11,12 +11,16 @@ export default async function MarketingLayout({
 
   return (
     <>
-      <SiteHeader logoUrl={content.images.logoUrl} />
+      <SiteHeader
+        logoUrl={content.images.logoUrl}
+        logoUrlDark={content.images.logoUrlDark}
+      />
       {children}
       <SiteFooter
         tagline={content.brand.tagline}
         socials={content.socials}
         logoUrl={content.images.logoUrl}
+        logoUrlDark={content.images.logoUrlDark}
       />
     </>
   );

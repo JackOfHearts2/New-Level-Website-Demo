@@ -319,16 +319,79 @@ export const SOCIALS = [
   { name: "TikTok", href: "https://newlevelassociates.com" },
 ];
 
-// Single source for the top-nav link list — shared by the homepage's
-// HeroHeader and every other page's SiteHeader so they can't drift apart.
-export const NAV_ITEMS = [
-  { name: "Properties", href: "/properties" },
-  { name: "About", href: "/about" },
-  { name: "Services", href: "/services" },
-  { name: "Testimonials", href: "/testimonials" },
-  { name: "Events", href: "/events" },
-  { name: "Contact", href: "/contact" },
+// Single source for the top nav — shared by the homepage's HeroHeader and
+// every other page's SiteHeader via the NavMenu/NavMenuMobile components so
+// they can't drift apart. Properties/About/Services carry dropdown children;
+// the rest are plain links.
+export const NAV_MENU = [
+  {
+    label: "Properties",
+    href: "/properties",
+    children: [
+      { label: "All properties", href: "/properties" },
+      { label: "Luxury Short-Term Rentals", href: "/properties#luxury-short-term" },
+      { label: "Short-Term Rentals", href: "/properties#short-term" },
+      { label: "Extended Stays", href: "/properties#extended-stay" },
+      { label: "Private Events", href: "/properties#events" },
+    ],
+  },
+  {
+    label: "About",
+    href: "/about",
+    children: [
+      { label: "About New Level", href: "/about" },
+      { label: "Team", href: "/team" },
+      { label: "The Broker's Corner", href: "/brokers-corner" },
+    ],
+  },
+  {
+    label: "Services",
+    href: "/services",
+    children: [
+      { label: "Brokerage & Consulting", href: "/services#brokerage" },
+      { label: "Property Management", href: "/services#management" },
+      { label: "Investment", href: "/services#investment" },
+    ],
+  },
+  { label: "Testimonials", href: "/testimonials" },
+  { label: "Events", href: "/events" },
+  { label: "Contact", href: "/contact" },
 ];
+
+// Homepage search bar (index.html's #choose section). The tabs + keyword
+// field are the only inputs that affect the resulting properties.html URL —
+// the 5 filter dropdowns below are populated/interactive but intentionally
+// decorative (this demo has one real listing, not an MLS inventory to
+// filter against).
+export const SEARCH_CATEGORIES = [
+  { id: "for-sale", label: "For Sale" },
+  {
+    id: "for-rent",
+    label: "For Rent",
+    children: [
+      { id: "long-term", label: "Long-Term" },
+      { id: "short-term", label: "Short-Term" },
+      { id: "extended-stay", label: "Extended" },
+    ],
+  },
+  { id: "investment", label: "Investment Properties" },
+];
+
+export const SEARCH_FILTERS = {
+  neighborhood: [
+    "Any",
+    "Downtown Miami",
+    "Brickell",
+    "Coral Gables",
+    "Coconut Grove",
+    "Wynwood",
+    "Miami Beach",
+  ],
+  beds: ["Any", "1+", "2+", "3+", "4+", "5+"],
+  baths: ["Any", "1+", "2+", "3+", "4+"],
+  minPrice: ["Any", "$200k", "$500k", "$1M", "$2M", "$5M"],
+  maxPrice: ["Any", "$500k", "$1M", "$2M", "$5M", "$10M+"],
+};
 
 export const FOOTER_NAV = [
   {

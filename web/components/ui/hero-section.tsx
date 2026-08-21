@@ -7,7 +7,9 @@ import { buttonVariants } from "@/components/ui/button";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { cn } from "@/lib/utils";
-import { NAV_ITEMS } from "@/lib/content";
+import { NavMenu } from "@/components/nav-menu";
+import { NavMenuMobile } from "@/components/nav-menu-mobile";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const transitionVariants = {
   item: {
@@ -31,19 +33,22 @@ const transitionVariants = {
 
 export function HeroSection({
   logoUrl,
+  logoUrlDark,
   heroBgUrl,
 }: {
   logoUrl: string;
+  logoUrlDark: string;
   heroBgUrl: string | null;
 }) {
   return (
     <>
-      <HeroHeader logoUrl={logoUrl} />
+      <HeroHeader logoUrl={logoUrl} logoUrlDark={logoUrlDark} />
       <main className="overflow-hidden">
         {heroBgUrl && (
-          // Optional admin-uploaded photo, layered under the existing glow —
-          // absent by default, so the hero renders identically to before
-          // until someone actually uploads one via /admin/images.
+          // A real property photo by default (see getSiteContent() in
+          // lib/site-content.ts), layered under the existing glow — an
+          // admin can replace it via /admin/images, but this always renders
+          // something rather than needing an upload first.
           <div
             aria-hidden
             className="absolute inset-0 -z-10 size-full bg-cover bg-center opacity-25"
@@ -152,7 +157,13 @@ export function HeroSection({
   );
 }
 
-const HeroHeader = ({ logoUrl }: { logoUrl: string }) => {
+const HeroHeader = ({
+  logoUrl,
+  logoUrlDark,
+}: {
+  logoUrl: string;
+  logoUrlDark: string;
+}) => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
 
@@ -194,7 +205,15 @@ const HeroHeader = ({ logoUrl }: { logoUrl: string }) => {
                     fill
                     sizes="160px"
                     priority
-                    className="object-contain object-left"
+                    className="object-contain object-left dark:hidden"
+                  />
+                  <Image
+                    src={logoUrlDark}
+                    alt="New Level"
+                    fill
+                    sizes="160px"
+                    priority
+                    className="hidden object-contain object-left dark:block"
                   />
                 </div>
               </Link>
@@ -210,36 +229,15 @@ const HeroHeader = ({ logoUrl }: { logoUrl: string }) => {
             </div>
 
             <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-              <ul className="flex gap-8 text-sm">
-                {NAV_ITEMS.map((item, index) => (
-                  <li key={index}>
-                    <Link
-                      href={item.href}
-                      className="text-muted-foreground hover:text-foreground font-heading block font-medium duration-150"
-                    >
-                      <span>{item.name}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <NavMenu />
             </div>
 
             <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
               <div className="lg:hidden">
-                <ul className="space-y-6 text-base">
-                  {NAV_ITEMS.map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        href={item.href}
-                        className="text-muted-foreground hover:text-foreground font-heading block font-medium duration-150"
-                      >
-                        <span>{item.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <NavMenuMobile onNavigate={() => setMenuState(false)} />
               </div>
-              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+              <div className="flex w-full flex-wrap items-center gap-3 sm:flex-nowrap md:w-fit">
+                <ThemeToggle />
                 <Link
                   href="/contact"
                   className={cn(

@@ -6,9 +6,17 @@ import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { NAV_ITEMS } from "@/lib/content";
+import { NavMenu } from "@/components/nav-menu";
+import { NavMenuMobile } from "@/components/nav-menu-mobile";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-export function SiteHeader({ logoUrl }: { logoUrl: string }) {
+export function SiteHeader({
+  logoUrl,
+  logoUrlDark,
+}: {
+  logoUrl: string;
+  logoUrlDark: string;
+}) {
   const [menuState, setMenuState] = React.useState(false);
 
   return (
@@ -26,7 +34,14 @@ export function SiteHeader({ logoUrl }: { logoUrl: string }) {
                     alt="New Level"
                     fill
                     sizes="160px"
-                    className="object-contain object-left"
+                    className="object-contain object-left dark:hidden"
+                  />
+                  <Image
+                    src={logoUrlDark}
+                    alt="New Level"
+                    fill
+                    sizes="160px"
+                    className="hidden object-contain object-left dark:block"
                   />
                 </div>
               </Link>
@@ -42,36 +57,15 @@ export function SiteHeader({ logoUrl }: { logoUrl: string }) {
             </div>
 
             <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-              <ul className="flex gap-8 text-sm">
-                {NAV_ITEMS.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="text-muted-foreground hover:text-foreground font-heading block font-medium duration-150"
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <NavMenu />
             </div>
 
             <div className="bg-background group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
               <div className="lg:hidden">
-                <ul className="space-y-6 text-base">
-                  {NAV_ITEMS.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className="text-muted-foreground hover:text-foreground font-heading block font-medium duration-150"
-                      >
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <NavMenuMobile onNavigate={() => setMenuState(false)} />
               </div>
-              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+              <div className="flex w-full flex-wrap items-center gap-3 sm:flex-nowrap md:w-fit">
+                <ThemeToggle />
                 <Link
                   href="/properties"
                   className={cn(buttonVariants({ size: "sm" }), "font-heading")}

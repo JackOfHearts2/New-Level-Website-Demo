@@ -1,8 +1,20 @@
-import { getSiteContent } from "@/lib/site-content";
+import { getRawSiteContent } from "@/lib/site-content";
 import { ImageForm } from "./image-form";
 
 export default async function AdminImagesPage() {
-  const content = await getSiteContent();
+  // Deliberately the raw (unresolved) content here, not getSiteContent()'s
+  // public-facing view — that view fills in real defaults (the built-in
+  // logo, a property photo behind the hero) when nothing's been uploaded,
+  // which would make every slot look "already set" on this page even when
+  // no admin override actually exists yet.
+  const raw = await getRawSiteContent();
+  const logoUrl = raw.images.logo
+    ? `/api/site-image/logo?v=${raw.images.logo.updatedAt}`
+    : null;
+  const heroBgUrl = raw.images.heroBg
+    ? `/api/site-image/hero-bg?v=${raw.images.heroBg.updatedAt}`
+    : null;
+
   return (
     <div className="space-y-6">
       <div>
@@ -13,11 +25,11 @@ export default async function AdminImagesPage() {
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <ImageForm imageKey="logo" label="Logo" currentUrl={content.images.logoUrl} />
+        <ImageForm imageKey="logo" label="Logo" currentUrl={logoUrl} />
         <ImageForm
           imageKey="hero-bg"
           label="Homepage background photo"
-          currentUrl={content.images.heroBgUrl}
+          currentUrl={heroBgUrl}
         />
       </div>
     </div>

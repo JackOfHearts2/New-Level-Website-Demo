@@ -7,10 +7,12 @@ export function SiteFooter({
   tagline,
   socials,
   logoUrl,
+  logoUrlDark,
 }: {
   tagline: string;
   socials: typeof SOCIALS;
   logoUrl: string;
+  logoUrlDark: string;
 }) {
   return (
     <footer className="border-border bg-muted/30 border-t">
@@ -23,7 +25,14 @@ export function SiteFooter({
                 alt="New Level"
                 fill
                 sizes="160px"
-                className="object-contain object-left"
+                className="object-contain object-left dark:hidden"
+              />
+              <Image
+                src={logoUrlDark}
+                alt="New Level"
+                fill
+                sizes="160px"
+                className="hidden object-contain object-left dark:block"
               />
             </div>
             <p className="text-muted-foreground mt-4 max-w-xs text-sm">
