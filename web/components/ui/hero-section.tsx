@@ -192,14 +192,21 @@ const HeroHeader = ({
         data-state={menuState ? "active" : undefined}
         className="fixed z-20 w-full px-2 group"
       >
+        {/* The scrolled state used to shrink to max-w-5xl — with the bigger
+            logo and the new Blog nav item, that was narrow enough to wrap
+            the utility icons (theme/profile/View Properties) onto their own
+            line directly under the logo. Keeping the same max-w-6xl as the
+            unscrolled state avoids that, so the "shrinks on scroll" glass
+            pill still solidifies visually (bg/border/blur) without also
+            narrowing enough to break the layout. */}
         <div
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
             isScrolled &&
-              "bg-background/70 max-w-5xl rounded-2xl border backdrop-blur-lg lg:px-5"
+              "bg-background/70 rounded-2xl border backdrop-blur-lg lg:px-5"
           )}
         >
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
+          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:flex-nowrap lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
               <Link
                 href="/"
@@ -273,7 +280,11 @@ const HeroHeader = ({
                   className={cn(
                     buttonVariants({ size: "sm" }),
                     "font-heading",
-                    isScrolled ? "lg:inline-flex" : "hidden"
+                    // xl: not lg: — same overflow fix as SiteHeader (the full
+                    // row genuinely doesn't fit in 1024–1279px even after
+                    // trimming NavMenu's gap; confirmed via a real
+                    // bounding-box check).
+                    isScrolled ? "xl:inline-flex" : "hidden"
                   )}
                 >
                   <span>View Properties</span>

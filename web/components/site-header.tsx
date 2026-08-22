@@ -25,8 +25,13 @@ export function SiteHeader({
       <nav data-state={menuState ? "active" : undefined} className="fixed z-20 w-full px-2 group">
         {/* Always the "scrolled" glass-pill treatment from the homepage nav —
             there's no hero to be transparent over on these pages. */}
-        <div className="bg-background/70 mx-auto mt-2 max-w-5xl rounded-2xl border px-6 backdrop-blur-lg transition-all duration-300 lg:px-5">
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
+        {/* max-w-6xl (was max-w-5xl): the bigger logo plus the new Blog nav
+            item made the row too wide for max-w-5xl at typical desktop
+            widths, so the utility icons (theme/profile/View Properties)
+            were wrapping onto their own line directly under the logo
+            instead of sitting beside the nav links. */}
+        <div className="bg-background/70 mx-auto mt-2 max-w-6xl rounded-2xl border px-6 backdrop-blur-lg transition-all duration-300 lg:px-5">
+          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:flex-nowrap lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" aria-label="home" className="flex items-center space-x-2">
                 <div className="relative h-16 w-64">
@@ -81,9 +86,18 @@ export function SiteHeader({
               <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:flex-nowrap md:w-fit">
                 <ThemeToggle />
                 <ProfileMenu />
+                {/* hidden below xl: even after trimming NavMenu's own gap,
+                    the full row (bigger logo + 7-item nav + icons + this
+                    button) still doesn't fit in the narrow 1024–1279px
+                    range (e.g. iPad landscape) — genuinely confirmed via a
+                    real bounding-box check, not just the page-level
+                    scrollWidth sweep, which doesn't catch overflow on a
+                    position:fixed element. "Properties" is already in the
+                    nav itself, so dropping this one button there is a safe
+                    trim rather than reintroducing the wrap-under-logo bug. */}
                 <Link
                   href="/properties"
-                  className={cn(buttonVariants({ size: "sm" }), "font-heading")}
+                  className={cn(buttonVariants({ size: "sm" }), "font-heading hidden xl:inline-flex")}
                 >
                   View Properties
                 </Link>

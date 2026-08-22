@@ -43,7 +43,7 @@ export function NavMenu() {
   }, []);
 
   return (
-    <ul className="flex gap-8 text-sm">
+    <ul className="flex gap-5 text-sm whitespace-nowrap">
       {NAV_MENU.map((item, i) => {
         const hasChildren = "children" in item && item.children;
         return (
