@@ -13,7 +13,7 @@ export function PageHero({
 }) {
   return (
     <div className="mx-auto max-w-3xl px-6 pt-32 pb-16 text-center sm:pt-40">
-      <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+      <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
         {eyebrow}
       </ShinePill>
       <h1 className="font-heading mt-6 text-4xl font-bold text-balance md:text-5xl">

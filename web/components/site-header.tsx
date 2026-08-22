@@ -29,19 +29,19 @@ export function SiteHeader({
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" aria-label="home" className="flex items-center space-x-2">
-                <div className="relative h-9 w-40">
+                <div className="relative h-14 w-60">
                   <Image
                     src={logoUrl}
                     alt="New Level"
                     fill
-                    sizes="160px"
+                    sizes="240px"
                     className="object-contain object-left dark:hidden"
                   />
                   <Image
                     src={logoUrlDark}
                     alt="New Level"
                     fill
-                    sizes="160px"
+                    sizes="240px"
                     className="hidden object-contain object-left dark:block"
                   />
                 </div>

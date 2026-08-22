@@ -105,7 +105,7 @@ export function ProfileMenu() {
             </ShineCircle>
             <div>
               <div className="font-heading text-sm font-semibold">Guest</div>
-              <div className="text-muted-foreground text-xs">Not signed in</div>
+              <div className="text-muted-foreground text-sm">Not signed in</div>
             </div>
           </div>
 

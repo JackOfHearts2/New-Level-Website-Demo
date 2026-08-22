@@ -43,7 +43,7 @@ function TestimonialFace({
           <blockquote className="text-sm text-balance">&ldquo;{t.text}&rdquo;</blockquote>
           <div className="mt-3 border-t border-white/20 pt-3">
             <div className="font-heading text-sm font-semibold">{t.name}</div>
-            <div className="text-xs text-white/70">{t.role}</div>
+            <div className="text-sm text-white">{t.role}</div>
           </div>
         </div>
       </GlowCard>

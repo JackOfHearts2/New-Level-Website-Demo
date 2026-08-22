@@ -77,7 +77,7 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
         </ShineCircle>
         <div className="min-w-0 flex-1">
           <div className="font-heading text-sm font-semibold">New Level Assistant</div>
-          <div className="text-muted-foreground text-xs">Instant answers to common questions</div>
+          <div className="text-muted-foreground text-sm">Instant answers to common questions</div>
         </div>
         <button
           type="button"
@@ -110,7 +110,7 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
                 key={f.q}
                 type="button"
                 onClick={() => ask(f.q)}
-                className="border-border hover:border-primary/50 hover:text-foreground text-muted-foreground rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
+                className="border-border hover:border-primary/50 hover:text-foreground text-muted-foreground rounded-full border px-3 py-1.5 text-sm font-medium transition-colors"
               >
                 {f.q}
               </button>
@@ -122,7 +122,7 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
           <Link
             href="/contact"
             onClick={onClose}
-            className="text-primary text-xs font-semibold hover:underline"
+            className="text-primary text-sm font-semibold hover:underline"
           >
             Talk to a real person instead →
           </Link>

@@ -60,14 +60,14 @@ export function StickyBookingBar() {
               {money(quote.totalNumeric)}
               {quote.pkg && " + services"}
             </div>
-            <div className="text-muted-foreground text-xs">
+            <div className="text-muted-foreground text-sm">
               {quote.tierLabel} · {fmtDate(quote.checkIn)} → {fmtDate(quote.checkOut)}
             </div>
           </>
         ) : (
           <>
             <div className="font-heading font-bold">Availability & quote</div>
-            <div className="text-muted-foreground text-xs">
+            <div className="text-muted-foreground text-sm">
               {state.tier ? "Pick your dates" : "Select your rate & dates"}
             </div>
           </>

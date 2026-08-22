@@ -45,14 +45,14 @@ export default async function PropertyPage({
     <PropertyBookingProvider initialAudience={initialAudience}>
       <div id="propertyHero">
         <PhotoTour>
-          <span className="bg-white/10 font-heading inline-block w-fit rounded-full px-3 py-1 text-xs font-semibold uppercase backdrop-blur-sm">
+          <span className="bg-white/10 font-heading inline-block w-fit rounded-full px-3 py-1 text-sm font-semibold uppercase backdrop-blur-sm">
             {PROPERTY.address}
           </span>
           <h1 className="font-heading mt-4 max-w-2xl text-4xl font-bold text-balance md:text-5xl">
             {PROPERTY.siteName}
           </h1>
-          <p className="mt-3 max-w-xl text-balance text-white/80">
-            Presented by New Level — a South Florida real estate group matching standout homes to
+          <p className="mt-3 max-w-xl text-balance text-white">
+            Presented by New Level — a South Florida Real Estate group matching standout homes to
             the moments they&apos;re made for.
           </p>
         </PhotoTour>
@@ -138,7 +138,7 @@ export default async function PropertyPage({
                 ))}
               </div>
               <blockquote className="mt-3 text-sm text-balance">&ldquo;{r.text}&rdquo;</blockquote>
-              <div className="text-muted-foreground mt-4 text-xs">
+              <div className="text-muted-foreground mt-4 text-sm">
                 {r.name} · {r.use} · {r.when}
               </div>
             </GlowCard>
@@ -181,7 +181,7 @@ export default async function PropertyPage({
                 </div>
               ))}
             </div>
-            <p className="text-muted-foreground/80 mt-4 text-xs">{FEES_POLICIES.rulesNote}</p>
+            <p className="text-muted-foreground/80 mt-4 text-sm">{FEES_POLICIES.rulesNote}</p>
           </div>
           <div className="mt-8 border-t border-border pt-6">
             <h3 className="font-heading text-sm font-semibold">Cancellation</h3>
@@ -226,14 +226,14 @@ export default async function PropertyPage({
                   sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   className="object-cover"
                 />
-                <span className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase">
+                <span className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2.5 py-1 text-xs font-semibold uppercase">
                   Coming soon
                 </span>
               </div>
               <div className="p-4">
                 <h3 className="font-heading font-semibold">{p.title}</h3>
                 <p className="text-muted-foreground text-sm">{p.meta}</p>
-                <p className="text-muted-foreground mt-1 text-xs">{p.rate}</p>
+                <p className="text-muted-foreground mt-1 text-sm">{p.rate}</p>
               </div>
             </GlowCard>
           ))}

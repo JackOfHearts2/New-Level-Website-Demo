@@ -59,7 +59,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
             <p className="text-muted-foreground mt-2 text-sm">
               We&apos;ll follow up as soon as we can.
             </p>
-            <p className="text-muted-foreground/70 mt-4 text-xs">
+            <p className="text-muted-foreground/70 mt-4 text-sm">
               Demo mode: this message wasn&apos;t actually sent anywhere.
             </p>
             <button
@@ -81,8 +81,8 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
                   aria-pressed={topic === t.id}
                   className={
                     topic === t.id
-                      ? "font-heading bg-primary text-primary-foreground rounded-full border border-transparent px-3 py-1.5 text-xs font-medium"
-                      : "font-heading border-border text-muted-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
+                      ? "font-heading bg-primary text-primary-foreground rounded-full border border-transparent px-3 py-1.5 text-sm font-medium"
+                      : "font-heading border-border text-muted-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-3 py-1.5 text-sm font-medium transition-colors"
                   }
                 >
                   {t.label}
@@ -90,7 +90,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
               ))}
             </div>
             <label className="block text-sm">
-              <span className="font-heading text-xs font-medium">Name</span>
+              <span className="font-heading text-sm font-medium">Name</span>
               <input
                 name="name"
                 required
@@ -98,7 +98,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
               />
             </label>
             <label className="block text-sm">
-              <span className="font-heading text-xs font-medium">Email</span>
+              <span className="font-heading text-sm font-medium">Email</span>
               <input
                 type="email"
                 name="email"
@@ -107,7 +107,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
               />
             </label>
             <label className="block text-sm">
-              <span className="font-heading text-xs font-medium">Message</span>
+              <span className="font-heading text-sm font-medium">Message</span>
               <textarea
                 name="message"
                 rows={3}

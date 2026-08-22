@@ -47,7 +47,7 @@ function MonthGrid({ monthDate }: { monthDate: Date }) {
   return (
     <div>
       <div className="font-heading text-center text-sm font-semibold">{label}</div>
-      <div className="text-muted-foreground mt-3 grid grid-cols-7 gap-1 text-center text-xs">
+      <div className="text-muted-foreground mt-3 grid grid-cols-7 gap-1 text-center text-sm">
         {WEEKDAYS.map((d, i) => (
           <div key={i}>{d}</div>
         ))}
@@ -115,7 +115,7 @@ export function BookingWidget() {
                   : `$${t.perNight.toLocaleString()} / night`}
               </div>
               <div className="text-muted-foreground text-sm">{t.label}</div>
-              <div className="text-muted-foreground/80 mt-1 text-xs">{t.blurb}</div>
+              <div className="text-muted-foreground/80 mt-1 text-sm">{t.blurb}</div>
             </GlowCard>
           );
         })}
@@ -136,7 +136,7 @@ export function BookingWidget() {
             {state.tier === "event" && (
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <label className="text-sm">
-                  <span className="text-muted-foreground font-heading text-xs font-medium">
+                  <span className="text-muted-foreground font-heading text-sm font-medium">
                     Check-in time
                   </span>
                   <select
@@ -154,7 +154,7 @@ export function BookingWidget() {
                   </select>
                 </label>
                 <label className="text-sm">
-                  <span className="text-muted-foreground font-heading text-xs font-medium">
+                  <span className="text-muted-foreground font-heading text-sm font-medium">
                     Check-out time
                   </span>
                   <select
@@ -217,16 +217,16 @@ export function BookingWidget() {
                       )}
                     >
                       {pkg.popular && (
-                        <span className="bg-primary text-primary-foreground font-heading absolute -top-2 right-4 rounded-full px-2 py-0.5 text-[10px] font-semibold">
+                        <span className="bg-primary text-primary-foreground font-heading absolute -top-2 right-4 rounded-full px-2 py-0.5 text-xs font-semibold">
                           Popular
                         </span>
                       )}
                       <div className="font-heading font-semibold">
                         {pkg.label} — {pkg.price ? `$${pkg.price.toLocaleString()}` : "Included"}
                       </div>
-                      <div className="text-muted-foreground text-xs">{pkg.tagline}</div>
+                      <div className="text-muted-foreground text-sm">{pkg.tagline}</div>
                       {pkg.includes.length > 0 && (
-                        <div className="text-muted-foreground/80 mt-2 text-xs">
+                        <div className="text-muted-foreground/80 mt-2 text-sm">
                           Includes:{" "}
                           {pkg.includes
                             .map((id) => EVENT_ADDONS.find((a) => a.id === id)?.label)

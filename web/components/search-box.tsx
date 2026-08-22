@@ -72,7 +72,7 @@ export function SearchBox() {
           className="mt-4 flex flex-wrap items-end gap-3"
         >
           <label className="min-w-[200px] flex-1 text-sm">
-            <span className="text-muted-foreground font-heading text-xs font-medium">
+            <span className="text-muted-foreground font-heading text-sm font-medium">
               Search
             </span>
             <input

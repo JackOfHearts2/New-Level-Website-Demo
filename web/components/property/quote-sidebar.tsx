@@ -75,7 +75,7 @@ export function QuoteSidebar() {
               <span className="font-heading font-semibold">{money(quote.taxTotal)}</span>
             </button>
             {showTaxDetail && (
-              <div className="text-muted-foreground mt-2 space-y-1 text-xs">
+              <div className="text-muted-foreground mt-2 space-y-1 text-sm">
                 {quote.taxLines.map((line) => (
                   <div key={line.key} className="flex justify-between">
                     <span>
@@ -88,7 +88,7 @@ export function QuoteSidebar() {
             )}
           </div>
 
-          <div className="text-muted-foreground flex items-baseline justify-between text-xs">
+          <div className="text-muted-foreground flex items-baseline justify-between text-sm">
             <span>{quote.cdtLabel} (3%)</span>
             <span>{money(quote.cdtAmount)}</span>
           </div>
@@ -98,14 +98,14 @@ export function QuoteSidebar() {
             <span className="font-heading text-xl font-bold">{money(quote.totalNumeric)}</span>
           </div>
 
-          <p className="text-muted-foreground/80 text-xs">
+          <p className="text-muted-foreground/80 text-sm">
             {quote.pkg
               ? "Estimate includes the selected New Level services. Rates are demo figures; total excludes the unresolved 3% CDT."
               : "Estimate only. Rates are placeholder; total excludes the unresolved 3% CDT."}
           </p>
 
           {quote.deposit && (
-            <p className="text-muted-foreground border-border border-t pt-3 text-xs">
+            <p className="text-muted-foreground border-border border-t pt-3 text-sm">
               Plus a refundable{" "}
               <span className="text-foreground font-semibold">
                 ${quote.deposit.amount}
@@ -115,7 +115,7 @@ export function QuoteSidebar() {
             </p>
           )}
 
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             You won&apos;t be charged to inquire. Free cancellation until{" "}
             {fmtDate(quote.cancelCutoff)} — 1 day before check-in.
           </p>

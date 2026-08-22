@@ -21,7 +21,7 @@ export function PurposeSelector() {
   return (
     <section id="purpose" className="mx-auto max-w-7xl px-6 py-16">
       <div className="mx-auto max-w-2xl text-center">
-        <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+        <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
           What brings you here?
         </ShinePill>
         <h2 className="font-heading mt-6 text-3xl font-bold text-balance md:text-4xl">
@@ -48,7 +48,7 @@ export function PurposeSelector() {
               />
               <div>
                 <div className="font-heading text-sm font-semibold">{a.navLabel}</div>
-                <div className="text-muted-foreground mt-1 text-xs">{a.cardMeta}</div>
+                <div className="text-muted-foreground mt-1 text-sm">{a.cardMeta}</div>
               </div>
             </GlowCard>
           );
@@ -57,7 +57,7 @@ export function PurposeSelector() {
 
       {state.audience === "events" && (
         <div className="mx-auto mt-8 max-w-2xl">
-          <p className="font-heading text-center text-xs font-medium tracking-wide uppercase">
+          <p className="font-heading text-center text-sm font-medium tracking-wide uppercase">
             What kind of event?
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
@@ -71,7 +71,7 @@ export function PurposeSelector() {
             ))}
           </div>
           <label className="mt-4 block text-sm">
-            <span className="text-muted-foreground font-heading text-xs font-medium">
+            <span className="text-muted-foreground font-heading text-sm font-medium">
               Or describe it in your own words (optional)
             </span>
             <input

@@ -56,7 +56,7 @@ export function ContentLibraryGrid() {
                 <ShineCircle className="bg-background/90 text-foreground absolute top-3 left-3 flex size-8 items-center justify-center rounded-full">
                   {Icon && <Icon className="size-4" />}
                 </ShineCircle>
-                <ShinePill className="font-heading bg-background/90 text-muted-foreground absolute top-3 right-3 rounded-full px-2 py-1 text-[10px] font-semibold uppercase">
+                <ShinePill className="font-heading bg-background/90 text-muted-foreground absolute top-3 right-3 rounded-full px-2 py-1 text-xs font-semibold uppercase">
                   Example
                 </ShinePill>
               </div>

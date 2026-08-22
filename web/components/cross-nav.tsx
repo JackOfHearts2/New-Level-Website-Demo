@@ -22,7 +22,7 @@ export function CrossNav({ current }: { current: SitePageKey }) {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <p className="font-heading text-muted-foreground text-center text-xs font-semibold tracking-wide uppercase">
+      <p className="font-heading text-muted-foreground text-center text-sm font-semibold tracking-wide uppercase">
         Keep exploring
       </p>
       <div className="mt-5 flex flex-wrap justify-center gap-2">

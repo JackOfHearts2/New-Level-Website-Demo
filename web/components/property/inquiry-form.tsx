@@ -71,7 +71,7 @@ export function InquiryForm() {
         <p className="text-muted-foreground mt-2 text-sm">
           We&apos;ll follow up to confirm availability and next steps.
         </p>
-        <p className="text-muted-foreground/70 mt-4 text-xs">
+        <p className="text-muted-foreground/70 mt-4 text-sm">
           Demo mode: this inquiry wasn&apos;t actually sent anywhere.
         </p>
         <button
@@ -91,7 +91,7 @@ export function InquiryForm() {
         <h3 className="font-heading text-lg font-bold">Send an inquiry</h3>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm">
-            <span className="font-heading text-xs font-medium">Name</span>
+            <span className="font-heading text-sm font-medium">Name</span>
             <input
               name="name"
               required
@@ -99,7 +99,7 @@ export function InquiryForm() {
             />
           </label>
           <label className="text-sm">
-            <span className="font-heading text-xs font-medium">Email</span>
+            <span className="font-heading text-sm font-medium">Email</span>
             <input
               type="email"
               name="email"
@@ -108,7 +108,7 @@ export function InquiryForm() {
             />
           </label>
           <label className="text-sm">
-            <span className="font-heading text-xs font-medium">Phone</span>
+            <span className="font-heading text-sm font-medium">Phone</span>
             <input
               type="tel"
               name="phone"
@@ -116,7 +116,7 @@ export function InquiryForm() {
             />
           </label>
           <label className="text-sm">
-            <span className="font-heading text-xs font-medium">Preferred contact method</span>
+            <span className="font-heading text-sm font-medium">Preferred contact method</span>
             <select
               name="contact_method"
               className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm"
@@ -127,7 +127,7 @@ export function InquiryForm() {
             </select>
           </label>
           <label className="text-sm sm:col-span-2">
-            <span className="font-heading text-xs font-medium">Group size</span>
+            <span className="font-heading text-sm font-medium">Group size</span>
             <input
               type="number"
               name="group_size"
@@ -136,7 +136,7 @@ export function InquiryForm() {
             />
           </label>
           <label className="text-sm sm:col-span-2">
-            <span className="font-heading text-xs font-medium">Notes (optional)</span>
+            <span className="font-heading text-sm font-medium">Notes (optional)</span>
             <textarea
               name="notes"
               rows={3}

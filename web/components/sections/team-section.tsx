@@ -7,7 +7,7 @@ export function TeamSection({ team }: { team: typeof TEAM }) {
   return (
     <section className="mx-auto w-full min-w-0 max-w-7xl px-6 py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+        <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
           Agents & Partners
         </ShinePill>
         <h2 className="font-heading mt-6 text-4xl font-bold text-balance md:text-5xl">

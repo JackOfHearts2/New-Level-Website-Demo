@@ -29,7 +29,7 @@ export default function ServicesPage() {
             id={service.id}
             className="scroll-mt-32 rounded-3xl p-8 md:p-12"
           >
-            <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+            <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
               {service.t}
             </ShinePill>
             <p className="text-foreground mt-6 max-w-2xl text-lg text-balance">

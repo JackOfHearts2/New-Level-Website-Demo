@@ -136,7 +136,7 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
               <ChevronRight className="size-4" />
             </button>
             {heroActive && (
-              <span className="font-heading rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-black">
+              <span className="font-heading rounded-full bg-white/90 px-3 py-2 text-sm font-semibold text-black">
                 {heroIndex + 1} / {TOTAL_PROPERTY_PHOTOS}
               </span>
             )}
@@ -144,7 +144,7 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
           <button
             type="button"
             onClick={() => setLightboxIndex(heroIndex)}
-            className="font-heading flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-xs font-semibold text-black hover:bg-white"
+            className="font-heading flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-black hover:bg-white"
           >
             <Images className="size-4" />
             View all photos
@@ -205,14 +205,14 @@ export function PhotoTour({ children }: { children?: React.ReactNode }) {
             <ChevronRight className="size-5" />
           </button>
           <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-3">
-            <span className="font-heading rounded-full bg-white/10 px-3 py-1 text-xs text-white">
+            <span className="font-heading rounded-full bg-white/10 px-3 py-1 text-sm text-white">
               {lightboxIndex + 1} / {TOTAL_PROPERTY_PHOTOS}
             </span>
             <a
               href={PROPERTY_ALBUM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-heading flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white hover:bg-white/20"
+              className="font-heading flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20"
             >
               View full album
               <ExternalLink className="size-3" />

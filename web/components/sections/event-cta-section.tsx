@@ -20,13 +20,13 @@ export function EventCtaSection({
           aria-hidden
           className="animate-event-glow bg-primary/45 pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-2xl transition-[opacity,transform] duration-500 group-hover:scale-125 group-hover:opacity-90"
         />
-        <ShinePill className="bg-background/10 text-background font-heading relative rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+        <ShinePill className="bg-background/10 text-background font-heading relative rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
           {eventCta.eyebrow}
         </ShinePill>
         <h2 className="font-heading relative mt-6 text-3xl font-bold text-balance md:text-4xl">
           {eventCta.heading}
         </h2>
-        <p className="text-background/70 relative mx-auto mt-4 max-w-xl text-balance">
+        <p className="text-background relative mx-auto mt-4 max-w-xl text-balance">
           {eventCta.sub}
         </p>
         <div className="relative mt-8 flex justify-center">

@@ -26,25 +26,25 @@ export function SiteFooter({
     <footer className="border-border mx-auto w-full min-w-0 border-t px-2">
       <div className="mx-auto grid max-w-7xl items-center justify-center gap-6 p-10 pb-0 md:flex">
         <Link href="/" className="flex items-center justify-center">
-          <div className="relative h-9 w-40">
+          <div className="relative h-14 w-60">
             <Image
               src={logoUrl}
               alt="New Level"
               fill
-              sizes="160px"
+              sizes="240px"
               className="object-contain dark:hidden"
             />
             <Image
               src={logoUrlDark}
               alt="New Level"
               fill
-              sizes="160px"
+              sizes="240px"
               className="hidden object-contain dark:block"
             />
           </div>
         </Link>
-        <p className="text-muted-foreground text-center text-xs leading-5 md:text-left">
-          {tagline} — a South Florida real estate group matching standout
+        <p className="text-muted-foreground text-center text-sm leading-5 md:text-left">
+          {tagline} — a South Florida Real Estate group matching standout
           properties to the moments they&apos;re made for.
         </p>
       </div>
@@ -63,7 +63,7 @@ export function SiteFooter({
                     <li key={link.label} className="flow-root">
                       <Link
                         href={link.href}
-                        className="text-muted-foreground hover:text-foreground text-xs transition-colors"
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -115,7 +115,7 @@ export function SiteFooter({
           is at the bottom of the page, and the footer's copyright line is
           the true end of every page — without this it's permanently
           covered. */}
-      <div className="mx-auto mb-24 flex flex-col justify-between text-center text-xs md:mb-10 md:max-w-7xl">
+      <div className="mx-auto mb-24 flex flex-col justify-between text-center text-sm md:mb-10 md:max-w-7xl">
         <p className="text-muted-foreground">
           &copy; {new Date().getFullYear()} {NLG_BRAND.name}. Demo site —
           not affiliated with any live listings.

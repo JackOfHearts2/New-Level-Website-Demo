@@ -55,7 +55,7 @@ export default function EventsPage() {
       <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="border-border h-fit rounded-2xl border p-6 shadow-sm">
           <h2 className="font-heading text-center font-semibold">{monthLabel}</h2>
-          <div className="text-muted-foreground mt-4 grid grid-cols-7 gap-1 text-center text-xs font-medium">
+          <div className="text-muted-foreground mt-4 grid grid-cols-7 gap-1 text-center text-sm font-medium">
             {WEEKDAYS.map((d) => (
               <div key={d}>{d}</div>
             ))}
@@ -92,7 +92,7 @@ export default function EventsPage() {
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="font-heading font-semibold">{event.title}</h3>
-                <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-3 py-1 text-xs font-semibold uppercase">
+                <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-3 py-1 text-sm font-semibold uppercase">
                   {event.type}
                 </ShinePill>
               </div>
@@ -119,7 +119,7 @@ export default function EventsPage() {
           <h2 className="font-heading relative text-3xl font-bold text-balance md:text-4xl">
             Hosting an event?
           </h2>
-          <p className="relative mx-auto mt-4 max-w-xl text-balance text-white/70">
+          <p className="relative mx-auto mt-4 max-w-xl text-balance text-white">
             Milestone celebrations, private dinners, corporate gatherings — see
             venues set up to host, not just sleep.
           </p>

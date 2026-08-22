@@ -73,14 +73,14 @@ function OtherPropertyCard({ p }: { p: (typeof OTHER_PROPERTIES)[number] }) {
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover"
         />
-        <ShinePill className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase">
+        <ShinePill className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2.5 py-1 text-xs font-semibold uppercase">
           Coming soon
         </ShinePill>
       </div>
       <div className="p-4">
         <h3 className="font-heading font-semibold">{p.title}</h3>
         <p className="text-muted-foreground text-sm">{p.meta}</p>
-        <p className="text-muted-foreground mt-1 text-xs">{p.rate}</p>
+        <p className="text-muted-foreground mt-1 text-sm">{p.rate}</p>
       </div>
     </GlowCard>
   );

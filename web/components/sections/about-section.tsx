@@ -14,11 +14,11 @@ export function AboutSection({
     <section className="mx-auto max-w-7xl px-6 py-24">
       <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
         <div>
-          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
             About New Level
           </ShinePill>
           <h2 className="font-heading mt-6 max-w-lg text-4xl font-bold text-balance md:text-5xl">
-            Real estate, redefined at every level.
+            Real Estate, Redefined at every level.
           </h2>
           <p className="text-muted-foreground mt-6 max-w-lg text-lg text-balance">
             {aboutShort}
@@ -41,7 +41,7 @@ export function AboutSection({
           ))}
         </div>
       </div>
-      <p className="text-muted-foreground/70 mt-4 text-right text-xs">
+      <p className="text-muted-foreground/70 mt-4 text-right text-sm">
         Figures shown are illustrative placeholders for this demo.
       </p>
     </section>

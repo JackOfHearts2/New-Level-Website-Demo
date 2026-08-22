@@ -154,7 +154,7 @@ export function HeroSection({
                       used to sit here has been pulled per client feedback,
                       pending a better home for it elsewhere on the page. */}
                   <p className="mx-auto mt-8 mb-12 max-w-2xl text-balance text-lg text-muted-foreground">
-                    A South Florida real estate group matching standout
+                    A South Florida Real Estate group matching standout
                     properties to the moments they&apos;re made for —
                     corporate offsites, family gatherings, private events,
                     retreats and extended stays.
@@ -206,7 +206,7 @@ const HeroHeader = ({
                 aria-label="home"
                 className="flex items-center space-x-2"
               >
-                <div className="relative h-9 w-40">
+                <div className="relative h-14 w-60">
                   {/* fill + object-contain instead of fixed width/height —
                       an admin-uploaded logo isn't guaranteed to match the
                       original asset's aspect ratio, and fixed dimensions
@@ -215,7 +215,7 @@ const HeroHeader = ({
                     src={logoUrl}
                     alt="New Level"
                     fill
-                    sizes="160px"
+                    sizes="240px"
                     priority
                     className="object-contain object-left dark:hidden"
                   />
@@ -223,7 +223,7 @@ const HeroHeader = ({
                     src={logoUrlDark}
                     alt="New Level"
                     fill
-                    sizes="160px"
+                    sizes="240px"
                     priority
                     className="hidden object-contain object-left dark:block"
                   />

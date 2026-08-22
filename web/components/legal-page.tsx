@@ -28,7 +28,7 @@ export function LegalPage({
       <PageHero eyebrow={eyebrow} heading={heading} sub={sub} />
 
       <section className="mx-auto max-w-3xl px-6 pb-8">
-        <p className="text-muted-foreground text-center text-xs">
+        <p className="text-muted-foreground text-center text-sm">
           Last updated: {lastUpdated}
         </p>
         <div className="border-border bg-muted/40 mt-6 rounded-2xl border p-5 text-sm">

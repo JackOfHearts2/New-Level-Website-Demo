@@ -41,7 +41,7 @@ export default function BrokersCornerPage() {
       </section>
 
       <section className="mx-auto max-w-4xl px-6 pb-24">
-        <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+        <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
           Latest Episode
         </ShinePill>
         <div className="bg-muted border-border relative mt-6 flex aspect-video items-center justify-center overflow-hidden rounded-2xl border">

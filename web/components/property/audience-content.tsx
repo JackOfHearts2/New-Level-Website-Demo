@@ -35,7 +35,7 @@ export function AudienceContent() {
           <div className="mt-6 grid grid-cols-2 gap-4">
             {a.facts.map((fact) => (
               <ShineBox key={fact.k} className="border-border rounded-xl border p-4">
-                <div className="text-muted-foreground text-xs">{fact.k}</div>
+                <div className="text-muted-foreground text-sm">{fact.k}</div>
                 <div className="font-heading font-semibold">{fact.v}</div>
               </ShineBox>
             ))}

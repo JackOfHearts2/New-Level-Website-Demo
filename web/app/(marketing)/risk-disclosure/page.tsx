@@ -15,7 +15,7 @@ export default function RiskDisclosurePage() {
       heading={page.heading}
       sub={page.sub}
       lastUpdated={LEGAL_LAST_UPDATED}
-      disclaimer="This page explains, in general terms, the kinds of risk that come with real estate investment, ownership, and rental. It's written for this demo and hasn't been reviewed by an attorney or financial professional — it isn't a substitute for independent advice."
+      disclaimer="This page explains, in general terms, the kinds of risk that come with Real Estate investment, ownership, and rental. It's written for this demo and hasn't been reviewed by an attorney or financial professional — it isn't a substitute for independent advice."
       sections={RISK_DISCLOSURE_SECTIONS}
     />
   );

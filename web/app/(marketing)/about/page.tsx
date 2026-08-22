@@ -53,13 +53,13 @@ export default function AboutPage() {
     <>
       <PageHero
         eyebrow="About New Level"
-        heading="Real estate, redefined at every level."
+        heading="Real Estate, Redefined at every level."
         intro={NLG_BRAND.aboutLong}
       />
 
       <section className="mx-auto grid max-w-5xl gap-12 px-6 py-16 md:grid-cols-2">
         <div>
-          <span className="font-heading text-primary text-xs font-semibold tracking-wide uppercase">
+          <span className="font-heading text-primary text-sm font-semibold tracking-wide uppercase">
             Our Mission
           </span>
           <p className="text-foreground mt-4 text-lg text-balance">
@@ -67,7 +67,7 @@ export default function AboutPage() {
           </p>
         </div>
         <div>
-          <span className="font-heading text-primary text-xs font-semibold tracking-wide uppercase">
+          <span className="font-heading text-primary text-sm font-semibold tracking-wide uppercase">
             Our Story
           </span>
           <p className="text-muted-foreground mt-4 text-balance">
@@ -78,7 +78,7 @@ export default function AboutPage() {
 
       <section className="mx-auto max-w-7xl px-6 pb-8">
         <div className="mx-auto max-w-2xl text-center">
-          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
             Our History
           </ShinePill>
           <h2 className="font-heading mt-6 text-3xl font-bold text-balance md:text-4xl">
@@ -109,7 +109,7 @@ export default function AboutPage() {
             />
           </div>
         </div>
-        <p className="text-muted-foreground/70 mt-3 text-center text-xs">
+        <p className="text-muted-foreground/70 mt-3 text-center text-sm">
           A look inside 1331 NW 87th Street, our featured New Level property.
         </p>
       </section>
@@ -117,7 +117,7 @@ export default function AboutPage() {
       <section className="bg-muted/50 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+            <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
               What We Stand For
             </ShinePill>
             <h2 className="font-heading mt-6 text-3xl font-bold text-balance md:text-4xl">
@@ -137,7 +137,7 @@ export default function AboutPage() {
 
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase">
+          <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
             What We Do
           </ShinePill>
           <h2 className="font-heading mt-6 text-3xl font-bold text-balance md:text-4xl">

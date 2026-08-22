@@ -98,6 +98,14 @@
    mode below applies only to this Next.js rebuild, added at the client's
    request once this app existed independently of that constraint. */
 :root {
+  /* Without this, native form controls (select dropdown option lists,
+     scrollbars, etc.) render with the OS's light-scheme chrome regardless
+     of the page's own dark theme — a select's OWN closed-state box follows
+     our CSS fine, but its opened option-list popup is browser-drawn and
+     ignores our colors unless color-scheme tells it which palette to use.
+     This was the cause of the search filter dropdowns opening as a plain
+     white list even in dark mode. */
+  color-scheme: light;
   --background: #ffffff; /* --paper */
   --foreground: #0a0a0a; /* --ink */
   --card: #ffffff;
@@ -131,6 +139,7 @@
    inverted: near-black background instead of paper-white, near-white text
    instead of ink. No new hues introduced. */
 :root.dark {
+  color-scheme: dark;
   --background: #0a0a0a;
   --foreground: #f5f5f5;
   --card: #141414;

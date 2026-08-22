@@ -36,7 +36,7 @@ function DialButton({
       transition={{ type: "spring", stiffness: 420, damping: 22, delay: index * 0.07 }}
       className="flex items-center justify-end gap-3"
     >
-      <span className="bg-foreground text-background font-heading rounded-full px-3 py-1.5 text-xs font-semibold shadow-lg">
+      <span className="bg-foreground text-background font-heading rounded-full px-3 py-1.5 text-sm font-semibold shadow-lg">
         {label}
       </span>
       <button

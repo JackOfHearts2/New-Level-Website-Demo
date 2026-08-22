@@ -6,13 +6,13 @@ export const NLG_BRAND = {
   name: "New Level",
   tagline: "Real Estate. Redefined.",
   aboutShort:
-    "At New Level, we believe excellence starts with connection. Real estate isn't just about buildings or numbers — it's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership.",
+    "At New Level, we believe excellence starts with connection. Real Estate isn't just about buildings or numbers — it's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership.",
   aboutLong:
-    "At New Level, we believe excellence starts with connection. Real estate isn't just about buildings or numbers — it's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership, helping clients invest with confidence and achieve results that stand out. Across brokerage, investments, property management and events, we're here to help — real estate, redefined.",
+    "At New Level, we believe excellence starts with connection. Real Estate isn't just about buildings or numbers — it's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership, helping clients invest with confidence and achieve results that stand out. Across brokerage, investments, property management and events, we're here to help — Real Estate, Redefined.",
   mission:
-    "At New Level, we believe real estate should elevate people, communities, and portfolios. Our purpose is to create lasting impact through innovation, integrity, and world-class service.",
+    "At New Level, we believe Real Estate should elevate people, communities, and portfolios. Our purpose is to create lasting impact through innovation, integrity, and world-class service.",
   story:
-    "Founded in 2003 and headquartered in South Florida, New Level is a real estate group redefining standards of excellence in brokerage, investment, and property management. What began as a small, ambitious brokerage has evolved into a multi-faceted organization known for its forward-thinking approach and client-first mindset. At its core, New Level is driven by one simple belief: real estate should be redefined at every level, from how investments are made to how relationships are built.",
+    "Founded in 2003 and headquartered in South Florida, New Level is a Real Estate group redefining standards of excellence in brokerage, investment, and property management. What began as a small, ambitious brokerage has evolved into a multi-faceted organization known for its forward-thinking approach and client-first mindset. At its core, New Level is driven by one simple belief: Real Estate should be redefined at every level, from how investments are made to how relationships are built.",
 };
 
 export const VALUES = [
@@ -30,7 +30,7 @@ export const VALUES = [
   },
   {
     t: "Innovation",
-    d: "We redefine traditional real estate through forward-thinking solutions and technology-driven insight.",
+    d: "We redefine traditional Real Estate through forward-thinking solutions and technology-driven insight.",
   },
   {
     t: "Client Focus",
@@ -41,8 +41,8 @@ export const VALUES = [
 export const BROKERS_CORNER = {
   tagline: "Real Stories • Real Strategies • Real Results",
   intro:
-    "Welcome to The Broker's Corner, a space where our Principal Broker, Shelley Lozier, shares real stories, strategies, and insights from years in the real estate industry. Whether you're new to investing or an experienced professional, you'll find honest conversations and expert guidance to help you navigate the market with confidence.",
-  bio: "With over two decades of experience in the real estate industry, Shelley Lozier founded New Level on a foundation of integrity, innovation, and service. His journey from agent to principal broker has been driven by one core belief: that success in real estate comes from relationships, not transactions. Through years of helping clients, mentoring agents, and building lasting partnerships, Shelley has developed a passion for educating others and sharing insights that empower both professionals and investors alike.",
+    "Welcome to The Broker's Corner, a space where our Principal Broker, Shelley Lozier, shares real stories, strategies, and insights from years in the Real Estate industry. Whether you're new to investing or an experienced professional, you'll find honest conversations and expert guidance to help you navigate the market with confidence.",
+  bio: "With over two decades of experience in the Real Estate industry, Shelley Lozier founded New Level on a foundation of integrity, innovation, and service. His journey from agent to principal broker has been driven by one core belief: that success in Real Estate comes from relationships, not transactions. Through years of helping clients, mentoring agents, and building lasting partnerships, Shelley has developed a passion for educating others and sharing insights that empower both professionals and investors alike.",
 };
 
 export const PAGES = {
@@ -75,7 +75,7 @@ export const PAGES = {
   events: {
     eyebrow: "Events",
     heading: "Come hang out with us.",
-    sub: "We love creating spaces where people connect and talk real estate in a way that makes sense — some educational, some just good people swapping ideas.",
+    sub: "We love creating spaces where people connect and talk Real Estate in a way that makes sense — some educational, some just good people swapping ideas.",
   },
   contact: {
     eyebrow: "Contact",
@@ -85,7 +85,7 @@ export const PAGES = {
   },
   brokersCorner: {
     eyebrow: "The Broker's Corner",
-    heading: "Insights, experience, and real conversations about real estate.",
+    heading: "Insights, experience, and real conversations about Real Estate.",
     sub: "Real Stories • Real Strategies • Real Results",
   },
   faq: {
@@ -106,7 +106,7 @@ export const PAGES = {
   riskDisclosure: {
     eyebrow: "Legal",
     heading: "Risk Disclosure",
-    sub: "Real estate involves real risk — here's the plain version.",
+    sub: "Real Estate involves real risk — here's the plain version.",
   },
   fairHousing: {
     eyebrow: "Legal",
@@ -160,7 +160,7 @@ export const PRIVACY_SECTIONS = [
 export const TERMS_SECTIONS = [
   {
     t: "Acceptance of these terms",
-    d: "By using this site, you agree to these terms. This is a demo of a real estate group's website — some features described (booking, inquiries, accounts) are previews and not yet connected to live systems.",
+    d: "By using this site, you agree to these terms. This is a demo of a Real Estate group's website — some features described (booking, inquiries, accounts) are previews and not yet connected to live systems.",
   },
   {
     t: "Permitted use",
@@ -168,7 +168,7 @@ export const TERMS_SECTIONS = [
   },
   {
     t: "Not investment, legal, or financial advice",
-    d: "Content on this site — including property descriptions, service overviews, and any figures shown — is for general informational purposes only and does not constitute investment, legal, financial, or tax advice. Speak with a licensed professional before making a real estate or investment decision.",
+    d: "Content on this site — including property descriptions, service overviews, and any figures shown — is for general informational purposes only and does not constitute investment, legal, financial, or tax advice. Speak with a licensed professional before making a Real Estate or investment decision.",
   },
   {
     t: "Intellectual property",
@@ -198,7 +198,7 @@ export const TERMS_SECTIONS = [
 
 export const RISK_DISCLOSURE_SECTIONS = [
   {
-    t: "Real estate values can go up or down",
+    t: "Real Estate values can go up or down",
     d: "Property values, rental income, and occupancy are affected by market conditions, interest rates, local economic factors, and other events outside anyone's control. Past performance of any property, market, or investment strategy is not a guarantee of future results.",
   },
   {
@@ -211,11 +211,11 @@ export const RISK_DISCLOSURE_SECTIONS = [
   },
   {
     t: "Liquidity risk",
-    d: "Real estate is not a liquid asset — it can take significant time to sell a property at a desired price, and market conditions may require accepting a different price or timeline than planned.",
+    d: "Real Estate is not a liquid asset — it can take significant time to sell a property at a desired price, and market conditions may require accepting a different price or timeline than planned.",
   },
   {
     t: "Independent advice recommended",
-    d: "Before making a real estate purchase, sale, or investment decision, New Level recommends speaking with a licensed real estate professional, attorney, and financial or tax advisor about your specific situation.",
+    d: "Before making a Real Estate purchase, sale, or investment decision, New Level recommends speaking with a licensed Real Estate professional, attorney, and financial or tax advisor about your specific situation.",
   },
 ];
 
@@ -329,7 +329,7 @@ export const SERVICES = [
     id: "brokerage",
     t: "Brokerage & Consulting",
     d: "Buying or selling is more than a transaction — it's a milestone. Our brokerage team makes every step smooth and transparent, from listing to closing.",
-    long: "We blend strategic insight with hands-on execution to help investors identify, acquire, and optimize real estate opportunities that deliver lasting value.",
+    long: "We blend strategic insight with hands-on execution to help investors identify, acquire, and optimize Real Estate opportunities that deliver lasting value.",
     capabilities: [
       {
         t: "Property Acquisition",
@@ -408,7 +408,7 @@ export const SERVICES = [
   {
     id: "events",
     t: "Events & Networking",
-    d: "We love creating spaces where people connect and talk real estate in a way that makes sense — some educational, some just good people swapping ideas.",
+    d: "We love creating spaces where people connect and talk Real Estate in a way that makes sense — some educational, some just good people swapping ideas.",
     long: "Some of our events are more educational, others are just a chance to meet good people and swap ideas — either way, you'll always walk away with something new.",
     capabilities: [] as { t: string; d: string }[],
   },
@@ -429,7 +429,7 @@ export const TESTIMONIALS = [
   {
     name: "Marcus W.",
     role: "Investor",
-    text: "New Level made investing in real estate feel straightforward and stress-free.",
+    text: "New Level made investing in Real Estate feel straightforward and stress-free.",
     photo:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&h=533&fit=crop&crop=faces&auto=format",
   },
@@ -453,7 +453,7 @@ export const TEAM = [
   {
     name: "Team Member",
     role: "Broker · Partner",
-    motto: "Real estate is relationships first.",
+    motto: "Real Estate is relationships first.",
     placeholder: true,
     photo:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
