@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { AnimatePresence } from "framer-motion";
 import { User, LogIn, UserPlus, Heart, HelpCircle, Mail } from "lucide-react";
 import { ShineCircle } from "@/components/ui/shine-shape";
+import { LoginModal } from "@/components/login-modal";
 
 const PANEL_WIDTH = 224; // w-56
 const PANEL_HEIGHT = 284; // approx rendered height, used for flip-up decisions
@@ -19,6 +21,7 @@ const VIEWPORT_MARGIN = 16;
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -114,6 +117,10 @@ export function ProfileMenu() {
           <button
             type="button"
             role="menuitem"
+            onClick={() => {
+              setAuthMode("signin");
+              setOpen(false);
+            }}
             className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
           >
             <LogIn className="text-foreground size-4" />
@@ -122,6 +129,10 @@ export function ProfileMenu() {
           <button
             type="button"
             role="menuitem"
+            onClick={() => {
+              setAuthMode("signup");
+              setOpen(false);
+            }}
             className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
           >
             <UserPlus className="text-foreground size-4" />
@@ -158,6 +169,26 @@ export function ProfileMenu() {
             Contact Us
           </Link>
           </div>,
+          document.body
+        )}
+
+      {typeof document !== "undefined" &&
+        createPortal(
+          // Same backdrop-filter containing-block issue as the dropdown
+          // panel above (see its portal comment) — the mobile dock's
+          // backdrop-blur would otherwise pin this fixed overlay to the
+          // dock instead of the real viewport. AnimatePresence itself must
+          // stay mounted unconditionally so LoginModal's exit animation can
+          // play before it unmounts.
+          <AnimatePresence>
+            {authMode && (
+              <LoginModal
+                key="auth"
+                initialMode={authMode}
+                onClose={() => setAuthMode(null)}
+              />
+            )}
+          </AnimatePresence>,
           document.body
         )}
     </div>
