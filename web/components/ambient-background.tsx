@@ -2,23 +2,23 @@
 
 import { useEffect, useRef } from "react";
 
-// The page's own mesh-gradient background (see the "Mesh gradient" comment
-// in globals.css) sits still at rest — client asked for even the empty
-// parts of the page to react to the cursor, specifically like a cloth: the
-// cursor sends small ripples across a connected surface as it moves,
-// rather than isolated particles bouncing independently (an earlier pass
-// of this used a plain per-point spring-to-rest grid, which read as
-// "particles" — the client asked for that to be replaced with this).
-//
-// The difference that actually makes it read as cloth instead of
-// particles: each point is spring-connected to its 4 grid neighbors, not
-// just to its own rest position. Poke one point and the disturbance
-// propagates outward through those neighbor springs frame by frame — a
-// genuine ripple traveling across a connected fabric — instead of every
-// point reacting only to the cursor in isolation. Rendered as connected
-// grid lines (a woven mesh), not dots, for the same reason. Only
-// meaningfully-displaced segments draw anything, so at rest this is fully
-// invisible and the existing mesh gradient reads exactly as it does today.
+// Third pass at this. First pass was a per-point spring grid rendered as
+// dots ("particles" — client said no). Second pass connected the points
+// with neighbor springs and rendered the connections as lines ("grid" —
+// still not it, and points held near the cursor read as sticking to it
+// rather than letting it pass through). This pass drops the mass-spring
+// mesh entirely in favor of an actual wave simulation (the classic
+// discrete ripple algorithm — a scalar "height" field where each cell
+// pulls toward the average of its neighbors, offset against its own
+// previous frame): a disturbance genuinely radiates outward and passes
+// through neighboring cells like a real ripple, and there is nothing for
+// the cursor to grab onto — it only ever deposits energy, never pins a
+// position. Rendered as a blurred glow (a small low-res buffer, upscaled
+// through a single blur filter), not discrete shapes, so there is no
+// visible grid/mesh/dot structure at any zoom — just soft light moving
+// across the surface, the way light catches fabric as a hand passes over
+// it. Confirmed with the client this "no visible lines at all" version is
+// the one they want, over a softened-but-still-visible mesh alternative.
 export function AmbientBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -30,39 +30,44 @@ export function AmbientBackground() {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
-    const SPACING = 44;
-    const PUSH_RADIUS = 130;
-    const PUSH_STRENGTH = 14;
-    const NEIGHBOR_K = 0.045; // structural spring toward neighbors — carries the ripple
-    const HOME_K = 0.006; // weak pull back to rest — keeps the cloth from drifting
-    const DAMPING = 0.9;
+    const buffer = document.createElement("canvas");
+    const bufferCtx = buffer.getContext("2d", { willReadFrequently: false });
+    if (!bufferCtx) return;
 
-    type Point = { ox: number; oy: number; x: number; y: number; vx: number; vy: number };
+    // One buffer cell per ~14px of real screen — coarse on purpose. The
+    // blur that follows on composite is what turns this into a smooth
+    // glow; a fine-grained field would just cost more per frame for a
+    // result that gets blurred away regardless.
+    const CELL = 14;
+    const DAMPING = 0.972;
+    const INJECT_RADIUS_CELLS = 2.2;
+    const MAX_SPEED = 60; // px/frame of pointer travel treated as "fast"
+    const BLUR_PX = 34;
+
     let cols = 0;
     let rows = 0;
-    let grid: Point[] = [];
     let width = 0;
     let height = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    let field = new Float32Array(0);
+    let prevField = new Float32Array(0);
+    let imageData: ImageData | null = null;
+
     let pointerX = -9999;
     let pointerY = -9999;
     let prevPointerX = -9999;
     let prevPointerY = -9999;
     let rafId = 0;
 
-    const at = (r: number, c: number) => grid[r * cols + c];
-
-    function buildGrid() {
-      cols = Math.ceil(width / SPACING) + 1;
-      rows = Math.ceil(height / SPACING) + 1;
-      grid = [];
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const x = c * SPACING;
-          const y = r * SPACING;
-          grid.push({ ox: x, oy: y, x, y, vx: 0, vy: 0 });
-        }
-      }
+    function buildField() {
+      cols = Math.max(1, Math.ceil(width / CELL));
+      rows = Math.max(1, Math.ceil(height / CELL));
+      field = new Float32Array(cols * rows);
+      prevField = new Float32Array(cols * rows);
+      buffer.width = cols;
+      buffer.height = rows;
+      imageData = bufferCtx!.createImageData(cols, rows);
     }
 
     function resize() {
@@ -73,7 +78,7 @@ export function AmbientBackground() {
       canvas!.style.width = `${width}px`;
       canvas!.style.height = `${height}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      buildGrid();
+      buildField();
     }
 
     function onPointerMove(e: PointerEvent) {
@@ -83,95 +88,108 @@ export function AmbientBackground() {
     function onPointerLeave() {
       pointerX = -9999;
       pointerY = -9999;
+      prevPointerX = -9999;
+      prevPointerY = -9999;
+    }
+
+    function inject(px: number, py: number, amount: number) {
+      const cx = px / CELL;
+      const cy = py / CELL;
+      const r = INJECT_RADIUS_CELLS;
+      const minC = Math.max(0, Math.floor(cx - r));
+      const maxC = Math.min(cols - 1, Math.ceil(cx + r));
+      const minR = Math.max(0, Math.floor(cy - r));
+      const maxR = Math.min(rows - 1, Math.ceil(cy + r));
+      for (let ry = minR; ry <= maxR; ry++) {
+        for (let rx = minC; rx <= maxC; rx++) {
+          const d = Math.hypot(rx - cx, ry - cy);
+          if (d > r) continue;
+          const falloff = 1 - d / r;
+          field[ry * cols + rx] += amount * falloff * falloff;
+        }
+      }
     }
 
     function step() {
-      // Only push points along the cursor's recent travel path (a short
-      // trail of sample positions between last frame and this one), the
-      // way dragging a finger through cloth disturbs a line, not just a
-      // single point under the tip.
-      const trailSteps = 4;
-      for (const p of grid) {
-        let ax = 0;
-        let ay = 0;
-
-        for (let s = 0; s <= trailSteps; s++) {
-          const t = s / trailSteps;
-          const px = prevPointerX + (pointerX - prevPointerX) * t;
-          const py = prevPointerY + (pointerY - prevPointerY) * t;
-          const dx = p.x - px;
-          const dy = p.y - py;
-          const dist = Math.hypot(dx, dy);
-          if (dist < PUSH_RADIUS && dist > 0.001) {
-            const force = (1 - dist / PUSH_RADIUS) * PUSH_STRENGTH;
-            ax += (dx / dist) * force;
-            ay += (dy / dist) * force;
+      // Only a moving pointer deposits energy — a still cursor holds
+      // nothing in place, it just stops adding anything new while
+      // whatever's already rippling keeps traveling and fading on its
+      // own. This is the actual fix for "sticks to the mouse": there is
+      // no force at all tying field values to the current pointer
+      // position, only a one-time deposit where it has recently moved.
+      if (prevPointerX > -9000 && pointerX > -9000) {
+        const dx = pointerX - prevPointerX;
+        const dy = pointerY - prevPointerY;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 0.5) {
+          const speed = Math.min(dist, MAX_SPEED) / MAX_SPEED;
+          const steps = Math.max(1, Math.min(8, Math.round(dist / (CELL * 0.6))));
+          for (let s = 0; s <= steps; s++) {
+            const t = s / steps;
+            inject(
+              prevPointerX + dx * t,
+              prevPointerY + dy * t,
+              speed * 2.2
+            );
           }
         }
-
-        ax += (p.ox - p.x) * HOME_K;
-        ay += (p.oy - p.y) * HOME_K;
-
-        p.vx = (p.vx + ax) * DAMPING;
-        p.vy = (p.vy + ay) * DAMPING;
       }
 
-      // Structural springs to right/down neighbors (each pair only needs
-      // to be resolved once) — this is what carries a poke at one point
-      // into a ripple across its neighbors over the following frames.
+      // Classic discrete ripple: each cell eases toward the average of
+      // its 4 neighbors, offset against where it was two frames ago, then
+      // damped. This is what makes a disturbance genuinely radiate
+      // outward as a traveling wave instead of just decaying in place.
+      const next = prevField; // reuse the older buffer as scratch space
       for (let r = 0; r < rows; r++) {
+        const up = r > 0 ? r - 1 : r;
+        const down = r < rows - 1 ? r + 1 : r;
         for (let c = 0; c < cols; c++) {
-          const p = at(r, c);
-          if (c < cols - 1) applySpring(p, at(r, c + 1));
-          if (r < rows - 1) applySpring(p, at(r + 1, c));
+          const left = c > 0 ? c - 1 : c;
+          const right = c < cols - 1 ? c + 1 : c;
+          const i = r * cols + c;
+          const avg =
+            (field[r * cols + left] +
+              field[r * cols + right] +
+              field[up * cols + c] +
+              field[down * cols + c]) /
+            2;
+          next[i] = (avg - next[i]) * DAMPING;
         }
       }
-
-      for (const p of grid) {
-        p.x += p.vx;
-        p.y += p.vy;
-      }
-    }
-
-    function applySpring(a: Point, b: Point) {
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const dist = Math.hypot(dx, dy) || 0.001;
-      const diff = (dist - SPACING) * NEIGHBOR_K;
-      const fx = (dx / dist) * diff;
-      const fy = (dy / dist) * diff;
-      a.vx += fx;
-      a.vy += fy;
-      b.vx -= fx;
-      b.vy -= fy;
+      prevField = field;
+      field = next;
     }
 
     function draw() {
-      ctx!.clearRect(0, 0, width, height);
       const dark = document.documentElement.classList.contains("dark");
-      const rgb = dark ? "114,211,91" : "78,158,59";
-
-      ctx!.lineWidth = 1;
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const p = at(r, c);
-          if (c < cols - 1) drawSegment(p, at(r, c + 1), rgb);
-          if (r < rows - 1) drawSegment(p, at(r + 1, c), rgb);
+      const data = imageData!.data;
+      for (let i = 0; i < field.length; i++) {
+        const v = field[i];
+        const o = i * 4;
+        if (v >= 0) {
+          // Crest — brand green, brighter with height (light catching a
+          // raised fold).
+          const a = Math.min(1, v * 0.9);
+          data[o] = dark ? 114 : 78;
+          data[o + 1] = dark ? 211 : 158;
+          data[o + 2] = dark ? 91 : 59;
+          data[o + 3] = Math.round(a * 255);
+        } else {
+          // Trough — a faint shadow, not a color, so it reads as a fold
+          // dipping away from the light rather than a second hue.
+          const a = Math.min(0.5, -v * 0.55);
+          data[o] = 0;
+          data[o + 1] = 0;
+          data[o + 2] = 0;
+          data[o + 3] = Math.round(a * 255);
         }
       }
-    }
+      bufferCtx!.putImageData(imageData!, 0, 0);
 
-    function drawSegment(a: Point, b: Point, rgb: string) {
-      const da = Math.hypot(a.x - a.ox, a.y - a.oy);
-      const db = Math.hypot(b.x - b.ox, b.y - b.oy);
-      const displacement = (da + db) / 2;
-      if (displacement < 0.6) return;
-      const alpha = Math.min(0.3, displacement / 45);
-      ctx!.strokeStyle = `rgba(${rgb},${alpha.toFixed(3)})`;
-      ctx!.beginPath();
-      ctx!.moveTo(a.x, a.y);
-      ctx!.lineTo(b.x, b.y);
-      ctx!.stroke();
+      ctx!.clearRect(0, 0, width, height);
+      ctx!.filter = `blur(${BLUR_PX}px)`;
+      ctx!.drawImage(buffer, 0, 0, cols, rows, 0, 0, width, height);
+      ctx!.filter = "none";
     }
 
     function tick() {
