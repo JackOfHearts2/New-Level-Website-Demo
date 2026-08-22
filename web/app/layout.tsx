@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, DM_Sans } from "next/font/google";
+import { AmbientBackground } from "@/components/ambient-background";
 import "./globals.css";
 
 // Matches --font-display / --font-body in the vanilla site's styles.css —
@@ -38,7 +39,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AmbientBackground />
+        {children}
+      </body>
     </html>
   );
 }

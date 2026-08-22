@@ -449,37 +449,65 @@ export const TESTIMONIALS = [
   },
 ];
 
+// Every member gets a slug for their own bio page at /team/[slug] (see
+// app/(marketing)/team/[slug]/page.tsx) — reachable either from a homepage
+// team photo or from a row on the full /team roster. Shelley's quote/bio
+// reuse the real migrated copy from BROKERS_CORNER/POINT_OF_CONTACT above
+// rather than inventing new text for the one real person on the team; the
+// other three are clearly-fictional placeholder profiles (placeholder:
+// true), same convention as their placeholder photos — their bio pages
+// flag that explicitly rather than reading as real hires.
 export const TEAM = [
   {
+    slug: "shelley-lozier",
     name: "Shelley Lozier",
     role: "Founder & Principal Broker",
     motto: "Every detail, followed through.",
+    quote: "Success in Real Estate comes from relationships, not transactions.",
+    bio: BROKERS_CORNER.bio,
+    email: POINT_OF_CONTACT.email,
+    phone: POINT_OF_CONTACT.phone,
     placeholder: false,
     photo: "/team/shelley-lozier.png",
   },
   {
+    slug: "broker-partner",
     name: "Team Member",
     role: "Broker · Partner",
     motto: "Real Estate is relationships first.",
+    quote: "The right property was never about the numbers. It's about the moment it's for.",
+    bio: "This profile is a placeholder for a real Broker & Partner who'll join the roster as New Level's team page is filled in — background, specialties, and what they bring to the brokerage side will live here.",
+    email: "placeholder@newlevelassociates.com",
+    phone: "+1 (305) 000-0000",
     placeholder: true,
     photo:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&h=800&fit=crop&crop=faces&auto=format",
   },
   {
+    slug: "sales-associate",
     name: "Team Member",
     role: "Sales Associate",
     motto: "Find the space that fits the moment.",
+    quote: "Every client is chasing a feeling, not just a floor plan.",
+    bio: "This profile is a placeholder for a real Sales Associate who'll join the roster as New Level's team page is filled in — background, specialties, and a bit of personality will live here.",
+    email: "placeholder@newlevelassociates.com",
+    phone: "+1 (305) 000-0000",
     placeholder: true,
     photo:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&h=800&fit=crop&crop=faces&auto=format",
   },
   {
+    slug: "property-management",
     name: "Team Member",
     role: "Property Management",
     motto: "Protect the property, protect the peace of mind.",
+    quote: "The best property management is the kind an owner never has to think about.",
+    bio: "This profile is a placeholder for a real member of the Property Management team who'll join the roster as New Level's team page is filled in — background, specialties, and day-to-day focus will live here.",
+    email: "placeholder@newlevelassociates.com",
+    phone: "+1 (305) 000-0000",
     placeholder: true,
     photo:
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&h=300&fit=crop&crop=faces&auto=format",
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=600&h=800&fit=crop&crop=faces&auto=format",
   },
 ];
 

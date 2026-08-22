@@ -1,16 +1,21 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { TEAM } from "@/lib/content";
 
 // Ported from the client's tailwind-image-accordion reference: a row of
 // images that are all equal width at rest, and on hover/focus the
 // hovered one expands (CSS group-hover, no JS state) revealing name/role
 // text overlaid at the bottom, while the others shrink to make room.
+// Each tile is a Link straight to that person's own bio page at
+// /team/[slug] — clicking a photo here (not just "Meet the full team")
+// goes directly to their profile.
 export function TeamImageAccordion({ team }: Readonly<{ team: typeof TEAM }>) {
   return (
     <div className="group mx-auto mb-10 mt-3 flex w-full max-md:flex-col justify-center gap-2">
       {team.map((member, i) => (
-        <article
+        <Link
           key={member.name + i}
+          href={`/team/${member.slug}`}
           className="group/article relative w-full overflow-hidden rounded-xl transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.15)] before:absolute before:inset-x-0 before:bottom-0 before:h-1/3 before:bg-gradient-to-t before:from-black/50 before:transition-opacity md:before:opacity-0 md:hover:before:opacity-100 focus-within:before:opacity-100 md:not-[&:hover]:group-hover:w-[20%] md:[&:not(:focus-within):not(:hover)]:group-focus-within:w-[20%]"
         >
           <div className="absolute inset-0 z-10 flex flex-col justify-end p-3 text-white">
@@ -28,7 +33,7 @@ export function TeamImageAccordion({ team }: Readonly<{ team: typeof TEAM }>) {
             height={640}
             className="h-72 w-full object-cover md:h-[420px]"
           />
-        </article>
+        </Link>
       ))}
     </div>
   );

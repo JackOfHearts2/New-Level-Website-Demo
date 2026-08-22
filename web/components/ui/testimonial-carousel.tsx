@@ -149,23 +149,29 @@ export function TestimonialCarousel({
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center gap-3">
-        <button
+      <div className="mt-10 flex justify-center gap-10">
+        <motion.button
           type="button"
           onClick={() => step(-1)}
           aria-label="Previous testimonial"
-          className="border-border hover:border-primary/50 hover:text-primary flex size-10 items-center justify-center rounded-full border transition-colors"
+          whileHover={reduceMotion ? undefined : { scale: 1.1, y: -2 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.85 }}
+          transition={{ type: "spring", stiffness: 420, damping: 22 }}
+          className="border-border bg-card hover:border-primary hover:bg-primary hover:text-primary-foreground flex size-14 items-center justify-center rounded-full border shadow-sm transition-colors"
         >
-          <ChevronLeft className="size-4" />
-        </button>
-        <button
+          <ChevronLeft className="size-6" />
+        </motion.button>
+        <motion.button
           type="button"
           onClick={() => step(1)}
           aria-label="Next testimonial"
-          className="border-border hover:border-primary/50 hover:text-primary flex size-10 items-center justify-center rounded-full border transition-colors"
+          whileHover={reduceMotion ? undefined : { scale: 1.1, y: -2 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.85 }}
+          transition={{ type: "spring", stiffness: 420, damping: 22 }}
+          className="border-border bg-card hover:border-primary hover:bg-primary hover:text-primary-foreground flex size-14 items-center justify-center rounded-full border shadow-sm transition-colors"
         >
-          <ChevronRight className="size-4" />
-        </button>
+          <ChevronRight className="size-6" />
+        </motion.button>
       </div>
     </div>
   );

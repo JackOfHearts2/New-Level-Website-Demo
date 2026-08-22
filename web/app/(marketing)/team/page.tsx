@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
-import { TeamImageAccordion } from "@/components/team/team-image-accordion";
+import { TeamRoster } from "@/components/team/team-roster";
 import { PAGES, TEAM } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -20,9 +20,7 @@ export default function TeamPage() {
         intro={page.intro}
       />
 
-      <section className="mx-auto max-w-7xl px-6 pb-24">
-        <TeamImageAccordion team={TEAM} />
-      </section>
+      <TeamRoster team={TEAM} />
 
       <CrossNav current="team" />
     </>
