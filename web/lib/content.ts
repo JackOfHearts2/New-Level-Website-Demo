@@ -93,7 +93,146 @@ export const PAGES = {
     heading: "Frequently Asked Questions",
     sub: "Answers to what people ask us most.",
   },
+  privacy: {
+    eyebrow: "Legal",
+    heading: "Privacy Policy",
+    sub: "How this site handles the information it has.",
+  },
+  terms: {
+    eyebrow: "Legal",
+    heading: "Terms of Use",
+    sub: "The rules for using this site.",
+  },
+  riskDisclosure: {
+    eyebrow: "Legal",
+    heading: "Risk Disclosure",
+    sub: "Real estate involves real risk — here's the plain version.",
+  },
+  fairHousing: {
+    eyebrow: "Legal",
+    heading: "Fair Housing Statement",
+    sub: "Our commitment to equal housing opportunity.",
+  },
 };
+
+// Draft/demo content — written to accurately describe what this actual
+// Next.js app does with data today (see the sections below), not generic
+// filler. It has NOT been reviewed by an attorney and should not be treated
+// as a finished legal document before this site (or its data-collecting
+// features) goes live for real.
+export const LEGAL_LAST_UPDATED = "August 2026";
+
+export const PRIVACY_SECTIONS = [
+  {
+    t: "Information we collect",
+    d: "The contact and inquiry forms on this site ask for the name, email, phone number, and message details a visitor chooses to enter. This is a demo — no inquiry endpoint is currently connected, so form submissions on this site are not actually transmitted or stored anywhere; they simply confirm on-screen. The account menu shown in the navigation (Sign In / Create Account) is a UI preview only — there is no real account system behind it, and no credentials are collected.",
+  },
+  {
+    t: "Cookies & local storage",
+    d: "This site uses your browser's local storage to remember one preference — light or dark mode — on the device you're using. That preference never leaves your browser. A separate, short-lived session cookie is used only to keep an administrator signed in to the site's internal content-editing tools; it is not set for ordinary visitors and is not used for tracking or advertising.",
+  },
+  {
+    t: "How information is used",
+    d: "Where a real inquiry endpoint is eventually connected, information submitted through a form would be used only to respond to that specific inquiry — scheduling, answering questions, or following up about a property, service, or event. It would not be sold or shared with third parties for their own marketing purposes.",
+  },
+  {
+    t: "Third-party services",
+    d: "Site content and any admin-uploaded images are stored using Netlify Blobs, a backend storage service operated by Netlify. This site does not currently run third-party analytics, advertising, or tracking scripts.",
+  },
+  {
+    t: "Data security",
+    d: "Reasonable technical safeguards are used for the systems this site does rely on (such as the admin login), but no method of storage or transmission over the internet is completely secure, and no guarantee of absolute security can be made.",
+  },
+  {
+    t: "Your choices",
+    d: "Because this demo's forms don't currently send data anywhere, there is nothing on file to request access to, correct, or delete. Once real data collection is connected, this section will describe how to make those requests.",
+  },
+  {
+    t: "Children's privacy",
+    d: "This site is intended for a general adult audience and is not directed at children under 13. It does not knowingly collect personal information from children.",
+  },
+  {
+    t: "Changes to this policy",
+    d: "This policy may be updated as real functionality (forms, accounts, analytics) is added to the site. The date below reflects the most recent update.",
+  },
+];
+
+export const TERMS_SECTIONS = [
+  {
+    t: "Acceptance of these terms",
+    d: "By using this site, you agree to these terms. This is a demo of a real estate group's website — some features described (booking, inquiries, accounts) are previews and not yet connected to live systems.",
+  },
+  {
+    t: "Permitted use",
+    d: "This site is provided for browsing information about New Level, its team, services, and featured properties. You agree not to misuse the site — including attempting to disrupt it, scrape it at scale, or interfere with other visitors' use of it.",
+  },
+  {
+    t: "Not investment, legal, or financial advice",
+    d: "Content on this site — including property descriptions, service overviews, and any figures shown — is for general informational purposes only and does not constitute investment, legal, financial, or tax advice. Speak with a licensed professional before making a real estate or investment decision.",
+  },
+  {
+    t: "Intellectual property",
+    d: "The New Level name, logo, and original site content (text, photos of the featured property, and design) belong to New Level or its licensors. You may not reproduce or redistribute them without permission.",
+  },
+  {
+    t: "Third-party links",
+    d: "This site links to third-party destinations, including social media platforms. New Level isn't responsible for the content, policies, or practices of those third-party sites.",
+  },
+  {
+    t: "No warranty",
+    d: "This site — including this demo version — is provided \"as is,\" without warranties of any kind, express or implied, including that it will be uninterrupted, error-free, or fit for a particular purpose.",
+  },
+  {
+    t: "Limitation of liability",
+    d: "To the fullest extent permitted by law, New Level is not liable for any indirect, incidental, or consequential damages arising from your use of this site.",
+  },
+  {
+    t: "Governing law",
+    d: "These terms are governed by the laws of the State of Florida, without regard to conflict-of-law principles, consistent with New Level being headquartered in South Florida.",
+  },
+  {
+    t: "Changes to these terms",
+    d: "These terms may be updated as the site's real functionality grows. Continued use of the site after an update means you accept the revised terms.",
+  },
+];
+
+export const RISK_DISCLOSURE_SECTIONS = [
+  {
+    t: "Real estate values can go up or down",
+    d: "Property values, rental income, and occupancy are affected by market conditions, interest rates, local economic factors, and other events outside anyone's control. Past performance of any property, market, or investment strategy is not a guarantee of future results.",
+  },
+  {
+    t: "No guaranteed returns",
+    d: "Nothing on this site — including testimonials, case studies, or example figures — should be read as a projection or guarantee of income, appreciation, or investment return. Figures shown on this demo site are illustrative placeholders, not real performance data.",
+  },
+  {
+    t: "Property management & rental risk",
+    d: "Rental and event-hosting income can be affected by vacancy, cancellations, seasonality, maintenance and repair costs, and changes in local regulation. Refundable deposits and cancellation terms shown for a given property or event are specific to that booking, not a general guarantee.",
+  },
+  {
+    t: "Liquidity risk",
+    d: "Real estate is not a liquid asset — it can take significant time to sell a property at a desired price, and market conditions may require accepting a different price or timeline than planned.",
+  },
+  {
+    t: "Independent advice recommended",
+    d: "Before making a real estate purchase, sale, or investment decision, New Level recommends speaking with a licensed real estate professional, attorney, and financial or tax advisor about your specific situation.",
+  },
+];
+
+export const FAIR_HOUSING_SECTIONS = [
+  {
+    t: "Equal housing opportunity",
+    d: "New Level is committed to compliance with the federal Fair Housing Act and applicable state and local fair housing laws. We do not discriminate on the basis of race, color, religion, sex, disability, familial status, or national origin in any aspect of the sale, rental, financing, or management of housing.",
+  },
+  {
+    t: "Our commitment",
+    d: "Every client, tenant, guest, and prospective agent is treated fairly and given equal access to New Level's properties, services, and opportunities, regardless of background.",
+  },
+  {
+    t: "Reporting a concern",
+    d: "If you believe you've experienced discrimination in connection with any New Level property or service, you can contact us directly, or file a complaint with the U.S. Department of Housing and Urban Development (HUD) at hud.gov/fairhousing.",
+  },
+];
 
 export const FAQS = [
   {
@@ -450,6 +589,15 @@ export const FOOTER_NAV = [
       { label: "Content Library", href: "/content-library" },
       { label: "FAQs", href: "/faq" },
       { label: "Property Portfolio", href: "/properties" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Use", href: "/terms" },
+      { label: "Risk Disclosure", href: "/risk-disclosure" },
+      { label: "Fair Housing", href: "/fair-housing" },
     ],
   },
 ];
