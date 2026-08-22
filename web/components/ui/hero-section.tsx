@@ -266,16 +266,6 @@ const HeroHeader = ({
                 <ThemeToggle />
                 <ProfileMenu />
                 <Link
-                  href="/contact"
-                  className={cn(
-                    buttonVariants({ variant: "outline", size: "sm" }),
-                    "font-heading",
-                    isScrolled && "lg:hidden"
-                  )}
-                >
-                  <span>Contact</span>
-                </Link>
-                <Link
                   href="/properties"
                   className={cn(
                     buttonVariants({ size: "sm" }),
