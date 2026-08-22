@@ -48,7 +48,12 @@ export function SearchBox() {
   }
 
   return (
-    <div className="relative z-10 mx-auto mt-8 max-w-5xl px-4 sm:-mt-16 sm:px-6">
+    // No more negative-margin overlap up into the hero — that layered
+    // "float over the seam" trick read as the search box being awkwardly
+    // wedged into the gap between the hero and the rest of the page. Plain
+    // positive spacing on every breakpoint instead, so it reads as its own
+    // clearly-separated section.
+    <div className="relative z-10 mx-auto mt-10 max-w-5xl px-4 sm:px-6">
       <GlowCard className="bg-background/95 rounded-3xl p-4 backdrop-blur-xl sm:p-6">
         <div role="tablist" className="flex flex-wrap gap-2">
           {SEARCH_CATEGORIES.map((cat) => (
@@ -81,9 +86,7 @@ export function SearchBox() {
 
           {children && (
             <label className="text-sm">
-              <span className="text-muted-foreground font-heading text-xs font-medium">
-                Rental Type
-              </span>
+              <span className="sr-only">Rental Type</span>
               <select
                 value={activeChild ?? ""}
                 onChange={(e) => setActiveChild(e.target.value || null)}
@@ -99,15 +102,21 @@ export function SearchBox() {
             </label>
           )}
 
+          {/* The field name lives inside the select itself (as a disabled
+              default option) instead of a separate label sitting right next
+              to it — that pairing used to read as cramped/clipped,
+              especially once several of these sat side by side. Matches the
+              "Rental type…" select above, which already worked this way. */}
           {(Object.keys(SEARCH_FILTERS) as (keyof typeof SEARCH_FILTERS)[]).map((key) => (
             <label key={key} className="text-sm">
-              <span className="text-muted-foreground font-heading text-xs font-medium">
-                {FILTER_LABELS[key]}
-              </span>
+              <span className="sr-only">{FILTER_LABELS[key]}</span>
               <select
-                defaultValue="Any"
+                defaultValue=""
                 className="border-border mt-1 rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
               >
+                <option value="" disabled>
+                  {FILTER_LABELS[key]}
+                </option>
                 {SEARCH_FILTERS[key].map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}

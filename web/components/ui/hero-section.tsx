@@ -5,7 +5,6 @@ import Image from "next/image";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { AnimatedGroup } from "@/components/ui/animated-group";
-import { CtaLink } from "@/components/ui/cta-link";
 import { cn } from "@/lib/utils";
 import { NavMenu } from "@/components/nav-menu";
 import { NavMenuMobile } from "@/components/nav-menu-mobile";
@@ -151,46 +150,15 @@ export function HeroSection({
                   <h1 className="font-heading mt-8 max-w-4xl mx-auto text-balance text-6xl font-bold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                     Spaces for the moments that matter.
                   </h1>
-                  <p className="mx-auto mt-8 max-w-2xl text-balance text-lg text-muted-foreground">
+                  {/* The Explore Properties / Request a Tour CTA row that
+                      used to sit here has been pulled per client feedback,
+                      pending a better home for it elsewhere on the page. */}
+                  <p className="mx-auto mt-8 mb-12 max-w-2xl text-balance text-lg text-muted-foreground">
                     A South Florida real estate group matching standout
                     properties to the moments they&apos;re made for —
                     corporate offsites, family gatherings, private events,
                     retreats and extended stays.
                   </p>
-                </AnimatedGroup>
-
-                <AnimatedGroup
-                  variants={{
-                    item: transitionVariants.item,
-                    container: {
-                      hidden: { opacity: 1 },
-                      visible: {
-                        opacity: 1,
-                        transition: { staggerChildren: 0.15, delayChildren: 1 },
-                      },
-                    },
-                  }}
-                  className="mt-12 mb-16 flex justify-center"
-                >
-                  {/* A bordered, backdrop-blurred capsule holding both CTAs
-                      together — these used to render as two independent
-                      pills floating in open space between the hero copy and
-                      the search card below, which read as "slapped on"
-                      rather than composed. Grouping them in one bounded
-                      shape (echoing the hero badge pill above) fixes that on
-                      every viewport, not just a mobile-only tweak. */}
-                  <div className="border-border/60 bg-background/70 flex w-fit flex-col items-stretch gap-2 rounded-3xl border p-3 shadow-xl backdrop-blur-md sm:flex-row sm:items-center sm:gap-0 sm:divide-x sm:divide-border/60 sm:rounded-full sm:p-1.5">
-                    <div className="sm:pr-1.5">
-                      <CtaLink href="/properties">
-                        <span className="text-nowrap">Explore Properties</span>
-                      </CtaLink>
-                    </div>
-                    <div className="sm:pl-1.5">
-                      <CtaLink href="/contact">
-                        <span className="text-nowrap">Request a Tour</span>
-                      </CtaLink>
-                    </div>
-                  </div>
                 </AnimatedGroup>
               </div>
             </div>

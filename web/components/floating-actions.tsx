@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, Plus, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useGlowRing } from "@/components/ui/glow-card";
 import { ContactIntakeModal } from "@/components/contact-intake-modal";
 import { AiChatWidget } from "@/components/ai-chat-widget";
@@ -51,15 +53,19 @@ function DialButton({
   );
 }
 
-// bottom-24 on mobile clears the fixed MobileDock (and property's
-// StickyBookingBar) at bottom-4; lg:bottom-6 once neither of those is
-// competing for the same corner. Collapsed to a single trigger instead of
-// two icons permanently camped in the corner — per client feedback that two
-// always-visible circles looked awkward, especially on mobile.
+// On mobile the trigger now sits at the same bottom-4 height as the
+// MobileDock, sized down to match its size-11 icons (rather than floating
+// above it at its own larger size) — per client feedback. md:bottom-6 +
+// md:size-16 once the dock is gone (MobileDock hides at md: too) and it can
+// be its own larger, independently-placed element again.
 export function FloatingActions() {
   const [dialOpen, setDialOpen] = useState(false);
   const [modal, setModal] = useState<"contact" | "chat" | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  // /property has its own edge-to-edge StickyBookingBar at this same
+  // bottom-4 spot (replacing the MobileDock there) — bump up to clear it
+  // instead of sitting on top of it.
+  const onPropertyPage = usePathname() === "/property";
 
   useEffect(() => {
     if (!dialOpen) return;
@@ -81,7 +87,10 @@ export function FloatingActions() {
     <>
       <div
         ref={rootRef}
-        className="fixed right-4 bottom-24 z-40 flex flex-col items-end gap-4 sm:right-6 lg:bottom-6"
+        className={cn(
+          "fixed right-4 z-40 flex flex-col items-end gap-4 md:right-6 md:bottom-6",
+          onPropertyPage ? "bottom-24 md:bottom-6" : "bottom-4"
+        )}
       >
         <AnimatePresence>
           {dialOpen &&
@@ -107,9 +116,9 @@ export function FloatingActions() {
           aria-expanded={dialOpen}
           animate={dialOpen ? { rotate: 135 } : { rotate: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="bg-primary text-primary-foreground border-background animate-fab-pulse relative flex size-16 items-center justify-center rounded-full border-4 shadow-2xl"
+          className="bg-primary text-primary-foreground border-background animate-fab-pulse relative flex size-11 items-center justify-center rounded-full border-2 shadow-2xl md:size-16 md:border-4"
         >
-          <Plus className="size-7" strokeWidth={2.5} />
+          <Plus className="size-4 md:size-7" strokeWidth={2.5} />
         </motion.button>
       </div>
 
