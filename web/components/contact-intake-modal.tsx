@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { CONTACT_TOPICS } from "@/lib/content";
 
@@ -17,13 +18,20 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 120, scale: 0.9, rotate: -2 }}
+        animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+        exit={{ opacity: 0, y: 60, scale: 0.92 }}
+        transition={{ type: "spring", stiffness: 340, damping: 26 }}
         role="dialog"
         aria-label="Contact New Level"
         className="border-border bg-popover w-full max-w-md rounded-t-3xl border p-6 shadow-2xl sm:rounded-3xl"
@@ -115,7 +123,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
             </button>
           </form>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

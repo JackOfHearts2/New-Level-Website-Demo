@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { X, Send, Sparkles } from "lucide-react";
 import { FAQS } from "@/lib/content";
 import { ShineCircle } from "@/components/ui/shine-shape";
@@ -60,10 +61,15 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, x: 60, y: 60, scale: 0.75 }}
+      animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+      exit={{ opacity: 0, x: 40, y: 40, scale: 0.8 }}
+      transition={{ type: "spring", stiffness: 320, damping: 24 }}
+      style={{ transformOrigin: "bottom right" }}
       role="dialog"
       aria-label="Chat with New Level"
-      className="border-border bg-popover fixed right-4 bottom-24 z-50 flex h-[32rem] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-3xl border shadow-2xl sm:right-6 sm:bottom-24"
+      className="border-border bg-popover fixed right-4 bottom-24 z-50 flex h-[32rem] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-3xl border-2 shadow-2xl sm:right-6 sm:bottom-24"
     >
       <div className="border-border flex items-center gap-3 border-b p-4">
         <ShineCircle className="bg-primary text-primary-foreground flex size-9 shrink-0 items-center justify-center rounded-full">
@@ -138,6 +144,6 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
           <Send className="size-4" />
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 }

@@ -48,6 +48,7 @@
      own wrapper (see VerticalMarquee in cta-with-text-marquee.tsx) — the
      fallback only applies if that's ever missing. */
   --animate-marquee-vertical: marquee-vertical var(--duration, 30s) linear infinite;
+  --animate-fab-pulse: fab-pulse 2.4s ease-in-out infinite;
 }
 
 @keyframes event-glow {
@@ -68,6 +69,21 @@
   }
   to {
     transform: translateY(-100%);
+  }
+}
+
+/* FloatingActions' collapsed trigger — a real sonar-ring pulse (not a tiny
+   scale wobble) so a single always-visible button still reads as "alive"
+   without needing two permanently-open icons to draw the eye. */
+@keyframes fab-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-green) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 18px color-mix(in srgb, var(--color-green) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-green) 0%, transparent);
   }
 }
 
