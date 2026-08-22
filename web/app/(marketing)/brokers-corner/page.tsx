@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import { Play } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
-import { ShinePill, ShineCircle } from "@/components/ui/shine-shape";
+import { ShinePill, ShineCircle, ShineBox } from "@/components/ui/shine-shape";
 import { CtaLink } from "@/components/ui/cta-link";
+import { GlowCard } from "@/components/ui/glow-card";
 import { PAGES, BROKERS_CORNER } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export default function BrokersCornerPage() {
       <PageHero eyebrow={page.eyebrow} heading={page.heading} sub={page.sub} />
 
       <section className="mx-auto max-w-3xl px-6 pb-16">
-        <div className="border-border flex flex-col items-center gap-4 rounded-2xl border p-8 text-center shadow-sm sm:flex-row sm:text-left">
+        <GlowCard className="flex flex-col items-center gap-4 p-8 text-center sm:flex-row sm:text-left">
           <ShineCircle className="relative size-16 shrink-0 overflow-hidden rounded-full">
             <Image
               src="/team/shelley-lozier.png"
@@ -36,7 +37,7 @@ export default function BrokersCornerPage() {
           <div className="sm:ml-auto">
             <CtaLink href="/contact">Ask Shelley a Question</CtaLink>
           </div>
-        </div>
+        </GlowCard>
         <p className="text-foreground mt-8 text-balance">{BROKERS_CORNER.bio}</p>
       </section>
 
@@ -44,11 +45,11 @@ export default function BrokersCornerPage() {
         <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
           Latest Episode
         </ShinePill>
-        <div className="bg-muted border-border relative mt-6 flex aspect-video items-center justify-center overflow-hidden rounded-2xl border">
+        <ShineBox className="bg-muted border-border relative mt-6 flex aspect-video items-center justify-center overflow-hidden rounded-2xl border">
           <ShineCircle className="bg-background/80 flex size-16 items-center justify-center rounded-full shadow-sm">
             <Play className="text-primary size-6 fill-current" />
           </ShineCircle>
-        </div>
+        </ShineBox>
         <p className="text-foreground mt-4 text-center text-sm">
           Full video series coming soon.
         </p>

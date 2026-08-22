@@ -469,6 +469,13 @@ export const TEAM = [
     phone: POINT_OF_CONTACT.phone,
     placeholder: false,
     photo: "/team/shelley-lozier.png",
+    // object-cover center-crops by default — this particular photo's
+    // headroom means a dead-center crop clips the top of her head in the
+    // accordion/roster/bio-page frames (all taller-than-the-source-image
+    // aspect ratios). Bias the crop toward the top instead. The three
+    // Unsplash placeholder photos below already arrive pre-cropped to
+    // faces via Unsplash's own crop=faces param, so they don't need this.
+    photoPosition: "top" as const,
   },
   {
     slug: "broker-partner",

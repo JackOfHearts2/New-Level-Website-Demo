@@ -58,37 +58,54 @@ function TestimonialFace({
 // faces visible to read as anything but a flat swap. Repeating the real
 // set around the ring (same content, more faces) restores that density
 // without inventing fake testimonials.
-const MIN_FACES = 9;
+//
+// Density is responsive, not a single constant: on the narrow (mobile)
+// layout the original ~3-visible-at-once density already reads fine and
+// the client confirmed it should stay as-is there — it's only the
+// desktop width where 3 felt small. DESKTOP_MIN_FACES packs the ring
+// denser (more faces, smaller angle step) so 5-6 read clearly at once,
+// with a wider perspective so the side faces foreshorten more gently
+// instead of curving out of view too quickly.
+const MOBILE_MIN_FACES = 9;
+const DESKTOP_MIN_FACES = 16;
+const DESKTOP_BREAKPOINT = 640;
 
 export function TestimonialCarousel({
   testimonials,
   className,
 }: Readonly<{ testimonials: Testimonial[]; className?: string }>) {
-  const repeatCount = Math.max(1, Math.ceil(MIN_FACES / testimonials.length));
-  const faces = Array.from({ length: repeatCount }, () => testimonials).flat();
-  const count = faces.length;
-  const angleStep = 360 / count;
   const reduceMotion = useReducedMotion();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [faceWidth, setFaceWidth] = useState(260);
+  const [containerWidth, setContainerWidth] = useState(400);
 
   // Cylinder size is derived from the container's own measured width rather
   // than a hardcoded/media-query breakpoint, so it adapts to any layout
-  // this component gets dropped into without a separate mobile/desktop case.
+  // this component gets dropped into without a separate mobile/desktop case
+  // for sizing — only the face *count* below branches on width.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
-      const w = entries[0].contentRect.width;
-      // Narrower than a single-flip layout would need — with MIN_FACES
-      // packed around the ring, a wide card would make the cylinder huge
-      // and the "several visible at once" effect harder to read.
-      setFaceWidth(Math.min(260, Math.max(180, w * 0.32)));
+      setContainerWidth(entries[0].contentRect.width);
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  const isDesktop = containerWidth >= DESKTOP_BREAKPOINT;
+  const minFaces = isDesktop ? DESKTOP_MIN_FACES : MOBILE_MIN_FACES;
+  const repeatCount = Math.max(1, Math.ceil(minFaces / testimonials.length));
+  const faces = Array.from({ length: repeatCount }, () => testimonials).flat();
+  const count = faces.length;
+  const angleStep = 360 / count;
+
+  // Smaller cards at the same density leave more of them legible within
+  // the visible arc, rather than the front 1-2 dominating and the rest
+  // curving out of frame almost immediately.
+  const faceWidth = isDesktop
+    ? Math.min(220, Math.max(150, containerWidth * 0.24))
+    : Math.min(260, Math.max(180, containerWidth * 0.32));
 
   const cylinderWidth = faceWidth * count;
   const radius = cylinderWidth / (2 * Math.PI);
@@ -110,7 +127,7 @@ export function TestimonialCarousel({
       <div
         ref={containerRef}
         className="relative h-[22rem] w-full sm:h-[26rem]"
-        style={{ perspective: "1200px" }}
+        style={{ perspective: isDesktop ? "1700px" : "1200px" }}
       >
         <div
           className="flex h-full items-center justify-center"

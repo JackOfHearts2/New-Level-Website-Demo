@@ -28,7 +28,7 @@ export function TestimonialsSection({
 
         <TestimonialCarousel
           testimonials={testimonials}
-          className="mx-auto mt-16 max-w-2xl"
+          className="mx-auto mt-16 max-w-2xl sm:max-w-4xl"
         />
 
         <div className="mt-10 flex justify-center">

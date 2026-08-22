@@ -1,11 +1,11 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
+import { EventCtaSection } from "@/components/sections/event-cta-section";
+import { GlowCard } from "@/components/ui/glow-card";
 import { ShinePill } from "@/components/ui/shine-shape";
-import { CtaLink } from "@/components/ui/cta-link";
 import { cn } from "@/lib/utils";
-import { PAGES, EVENTS_CALENDAR } from "@/lib/content";
+import { PAGES, EVENTS_CALENDAR, EVENT_CTA } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Events · New Level",
@@ -53,7 +53,7 @@ export default function EventsPage() {
       <PageHero eyebrow={page.eyebrow} heading={page.heading} sub={page.sub} />
 
       <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-        <div className="border-border h-fit rounded-2xl border p-6 shadow-sm">
+        <GlowCard className="h-fit p-6">
           <h2 className="font-heading text-center font-semibold">{monthLabel}</h2>
           <div className="text-foreground mt-4 grid grid-cols-7 gap-1 text-center text-sm font-medium">
             {WEEKDAYS.map((d) => (
@@ -81,14 +81,14 @@ export default function EventsPage() {
               );
             })}
           </div>
-        </div>
+        </GlowCard>
 
         <div className="space-y-4">
           {EVENTS_CALENDAR.map((event) => (
-            <Link
+            <GlowCard
               key={event.date + event.title}
               href="/contact"
-              className="border-border hover:border-primary/50 hover:-translate-y-1 block rounded-2xl border p-6 shadow-sm transition-all duration-300"
+              className="hover:border-primary/50 hover:-translate-y-1 block p-6 transition-all duration-300"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="font-heading font-semibold">{event.title}</h3>
@@ -105,30 +105,13 @@ export default function EventsPage() {
                 · {event.time}
               </p>
               <p className="text-foreground mt-2 text-sm">{event.blurb}</p>
-            </Link>
+            </GlowCard>
           ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
-        <div className="group bg-foreground text-background relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16">
-          <div
-            aria-hidden
-            className="animate-event-glow bg-primary/45 pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-2xl transition-[opacity,transform] duration-500 group-hover:scale-125 group-hover:opacity-90"
-          />
-          <h2 className="font-heading relative text-3xl font-bold text-balance md:text-4xl">
-            Hosting an event?
-          </h2>
-          <p className="relative mx-auto mt-4 max-w-xl text-balance text-white">
-            Milestone celebrations, private dinners, corporate gatherings: see
-            venues set up to host, not just sleep.
-          </p>
-          <div className="relative mt-8 flex justify-center">
-            <CtaLink href="/properties?category=events" variant="light">
-              See event venues
-            </CtaLink>
-          </div>
-        </div>
+        <EventCtaSection eventCta={EVENT_CTA} />
       </section>
 
       <CrossNav current="events" />

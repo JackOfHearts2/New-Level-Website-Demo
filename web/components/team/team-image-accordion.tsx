@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import type { TEAM } from "@/lib/content";
 
 // Ported from the client's tailwind-image-accordion reference: a row of
@@ -31,7 +32,10 @@ export function TeamImageAccordion({ team }: Readonly<{ team: typeof TEAM }>) {
             alt=""
             width={480}
             height={640}
-            className="h-72 w-full object-cover md:h-[420px]"
+            className={cn(
+              "h-72 w-full object-cover md:h-[420px]",
+              member.photoPosition === "top" && "object-top"
+            )}
           />
         </Link>
       ))}

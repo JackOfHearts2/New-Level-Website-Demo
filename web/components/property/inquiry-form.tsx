@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
 import { AUDIENCES } from "@/lib/content";
 import { useBooking } from "./booking-context";
 
@@ -16,6 +17,10 @@ export function InquiryForm() {
   const { state, quote } = useBooking();
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Not GlowCard — it can't render as a <form>, and this needs to stay a
+  // real form element for onSubmit — so the same glow-card classes/hook
+  // are wired up by hand instead of via the component.
+  const formRef = useGlowRing<HTMLFormElement>();
 
   const audience = state.audience ? AUDIENCES[state.audience] : null;
 
@@ -66,7 +71,7 @@ export function InquiryForm() {
 
   if (submitted) {
     return (
-      <div id="inquiry" className="border-border rounded-2xl border p-8 text-center shadow-sm">
+      <GlowCard id="inquiry" className="p-8 text-center">
         <h3 className="font-heading text-xl font-bold">Thanks, we&apos;ve got it.</h3>
         <p className="text-foreground mt-2 text-sm">
           We&apos;ll follow up to confirm availability and next steps.
@@ -81,13 +86,18 @@ export function InquiryForm() {
         >
           Edit and resubmit
         </button>
-      </div>
+      </GlowCard>
     );
   }
 
   return (
     <div id="inquiry" className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
-      <form onSubmit={handleSubmit} className="border-border space-y-4 rounded-2xl border p-6 shadow-sm">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="glow-card relative space-y-4 rounded-2xl border border-border p-6"
+      >
+        <span className="glow-card__ring" aria-hidden />
         <h3 className="font-heading text-lg font-bold">Send an inquiry</h3>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm">
@@ -157,7 +167,7 @@ export function InquiryForm() {
         </button>
       </form>
 
-      <div className="border-border h-fit rounded-2xl border p-6 shadow-sm">
+      <GlowCard className="h-fit p-6">
         <h4 className="font-heading text-sm font-semibold">Attached to your inquiry</h4>
         <dl className="mt-4 space-y-2 text-sm">
           {carried.map((row) => (
@@ -167,7 +177,7 @@ export function InquiryForm() {
             </div>
           ))}
         </dl>
-      </div>
+      </GlowCard>
     </div>
   );
 }

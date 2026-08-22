@@ -106,32 +106,39 @@
      This was the cause of the search filter dropdowns opening as a plain
      white list even in dark mode. */
   color-scheme: light;
-  --background: #ffffff; /* --paper */
+  /* Toned down per client feedback ("light mode is way, way, way too
+     bright") — was pure #ffffff for background/card/popover/sidebar alike,
+     which read as glaring, especially with the mesh gradient's white blobs
+     (below) layered on top and white GlowCards stacked on top of that.
+     Page background drops to a soft off-white; card/popover/sidebar stay
+     lighter than the page (so elevated surfaces still read as "elevated")
+     but are no longer stark #ffffff either. */
+  --background: #f2f2ef;
   --foreground: #0a0a0a; /* --ink */
-  --card: #ffffff;
+  --card: #fafaf8;
   --card-foreground: #0a0a0a;
-  --popover: #ffffff;
+  --popover: #fafaf8;
   --popover-foreground: #0a0a0a;
   --primary: #72d35b; /* --green */
   --primary-foreground: #ffffff;
   --secondary: #0a0a0a; /* --ink, matches .btn--solid */
   --secondary-foreground: #ffffff;
-  --muted: #f6f6f3; /* --paper-2 */
+  --muted: #eceae4; /* --paper-2, darkened alongside background */
   --muted-foreground: #6a6a6a; /* --muted */
-  --accent: #e9f7e3; /* --green-tint */
+  --accent: #e3f2dd; /* --green-tint, slightly deepened to match */
   --accent-foreground: #0a0a0a;
   --destructive: #b00020; /* matches the inline form-error color in app.js */
-  --border: #e6e6e1; /* --line */
-  --input: #e6e6e1;
+  --border: #ddddd6; /* --line, darkened slightly so it still shows against the dimmer background */
+  --input: #ddddd6;
   --ring: #72d35b; /* --green, matches the site's existing focus-outline color */
   --radius: 0.875rem; /* --radius: 14px */
-  --sidebar: #ffffff;
+  --sidebar: #fafaf8;
   --sidebar-foreground: #0a0a0a;
   --sidebar-primary: #72d35b;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e9f7e3;
+  --sidebar-accent: #e3f2dd;
   --sidebar-accent-foreground: #0a0a0a;
-  --sidebar-border: #e6e6e1;
+  --sidebar-border: #ddddd6;
   --sidebar-ring: #72d35b;
 }
 
@@ -184,39 +191,44 @@
        gradient's percentage-based positions relative to the viewport
        instead of the full scrollable page height, so it reads the same on
        a short page and a very long one (e.g. the property page) instead of
-       being compressed into a sliver at the top. */
-    background-color: #f6f6f3;
+       being compressed into a sliver at the top. Peak opacities on the
+       white and green-tint layers were dropped (client feedback: "light
+       mode is way too bright" — the two near-white blobs at full 1.0
+       opacity were the main culprit, especially stacked under white
+       GlowCards) — same positions/falloff shape, just dimmer blobs over a
+       darker base fill so the whole page reads calmer. */
+    background-color: #eceae4;
     background-image:
       radial-gradient(
         circle at 65.34% 44.62%,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 0.844) 8.53%,
-        rgba(255, 255, 255, 0.5) 17.05%,
-        rgba(255, 255, 255, 0.156) 25.58%,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.46) 8.53%,
+        rgba(255, 255, 255, 0.27) 17.05%,
+        rgba(255, 255, 255, 0.08) 25.58%,
         rgba(255, 255, 255, 0) 34.1%
       ),
       radial-gradient(
         circle at 28.07% 74.48%,
-        rgba(114, 211, 91, 0.45) 0%,
-        rgba(114, 211, 91, 0.38) 11.41%,
-        rgba(114, 211, 91, 0.225) 22.83%,
-        rgba(114, 211, 91, 0.07) 34.24%,
+        rgba(114, 211, 91, 0.38) 0%,
+        rgba(114, 211, 91, 0.32) 11.41%,
+        rgba(114, 211, 91, 0.19) 22.83%,
+        rgba(114, 211, 91, 0.06) 34.24%,
         rgba(114, 211, 91, 0) 45.65%
       ),
       radial-gradient(
         circle at 52.42% 19.94%,
-        rgba(233, 247, 227, 1) 0%,
-        rgba(233, 247, 227, 0.844) 14.39%,
-        rgba(233, 247, 227, 0.5) 28.77%,
-        rgba(233, 247, 227, 0.156) 43.16%,
+        rgba(233, 247, 227, 0.65) 0%,
+        rgba(233, 247, 227, 0.55) 14.39%,
+        rgba(233, 247, 227, 0.32) 28.77%,
+        rgba(233, 247, 227, 0.1) 43.16%,
         rgba(233, 247, 227, 0) 57.55%
       ),
       radial-gradient(
         circle at 80.31% 84.47%,
-        rgba(78, 158, 59, 0.4) 0%,
-        rgba(78, 158, 59, 0.338) 17.27%,
-        rgba(78, 158, 59, 0.2) 34.55%,
-        rgba(78, 158, 59, 0.062) 51.82%,
+        rgba(78, 158, 59, 0.35) 0%,
+        rgba(78, 158, 59, 0.3) 17.27%,
+        rgba(78, 158, 59, 0.17) 34.55%,
+        rgba(78, 158, 59, 0.055) 51.82%,
         rgba(78, 158, 59, 0) 69.1%
       );
     background-attachment: fixed;

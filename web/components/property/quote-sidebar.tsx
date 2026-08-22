@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useGlowRing } from "@/components/ui/glow-card";
 import { RATE_TIERS } from "@/lib/content";
 import { useBooking } from "./booking-context";
 
@@ -17,9 +18,15 @@ function fmtDate(d: Date) {
 export function QuoteSidebar() {
   const { quote } = useBooking();
   const [showTaxDetail, setShowTaxDetail] = useState(false);
+  // Not GlowCard directly — its base classes force position:relative, which
+  // would fight the sticky positioning this sidebar needs. sticky is a
+  // valid containing block for the ring's absolute inset:0 span too, so
+  // wiring the same glow-card classes/hook by hand keeps both.
+  const ref = useGlowRing<HTMLDivElement>();
 
   return (
-    <div className="border-border sticky top-28 rounded-2xl border p-6 shadow-sm">
+    <div ref={ref} className="glow-card sticky top-28 rounded-2xl border border-border bg-card p-6">
+      <span className="glow-card__ring" aria-hidden />
       <h3 className="font-heading text-lg font-bold">Your quote</h3>
 
       {quote.status !== "ok" ? (

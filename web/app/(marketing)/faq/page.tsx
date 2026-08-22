@@ -3,6 +3,7 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { FaqList } from "@/components/faq-list";
 import { CtaLink } from "@/components/ui/cta-link";
+import { GlowCard } from "@/components/ui/glow-card";
 import { PAGES, FAQS } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default function FaqPage() {
       </section>
 
       <section className="mx-auto max-w-3xl px-6 pb-24 text-center">
-        <div className="border-border rounded-2xl border p-8 shadow-sm">
+        <GlowCard className="p-8">
           <h2 className="font-heading text-xl font-semibold">
             Still have a question?
           </h2>
@@ -31,7 +32,7 @@ export default function FaqPage() {
           <div className="mt-6 flex justify-center">
             <CtaLink href="/contact">Contact Us</CtaLink>
           </div>
-        </div>
+        </GlowCard>
       </section>
 
       <CrossNav current="faq" />

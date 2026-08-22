@@ -4,6 +4,7 @@ import { Star, MapPin } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
+import { ShineBox, ShineListItem } from "@/components/ui/shine-shape";
 import { cn } from "@/lib/utils";
 import {
   PROPERTY,
@@ -66,9 +67,9 @@ export default async function PropertyPage({
         <h2 className="font-heading text-2xl font-bold">Highlights</h2>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2">
           {HIGHLIGHTS.map((h) => (
-            <li key={h} className="border-border rounded-xl border p-4 text-sm">
+            <ShineListItem key={h} className="border-border rounded-xl border p-4 text-sm">
               {h}
-            </li>
+            </ShineListItem>
           ))}
         </ul>
       </section>
@@ -93,14 +94,14 @@ export default async function PropertyPage({
           <h2 className="font-heading text-2xl font-bold">Neighborhood</h2>
           <p className="text-foreground mt-2 max-w-2xl text-sm">{NEIGHBORHOOD.blurb}</p>
           <div className="mt-8 grid gap-8 lg:grid-cols-2">
-            <div className="border-border overflow-hidden rounded-2xl border">
+            <ShineBox className="border-border overflow-hidden rounded-2xl border">
               <iframe
                 title="Map"
                 className="h-80 w-full"
                 loading="lazy"
                 src={`https://www.google.com/maps?q=${encodeURIComponent(NEIGHBORHOOD.mapQuery)}&output=embed`}
               />
-            </div>
+            </ShineBox>
             <div>
               <h3 className="font-heading flex items-center gap-2 text-sm font-semibold">
                 <MapPin className="text-primary size-4" />

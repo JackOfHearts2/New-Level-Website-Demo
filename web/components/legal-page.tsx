@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/page-hero";
 import { GlowCard } from "@/components/ui/glow-card";
+import { ShineBox } from "@/components/ui/shine-shape";
 import { CtaLink } from "@/components/ui/cta-link";
 import { POINT_OF_CONTACT } from "@/lib/content";
 
@@ -31,14 +32,14 @@ export function LegalPage({
         <p className="text-foreground text-center text-sm">
           Last updated: {lastUpdated}
         </p>
-        <div className="border-border bg-muted/40 mt-6 rounded-2xl border p-5 text-sm">
+        <ShineBox className="border-border bg-muted/40 mt-6 rounded-2xl border p-5 text-sm">
           <p className="text-foreground">
             <strong className="text-foreground font-heading">
               This is a demo site.
             </strong>{" "}
             {disclaimer}
           </p>
-        </div>
+        </ShineBox>
       </section>
 
       <section className="mx-auto max-w-3xl space-y-6 px-6 pb-16">
@@ -53,7 +54,7 @@ export function LegalPage({
       </section>
 
       <section className="mx-auto max-w-3xl px-6 pb-24 text-center">
-        <div className="border-border rounded-2xl border p-8 shadow-sm">
+        <GlowCard className="p-8">
           <h2 className="font-heading text-xl font-semibold">
             Questions about this page?
           </h2>
@@ -63,7 +64,7 @@ export function LegalPage({
           <div className="mt-6 flex justify-center">
             <CtaLink href="/contact">Contact Us</CtaLink>
           </div>
-        </div>
+        </GlowCard>
       </section>
     </>
   );

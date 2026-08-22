@@ -9,8 +9,16 @@ export function EventCtaSection({
 }) {
   return (
     <section className="mx-auto max-w-7xl px-6 py-24">
-      <div className="group bg-foreground text-background relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16">
-        {/* Was a flat, near-white wash (bg-primary/20 at blur-3xl reads as
+      <div className="group border-background/15 bg-foreground text-background relative overflow-hidden rounded-3xl border px-8 py-16 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:px-16">
+        {/* The banner itself used to have no border and didn't respond to
+            anything beyond an internal decorative blob — the shape itself
+            needed its own tactile response, same as every other card
+            sitewide (border + hover lift/shadow), not just the glow inside
+            it. border-background/15 (not border-border) since this sits on
+            a near-black/near-white bg-foreground fill in both themes — a
+            token border tuned for the page's usual bg/card surfaces would
+            barely show here; a faint background-tinted line reads in both.
+            Was a flat, near-white wash (bg-primary/20 at blur-3xl reads as
             pale/gray, not green, against this dark banner) and didn't move
             at all — bumped saturation, added a continuous breathing pulse
             (animate-event-glow) so it's a real presence rather than

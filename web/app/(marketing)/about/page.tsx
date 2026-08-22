@@ -90,22 +90,22 @@ export default function AboutPage() {
 
       <section className="mx-auto max-w-7xl px-6 pb-16">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+          <div className="group border-border relative aspect-[4/3] overflow-hidden rounded-2xl border shadow-sm transition-shadow duration-300 hover:shadow-lg">
             <Image
               src="/photos/35.jpg"
               alt="Screened patio at 1331 NW 87th Street"
               fill
               sizes="(min-width: 640px) 50vw, 100vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+          <div className="group border-border relative aspect-[4/3] overflow-hidden rounded-2xl border shadow-sm transition-shadow duration-300 hover:shadow-lg">
             <Image
               src="/photos/10.jpg"
               alt="Kitchen at 1331 NW 87th Street"
               fill
               sizes="(min-width: 640px) 50vw, 100vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           </div>
         </div>

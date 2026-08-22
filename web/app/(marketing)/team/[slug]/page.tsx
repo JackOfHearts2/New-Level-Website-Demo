@@ -58,7 +58,7 @@ export default async function TeamMemberPage({
               alt={member.name}
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
-              className="object-cover"
+              className={cn("object-cover", member.photoPosition === "top" && "object-top")}
               priority
             />
           </div>

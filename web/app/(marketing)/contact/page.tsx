@@ -6,6 +6,7 @@ import { CrossNav } from "@/components/cross-nav";
 import { FaqList } from "@/components/faq-list";
 import { buttonVariants } from "@/components/ui/button";
 import { CtaLink } from "@/components/ui/cta-link";
+import { GlowCard } from "@/components/ui/glow-card";
 import { ShineCircle } from "@/components/ui/shine-shape";
 import { cn } from "@/lib/utils";
 import { PAGES, FAQS, POINT_OF_CONTACT } from "@/lib/content";
@@ -40,7 +41,7 @@ export default async function ContactPage({
       </section>
 
       <section className="mx-auto max-w-2xl px-6 pb-24">
-        <div className="border-border flex flex-col items-center gap-4 rounded-2xl border p-8 text-center shadow-sm">
+        <GlowCard className="flex flex-col items-center gap-4 p-8 text-center">
           <ShineCircle className="relative size-16 overflow-hidden rounded-full">
             <Image
               src="/team/shelley-lozier.png"
@@ -78,7 +79,7 @@ export default async function ContactPage({
               WhatsApp
             </a>
           </div>
-        </div>
+        </GlowCard>
       </section>
 
       <section className="mx-auto max-w-3xl px-6 pb-24">

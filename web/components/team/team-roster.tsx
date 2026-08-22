@@ -49,7 +49,10 @@ export function TeamRoster({ team }: Readonly<{ team: typeof TEAM }>) {
                   alt=""
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  className={cn(
+                    "object-cover transition-transform duration-500 ease-out group-hover:scale-105",
+                    member.photoPosition === "top" && "object-top"
+                  )}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent md:hidden" />
               </div>

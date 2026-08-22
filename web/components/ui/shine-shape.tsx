@@ -48,6 +48,33 @@ export function ShineBox(props: Parameters<typeof ShineCircle>[0]) {
   return <ShineCircle {...props} />;
 }
 
+// Same ring treatment, rendered as <li> — for bordered items that need to
+// stay real list markup (e.g. a highlights grid) rather than a <div>.
+export function ShineListItem({
+  children,
+  className,
+  lift = false,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  lift?: boolean;
+}) {
+  const ref = useGlowRing<HTMLLIElement>();
+  return (
+    <li
+      ref={ref}
+      className={cn(
+        "shine-shape relative",
+        lift && "transition-transform duration-300 hover:-translate-y-0.5",
+        className
+      )}
+    >
+      <span className="glow-card__ring" aria-hidden />
+      {children}
+    </li>
+  );
+}
+
 export function ShineCircle({
   children,
   className,
