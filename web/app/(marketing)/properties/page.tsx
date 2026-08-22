@@ -56,7 +56,7 @@ function RealPropertyCard({ href }: { href: string }) {
       </div>
       <div className="p-4">
         <h3 className="font-heading font-semibold">{PROPERTY.siteName}</h3>
-        <p className="text-muted-foreground text-sm">{PROPERTY.address}</p>
+        <p className="text-foreground text-sm">{PROPERTY.address}</p>
       </div>
     </GlowCard>
   );
@@ -79,8 +79,8 @@ function OtherPropertyCard({ p }: { p: (typeof OTHER_PROPERTIES)[number] }) {
       </div>
       <div className="p-4">
         <h3 className="font-heading font-semibold">{p.title}</h3>
-        <p className="text-muted-foreground text-sm">{p.meta}</p>
-        <p className="text-muted-foreground mt-1 text-sm">{p.rate}</p>
+        <p className="text-foreground text-sm">{p.meta}</p>
+        <p className="text-foreground mt-1 text-sm">{p.rate}</p>
       </div>
     </GlowCard>
   );
@@ -138,7 +138,7 @@ export default async function PropertiesPage({
         />
         <section className="mx-auto max-w-7xl px-6 pb-24">
           {showingFallback && (
-            <p className="text-muted-foreground mb-6 text-sm">
+            <p className="text-foreground mb-6 text-sm">
               No exact matches for &ldquo;{q}&rdquo; — showing all {cat?.label} listings instead.
             </p>
           )}
@@ -149,7 +149,7 @@ export default async function PropertiesPage({
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground text-center">
+            <p className="text-foreground text-center">
               No listings in this category yet.
             </p>
           )}
@@ -175,7 +175,7 @@ export default async function PropertiesPage({
             <div key={cat.id}>
               <div className="flex items-baseline justify-between gap-4">
                 <h2 className="font-heading text-2xl font-bold">{cat.label}</h2>
-                <span className="text-muted-foreground text-sm">{cat.blurb}</span>
+                <span className="text-foreground text-sm">{cat.blurb}</span>
               </div>
               <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {items.map((item, i) => (

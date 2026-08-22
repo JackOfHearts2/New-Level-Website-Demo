@@ -55,7 +55,7 @@ export default function EventsPage() {
       <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="border-border h-fit rounded-2xl border p-6 shadow-sm">
           <h2 className="font-heading text-center font-semibold">{monthLabel}</h2>
-          <div className="text-muted-foreground mt-4 grid grid-cols-7 gap-1 text-center text-sm font-medium">
+          <div className="text-foreground mt-4 grid grid-cols-7 gap-1 text-center text-sm font-medium">
             {WEEKDAYS.map((d) => (
               <div key={d}>{d}</div>
             ))}
@@ -73,7 +73,7 @@ export default function EventsPage() {
                     day == null && "invisible",
                     event
                       ? "bg-primary text-primary-foreground font-heading font-semibold"
-                      : "text-muted-foreground"
+                      : "text-foreground"
                   )}
                 >
                   {day}
@@ -96,7 +96,7 @@ export default function EventsPage() {
                   {event.type}
                 </ShinePill>
               </div>
-              <p className="text-muted-foreground mt-2 text-sm">
+              <p className="text-foreground mt-2 text-sm">
                 {new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {
                   weekday: "long",
                   month: "long",
@@ -104,7 +104,7 @@ export default function EventsPage() {
                 })}{" "}
                 · {event.time}
               </p>
-              <p className="text-muted-foreground mt-2 text-sm">{event.blurb}</p>
+              <p className="text-foreground mt-2 text-sm">{event.blurb}</p>
             </Link>
           ))}
         </div>

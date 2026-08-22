@@ -20,7 +20,7 @@ export function AboutSection({
           <h2 className="font-heading mt-6 max-w-lg text-4xl font-bold text-balance md:text-5xl">
             Real Estate, Redefined at every level.
           </h2>
-          <p className="text-muted-foreground mt-6 max-w-lg text-lg text-balance">
+          <p className="text-foreground mt-6 max-w-lg text-lg text-balance">
             {aboutShort}
           </p>
           <div className="mt-8">
@@ -34,14 +34,14 @@ export function AboutSection({
               <div className="font-heading text-primary text-3xl font-bold md:text-4xl">
                 {stat.value}
               </div>
-              <div className="text-muted-foreground mt-2 text-sm">
+              <div className="text-foreground mt-2 text-sm">
                 {stat.label}
               </div>
             </GlowCard>
           ))}
         </div>
       </div>
-      <p className="text-muted-foreground/70 mt-4 text-right text-sm">
+      <p className="text-foreground mt-4 text-right text-sm">
         Figures shown are illustrative placeholders for this demo.
       </p>
     </section>

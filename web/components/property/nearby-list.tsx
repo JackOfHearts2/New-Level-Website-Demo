@@ -8,7 +8,7 @@ export function NearbyList() {
   const items = state.audience ? NEIGHBORHOOD.nearby[state.audience] : NEIGHBORHOOD.nearby.extended;
 
   return (
-    <ul className="text-muted-foreground mt-3 space-y-2 text-sm">
+    <ul className="text-foreground mt-3 space-y-2 text-sm">
       {items.map((n) => (
         <li key={n}>{n}</li>
       ))}

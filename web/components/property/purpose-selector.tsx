@@ -44,11 +44,11 @@ export function PurposeSelector() {
               )}
             >
               <Icon
-                className={cn("size-7", selected ? "text-primary" : "text-muted-foreground")}
+                className={cn("size-7", selected ? "text-primary" : "text-foreground")}
               />
               <div>
                 <div className="font-heading text-sm font-semibold">{a.navLabel}</div>
-                <div className="text-muted-foreground mt-1 text-sm">{a.cardMeta}</div>
+                <div className="text-foreground mt-1 text-sm">{a.cardMeta}</div>
               </div>
             </GlowCard>
           );
@@ -71,7 +71,7 @@ export function PurposeSelector() {
             ))}
           </div>
           <label className="mt-4 block text-sm">
-            <span className="text-muted-foreground font-heading text-sm font-medium">
+            <span className="text-foreground font-heading text-sm font-medium">
               Or describe it in your own words (optional)
             </span>
             <input
@@ -81,7 +81,7 @@ export function PurposeSelector() {
                 dispatch({ type: "SET_EVENT_TYPE_OTHER", value: e.target.value })
               }
               placeholder="e.g. Engagement dinner for 20"
-              className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="border-border placeholder:text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
             />
           </label>
         </div>
@@ -110,7 +110,7 @@ function EventTypeChip({
         "shine-shape font-heading relative rounded-full border px-4 py-1.5 text-sm font-medium transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-0.5",
         selected
           ? "bg-primary border-primary text-primary-foreground"
-          : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+          : "border-border text-foreground hover:border-primary/50 hover:text-foreground"
       )}
     >
       <span className="glow-card__ring" aria-hidden />

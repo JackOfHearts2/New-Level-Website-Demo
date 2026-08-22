@@ -68,10 +68,10 @@ export function InquiryForm() {
     return (
       <div id="inquiry" className="border-border rounded-2xl border p-8 text-center shadow-sm">
         <h3 className="font-heading text-xl font-bold">Thanks — we&apos;ve got it.</h3>
-        <p className="text-muted-foreground mt-2 text-sm">
+        <p className="text-foreground mt-2 text-sm">
           We&apos;ll follow up to confirm availability and next steps.
         </p>
-        <p className="text-muted-foreground/70 mt-4 text-sm">
+        <p className="text-foreground mt-4 text-sm">
           Demo mode: this inquiry wasn&apos;t actually sent anywhere.
         </p>
         <button
@@ -162,7 +162,7 @@ export function InquiryForm() {
         <dl className="mt-4 space-y-2 text-sm">
           {carried.map((row) => (
             <div key={row.label} className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">{row.label}</dt>
+              <dt className="text-foreground">{row.label}</dt>
               <dd className="text-right font-medium">{row.value}</dd>
             </div>
           ))}

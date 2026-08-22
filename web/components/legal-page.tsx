@@ -28,11 +28,11 @@ export function LegalPage({
       <PageHero eyebrow={eyebrow} heading={heading} sub={sub} />
 
       <section className="mx-auto max-w-3xl px-6 pb-8">
-        <p className="text-muted-foreground text-center text-sm">
+        <p className="text-foreground text-center text-sm">
           Last updated: {lastUpdated}
         </p>
         <div className="border-border bg-muted/40 mt-6 rounded-2xl border p-5 text-sm">
-          <p className="text-muted-foreground">
+          <p className="text-foreground">
             <strong className="text-foreground font-heading">
               This is a demo site.
             </strong>{" "}
@@ -45,7 +45,7 @@ export function LegalPage({
         {sections.map((s) => (
           <GlowCard key={s.t} className="p-6">
             <h2 className="font-heading text-lg font-semibold">{s.t}</h2>
-            <p className="text-muted-foreground mt-2 text-sm text-balance">
+            <p className="text-foreground mt-2 text-sm text-balance">
               {s.d}
             </p>
           </GlowCard>
@@ -57,7 +57,7 @@ export function LegalPage({
           <h2 className="font-heading text-xl font-semibold">
             Questions about this page?
           </h2>
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="text-foreground mt-2 text-sm">
             Reach out and we&apos;ll walk you through it — {POINT_OF_CONTACT.email}
           </p>
           <div className="mt-6 flex justify-center">

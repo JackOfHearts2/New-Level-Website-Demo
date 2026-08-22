@@ -53,6 +53,13 @@ export const PAGES = {
     intro:
       "Real posts will appear here once each platform is connected — for now, this is a preview of how it'll look.",
   },
+  blog: {
+    eyebrow: "Blog",
+    heading: "Insights on real estate, investing, and South Florida.",
+    sub: "This is where New Level's writing will live — market takes, investment thinking, and practical guidance.",
+    intro:
+      "No posts are published yet — for now, this previews the categories the blog will be organized around.",
+  },
   team: {
     eyebrow: "Agents & Partners",
     heading: "Our Team",
@@ -518,9 +525,54 @@ export const NAV_MENU = [
       { label: "Investment", href: "/services#investment" },
     ],
   },
+  {
+    label: "Blog",
+    href: "/blog",
+    children: [
+      { label: "Market Insights", href: "/blog?category=market-insights" },
+      { label: "Investment Strategies", href: "/blog?category=investment-strategies" },
+      { label: "Buying & Selling Tips", href: "/blog?category=buying-selling-tips" },
+      { label: "Property Management", href: "/blog?category=property-management" },
+      { label: "South Florida Spotlight", href: "/blog?category=south-florida-spotlight" },
+      { label: "Client Success Stories", href: "/blog?category=client-success-stories" },
+    ],
+  },
   { label: "Testimonials", href: "/testimonials" },
   { label: "Events", href: "/events" },
   { label: "Contact", href: "/contact" },
+];
+
+export const BLOG_CATEGORIES = [
+  {
+    id: "market-insights",
+    label: "Market Insights",
+    blurb: "Where South Florida real estate is heading, in plain terms.",
+  },
+  {
+    id: "investment-strategies",
+    label: "Investment Strategies",
+    blurb: "How to think about building and protecting a real estate portfolio.",
+  },
+  {
+    id: "buying-selling-tips",
+    label: "Buying & Selling Tips",
+    blurb: "Practical guidance for whichever side of the table you're on.",
+  },
+  {
+    id: "property-management",
+    label: "Property Management",
+    blurb: "What actually keeps a rental or managed property running well.",
+  },
+  {
+    id: "south-florida-spotlight",
+    label: "South Florida Spotlight",
+    blurb: "Neighborhood-by-neighborhood looks at the markets we work in.",
+  },
+  {
+    id: "client-success-stories",
+    label: "Client Success Stories",
+    blurb: "Real outcomes from working with New Level.",
+  },
 ];
 
 // Homepage search bar (index.html's #choose section). The tabs + keyword

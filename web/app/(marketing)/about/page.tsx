@@ -20,7 +20,7 @@ const TIMELINE = [
   {
     title: "2003",
     content: (
-      <p className="text-muted-foreground text-sm md:text-base">
+      <p className="text-foreground text-sm md:text-base">
         {NLG_BRAND.story}
       </p>
     ),
@@ -28,7 +28,7 @@ const TIMELINE = [
   {
     title: "Growing the Team",
     content: (
-      <p className="text-muted-foreground text-sm md:text-base">
+      <p className="text-foreground text-sm md:text-base">
         {BROKERS_CORNER.bio}
       </p>
     ),
@@ -37,7 +37,7 @@ const TIMELINE = [
     title: "Today",
     content: (
       <div>
-        <p className="text-muted-foreground text-sm md:text-base">
+        <p className="text-foreground text-sm md:text-base">
           {NLG_BRAND.aboutLong}
         </p>
         <div className="mt-6">
@@ -70,7 +70,7 @@ export default function AboutPage() {
           <span className="font-heading text-primary text-sm font-semibold tracking-wide uppercase">
             Our Story
           </span>
-          <p className="text-muted-foreground mt-4 text-balance">
+          <p className="text-foreground mt-4 text-balance">
             {NLG_BRAND.story}
           </p>
         </div>
@@ -109,7 +109,7 @@ export default function AboutPage() {
             />
           </div>
         </div>
-        <p className="text-muted-foreground/70 mt-3 text-center text-sm">
+        <p className="text-foreground mt-3 text-center text-sm">
           A look inside 1331 NW 87th Street, our featured New Level property.
         </p>
       </section>
@@ -128,7 +128,7 @@ export default function AboutPage() {
             {VALUES.map((value) => (
               <GlowCard key={value.t} className="p-6">
                 <h3 className="font-heading font-semibold">{value.t}</h3>
-                <p className="text-muted-foreground mt-2 text-sm">{value.d}</p>
+                <p className="text-foreground mt-2 text-sm">{value.d}</p>
               </GlowCard>
             ))}
           </div>
@@ -152,7 +152,7 @@ export default function AboutPage() {
               className="hover:-translate-y-1 flex flex-col p-6 transition-transform duration-300"
             >
               <h3 className="font-heading text-lg font-semibold">{service.t}</h3>
-              <p className="text-muted-foreground mt-3 flex-1 text-sm">
+              <p className="text-foreground mt-3 flex-1 text-sm">
                 {service.d}
               </p>
               <span className="text-primary font-heading mt-4 text-sm font-semibold">
@@ -167,7 +167,7 @@ export default function AboutPage() {
             className="hover:-translate-y-1 px-6 py-4 text-center transition-transform duration-300"
           >
             <span className="font-heading block font-semibold">Meet the Team</span>
-            <span className="text-muted-foreground text-sm">
+            <span className="text-foreground text-sm">
               The agents and partners behind New Level
             </span>
           </GlowCard>
@@ -176,7 +176,7 @@ export default function AboutPage() {
             className="hover:-translate-y-1 px-6 py-4 text-center transition-transform duration-300"
           >
             <span className="font-heading block font-semibold">The Broker&apos;s Corner</span>
-            <span className="text-muted-foreground text-sm">
+            <span className="text-foreground text-sm">
               Insights from our Principal Broker
             </span>
           </GlowCard>

@@ -13,6 +13,7 @@ const SITE_PAGES = [
   { key: "brokersCorner", label: "The Broker's Corner", href: "/brokers-corner" },
   { key: "contentLibrary", label: "Content Library", href: "/content-library" },
   { key: "faq", label: "FAQs", href: "/faq" },
+  { key: "blog", label: "Blog", href: "/blog" },
 ] as const;
 
 export type SitePageKey = (typeof SITE_PAGES)[number]["key"];
@@ -22,7 +23,7 @@ export function CrossNav({ current }: { current: SitePageKey }) {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <p className="font-heading text-muted-foreground text-center text-sm font-semibold tracking-wide uppercase">
+      <p className="font-heading text-foreground text-center text-sm font-semibold tracking-wide uppercase">
         Keep exploring
       </p>
       <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -30,7 +31,7 @@ export function CrossNav({ current }: { current: SitePageKey }) {
           <Link
             key={p.key}
             href={p.href}
-            className="border-border text-muted-foreground hover:text-foreground hover:border-primary/50 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors"
+            className="border-border text-foreground hover:text-foreground hover:border-primary/50 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors"
           >
             {p.label}
           </Link>

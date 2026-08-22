@@ -17,7 +17,7 @@ export function ServicesSection({
           <h2 className="font-heading mt-6 text-4xl font-bold text-balance md:text-5xl">
             What we do.
           </h2>
-          <p className="text-muted-foreground mt-4 text-lg text-balance">
+          <p className="text-foreground mt-4 text-lg text-balance">
             Brokerage, investment, property management and events — the full
             New Level offering.
           </p>
@@ -33,7 +33,7 @@ export function ServicesSection({
               <h3 className="font-heading text-lg font-semibold">
                 {service.t}
               </h3>
-              <p className="text-muted-foreground mt-3 flex-1 text-sm">
+              <p className="text-foreground mt-3 flex-1 text-sm">
                 {service.d}
               </p>
               <span className="text-primary font-heading mt-4 text-sm font-semibold">

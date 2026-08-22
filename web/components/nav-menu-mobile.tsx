@@ -19,7 +19,7 @@ export function NavMenuMobile({ onNavigate }: { onNavigate?: () => void }) {
               <Link
                 href={item.href}
                 onClick={onNavigate}
-                className="text-muted-foreground hover:text-foreground font-heading block py-2 font-medium duration-150"
+                className="text-foreground hover:text-foreground font-heading block py-2 font-medium duration-150"
               >
                 {item.label}
               </Link>
@@ -29,7 +29,7 @@ export function NavMenuMobile({ onNavigate }: { onNavigate?: () => void }) {
                   aria-expanded={openIndex === i}
                   aria-label={`${item.label} submenu`}
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="text-muted-foreground hover:text-foreground p-2"
+                  className="text-foreground hover:text-foreground p-2"
                 >
                   <ChevronDown
                     className={cn(
@@ -47,7 +47,7 @@ export function NavMenuMobile({ onNavigate }: { onNavigate?: () => void }) {
                     <Link
                       href={child.href}
                       onClick={onNavigate}
-                      className="text-muted-foreground hover:text-foreground block py-1.5 text-sm"
+                      className="text-foreground hover:text-foreground block py-1.5 text-sm"
                     >
                       {child.label}
                     </Link>

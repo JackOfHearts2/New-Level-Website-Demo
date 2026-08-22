@@ -52,7 +52,7 @@ export default async function ContactPage({
           </ShineCircle>
           <div>
             <h2 className="font-heading font-semibold">{POINT_OF_CONTACT.name}</h2>
-            <p className="text-muted-foreground text-sm">{POINT_OF_CONTACT.role}</p>
+            <p className="text-foreground text-sm">{POINT_OF_CONTACT.role}</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
             <a

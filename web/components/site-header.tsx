@@ -29,19 +29,19 @@ export function SiteHeader({
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" aria-label="home" className="flex items-center space-x-2">
-                <div className="relative h-14 w-60">
+                <div className="relative h-16 w-64">
                   <Image
                     src={logoUrl}
                     alt="New Level"
                     fill
-                    sizes="240px"
+                    sizes="256px"
                     className="object-contain object-left dark:hidden"
                   />
                   <Image
                     src={logoUrlDark}
                     alt="New Level"
                     fill
-                    sizes="240px"
+                    sizes="256px"
                     className="hidden object-contain object-left dark:block"
                   />
                 </div>
@@ -74,7 +74,11 @@ export function SiteHeader({
               <div className="w-full lg:hidden">
                 <NavMenuMobile onNavigate={() => setMenuState(false)} />
               </div>
-              <div className="flex w-full flex-wrap items-center gap-3 sm:flex-nowrap md:w-fit">
+              {/* justify-end: this row used to sit left-aligned, directly
+                  under the nav list (and visually under the logo above it)
+                  — client asked for it pinned to the right side of the
+                  panel instead. */}
+              <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:flex-nowrap md:w-fit">
                 <ThemeToggle />
                 <ProfileMenu />
                 <Link

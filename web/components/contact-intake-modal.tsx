@@ -39,7 +39,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="font-heading text-lg font-bold">Get in touch</h2>
-            <p className="text-muted-foreground mt-1 text-sm">
+            <p className="text-foreground mt-1 text-sm">
               Send us a few details and we&apos;ll follow up.
             </p>
           </div>
@@ -47,7 +47,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="text-muted-foreground hover:text-foreground hover:bg-muted flex size-8 shrink-0 items-center justify-center rounded-full"
+            className="text-foreground hover:text-foreground hover:bg-muted flex size-8 shrink-0 items-center justify-center rounded-full"
           >
             <X className="size-4" />
           </button>
@@ -56,10 +56,10 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
         {submitted ? (
           <div className="mt-6 text-center">
             <h3 className="font-heading text-base font-semibold">Thanks — we&apos;ve got it.</h3>
-            <p className="text-muted-foreground mt-2 text-sm">
+            <p className="text-foreground mt-2 text-sm">
               We&apos;ll follow up as soon as we can.
             </p>
-            <p className="text-muted-foreground/70 mt-4 text-sm">
+            <p className="text-foreground mt-4 text-sm">
               Demo mode: this message wasn&apos;t actually sent anywhere.
             </p>
             <button
@@ -82,7 +82,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
                   className={
                     topic === t.id
                       ? "font-heading bg-primary text-primary-foreground rounded-full border border-transparent px-3 py-1.5 text-sm font-medium"
-                      : "font-heading border-border text-muted-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-3 py-1.5 text-sm font-medium transition-colors"
+                      : "font-heading border-border text-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-3 py-1.5 text-sm font-medium transition-colors"
                   }
                 >
                   {t.label}

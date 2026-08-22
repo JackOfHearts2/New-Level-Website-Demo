@@ -13,7 +13,7 @@ export function AudienceContent() {
   if (!state.audience) {
     return (
       <section id="audienceContent" className="mx-auto max-w-3xl px-6 pb-16 text-center">
-        <p className="text-muted-foreground">
+        <p className="text-foreground">
           Choose what brings you here above to see details tailored to your visit.
         </p>
       </section>
@@ -31,11 +31,11 @@ export function AudienceContent() {
           <h2 className="font-heading text-3xl font-bold text-balance md:text-4xl">
             {a.headline}
           </h2>
-          <p className="text-muted-foreground mt-4 text-balance">{a.overview}</p>
+          <p className="text-foreground mt-4 text-balance">{a.overview}</p>
           <div className="mt-6 grid grid-cols-2 gap-4">
             {a.facts.map((fact) => (
               <ShineBox key={fact.k} className="border-border rounded-xl border p-4">
-                <div className="text-muted-foreground text-sm">{fact.k}</div>
+                <div className="text-foreground text-sm">{fact.k}</div>
                 <div className="font-heading font-semibold">{fact.v}</div>
               </ShineBox>
             ))}
@@ -61,7 +61,7 @@ export function AudienceContent() {
               <CircleCheck className="text-primary mt-0.5 size-5 shrink-0" />
               <div>
                 <div className="font-heading text-sm font-semibold">{item.t}</div>
-                <div className="text-muted-foreground text-sm">{item.d}</div>
+                <div className="text-foreground text-sm">{item.d}</div>
               </div>
             </div>
           ))}
@@ -78,7 +78,7 @@ export function AudienceContent() {
                 {String(i + 1).padStart(2, "0")}
               </div>
               <div className="font-heading mt-2 text-sm font-semibold">{step.t}</div>
-              <div className="text-muted-foreground mt-1 text-sm">{step.d}</div>
+              <div className="text-foreground mt-1 text-sm">{step.d}</div>
             </div>
           ))}
         </div>

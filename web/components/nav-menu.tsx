@@ -56,7 +56,7 @@ export function NavMenu() {
             <div className="flex items-center gap-1">
               <Link
                 href={item.href}
-                className="text-muted-foreground hover:text-foreground font-heading block font-medium duration-150"
+                className="text-foreground hover:text-foreground font-heading block font-medium duration-150"
               >
                 {item.label}
               </Link>
@@ -70,7 +70,7 @@ export function NavMenu() {
                     cancelClose();
                     setOpenIndex(openIndex === i ? null : i);
                   }}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-foreground hover:text-foreground"
                 >
                   <ChevronDown
                     className={cn(
@@ -96,7 +96,7 @@ export function NavMenu() {
                     <Link
                       key={child.href}
                       href={child.href}
-                      className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-sm font-medium"
+                      className="text-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-sm font-medium"
                     >
                       {child.label}
                     </Link>

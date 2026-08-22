@@ -78,7 +78,7 @@ export function ProfileMenu() {
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        className="text-muted-foreground hover:text-foreground hover:bg-muted flex size-8 items-center justify-center rounded-full transition-colors"
+        className="text-foreground hover:text-foreground hover:bg-muted flex size-8 items-center justify-center rounded-full transition-colors"
       >
         <User className="size-4" />
       </button>
@@ -101,11 +101,11 @@ export function ProfileMenu() {
           >
           <div className="flex items-center gap-3 px-3 py-2">
             <ShineCircle className="bg-muted flex size-9 items-center justify-center rounded-full">
-              <User className="text-muted-foreground size-4" />
+              <User className="text-foreground size-4" />
             </ShineCircle>
             <div>
               <div className="font-heading text-sm font-semibold">Guest</div>
-              <div className="text-muted-foreground text-sm">Not signed in</div>
+              <div className="text-foreground text-sm">Not signed in</div>
             </div>
           </div>
 
@@ -116,7 +116,7 @@ export function ProfileMenu() {
             role="menuitem"
             className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
           >
-            <LogIn className="text-muted-foreground size-4" />
+            <LogIn className="text-foreground size-4" />
             Sign In
           </button>
           <button
@@ -124,7 +124,7 @@ export function ProfileMenu() {
             role="menuitem"
             className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
           >
-            <UserPlus className="text-muted-foreground size-4" />
+            <UserPlus className="text-foreground size-4" />
             Create Account
           </button>
 
@@ -136,7 +136,7 @@ export function ProfileMenu() {
             onClick={() => setOpen(false)}
             className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
           >
-            <Heart className="text-muted-foreground size-4" />
+            <Heart className="text-foreground size-4" />
             Saved Properties
           </Link>
           <Link
@@ -145,7 +145,7 @@ export function ProfileMenu() {
             onClick={() => setOpen(false)}
             className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
           >
-            <HelpCircle className="text-muted-foreground size-4" />
+            <HelpCircle className="text-foreground size-4" />
             Help Center
           </Link>
           <Link
@@ -154,7 +154,7 @@ export function ProfileMenu() {
             onClick={() => setOpen(false)}
             className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
           >
-            <Mail className="text-muted-foreground size-4" />
+            <Mail className="text-foreground size-4" />
             Contact Us
           </Link>
           </div>,

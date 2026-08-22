@@ -20,10 +20,10 @@ export function PageHero({
         {heading}
       </h1>
       {sub && (
-        <p className="text-muted-foreground mt-4 text-lg text-balance">{sub}</p>
+        <p className="text-foreground mt-4 text-lg text-balance">{sub}</p>
       )}
       {intro && (
-        <p className="text-muted-foreground/80 mx-auto mt-4 max-w-xl text-balance text-sm">
+        <p className="text-foreground mx-auto mt-4 max-w-xl text-balance text-sm">
           {intro}
         </p>
       )}

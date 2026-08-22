@@ -47,7 +47,7 @@ function MonthGrid({ monthDate }: { monthDate: Date }) {
   return (
     <div>
       <div className="font-heading text-center text-sm font-semibold">{label}</div>
-      <div className="text-muted-foreground mt-3 grid grid-cols-7 gap-1 text-center text-sm">
+      <div className="text-foreground mt-3 grid grid-cols-7 gap-1 text-center text-sm">
         {WEEKDAYS.map((d, i) => (
           <div key={i}>{d}</div>
         ))}
@@ -114,8 +114,8 @@ export function BookingWidget() {
                   ? `$${t.base.toLocaleString()} flat`
                   : `$${t.perNight.toLocaleString()} / night`}
               </div>
-              <div className="text-muted-foreground text-sm">{t.label}</div>
-              <div className="text-muted-foreground/80 mt-1 text-sm">{t.blurb}</div>
+              <div className="text-foreground text-sm">{t.label}</div>
+              <div className="text-foreground mt-1 text-sm">{t.blurb}</div>
             </GlowCard>
           );
         })}
@@ -127,7 +127,7 @@ export function BookingWidget() {
             <h3 className="font-heading text-lg font-bold">
               {state.tier === "event" ? "Select your check-in & check-out" : "Select your dates"}
             </h3>
-            <p className="text-muted-foreground mt-1 text-sm">
+            <p className="text-foreground mt-1 text-sm">
               {state.tier === "event"
                 ? `Pick your check-in date, then your check-out date (${EVENT_MIN_HOURS}-hour minimum — usually the next day). Set the times below.`
                 : "Pick a check-in date, then a check-out date. Ranges can't span an unavailable night."}
@@ -136,7 +136,7 @@ export function BookingWidget() {
             {state.tier === "event" && (
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <label className="text-sm">
-                  <span className="text-muted-foreground font-heading text-sm font-medium">
+                  <span className="text-foreground font-heading text-sm font-medium">
                     Check-in time
                   </span>
                   <select
@@ -154,7 +154,7 @@ export function BookingWidget() {
                   </select>
                 </label>
                 <label className="text-sm">
-                  <span className="text-muted-foreground font-heading text-sm font-medium">
+                  <span className="text-foreground font-heading text-sm font-medium">
                     Check-out time
                   </span>
                   <select
@@ -178,14 +178,14 @@ export function BookingWidget() {
               <button
                 type="button"
                 onClick={() => dispatch({ type: "NAV_MONTH", delta: -1 })}
-                className="text-muted-foreground hover:text-foreground text-sm font-medium"
+                className="text-foreground hover:text-foreground text-sm font-medium"
               >
                 ← Prev
               </button>
               <button
                 type="button"
                 onClick={() => dispatch({ type: "NAV_MONTH", delta: 1 })}
-                className="text-muted-foreground hover:text-foreground text-sm font-medium"
+                className="text-foreground hover:text-foreground text-sm font-medium"
               >
                 Next →
               </button>
@@ -224,9 +224,9 @@ export function BookingWidget() {
                       <div className="font-heading font-semibold">
                         {pkg.label} — {pkg.price ? `$${pkg.price.toLocaleString()}` : "Included"}
                       </div>
-                      <div className="text-muted-foreground text-sm">{pkg.tagline}</div>
+                      <div className="text-foreground text-sm">{pkg.tagline}</div>
                       {pkg.includes.length > 0 && (
-                        <div className="text-muted-foreground/80 mt-2 text-sm">
+                        <div className="text-foreground mt-2 text-sm">
                           Includes:{" "}
                           {pkg.includes
                             .map((id) => EVENT_ADDONS.find((a) => a.id === id)?.label)

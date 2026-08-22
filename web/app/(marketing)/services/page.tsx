@@ -41,7 +41,7 @@ export default function ServicesPage() {
                 {service.capabilities.map((cap) => (
                   <div key={cap.t}>
                     <h3 className="font-heading font-semibold">{cap.t}</h3>
-                    <p className="text-muted-foreground mt-1 text-sm">{cap.d}</p>
+                    <p className="text-foreground mt-1 text-sm">{cap.d}</p>
                   </div>
                 ))}
               </div>

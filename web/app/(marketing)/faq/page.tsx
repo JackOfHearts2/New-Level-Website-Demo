@@ -25,7 +25,7 @@ export default function FaqPage() {
           <h2 className="font-heading text-xl font-semibold">
             Still have a question?
           </h2>
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="text-foreground mt-2 text-sm">
             We&apos;re happy to talk it through directly.
           </p>
           <div className="mt-6 flex justify-center">

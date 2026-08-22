@@ -77,13 +77,13 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
         </ShineCircle>
         <div className="min-w-0 flex-1">
           <div className="font-heading text-sm font-semibold">New Level Assistant</div>
-          <div className="text-muted-foreground text-sm">Instant answers to common questions</div>
+          <div className="text-foreground text-sm">Instant answers to common questions</div>
         </div>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close chat"
-          className="text-muted-foreground hover:text-foreground hover:bg-muted flex size-8 shrink-0 items-center justify-center rounded-full"
+          className="text-foreground hover:text-foreground hover:bg-muted flex size-8 shrink-0 items-center justify-center rounded-full"
         >
           <X className="size-4" />
         </button>
@@ -110,7 +110,7 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
                 key={f.q}
                 type="button"
                 onClick={() => ask(f.q)}
-                className="border-border hover:border-primary/50 hover:text-foreground text-muted-foreground rounded-full border px-3 py-1.5 text-sm font-medium transition-colors"
+                className="border-border hover:border-primary/50 hover:text-foreground text-foreground rounded-full border px-3 py-1.5 text-sm font-medium transition-colors"
               >
                 {f.q}
               </button>
@@ -134,7 +134,7 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question…"
-          className="border-border flex-1 rounded-full border px-4 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="border-border placeholder:text-foreground flex-1 rounded-full border px-4 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         />
         <button
           type="submit"

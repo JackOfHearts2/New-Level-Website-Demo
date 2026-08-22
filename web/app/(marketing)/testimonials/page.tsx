@@ -26,7 +26,7 @@ export default function TestimonialsPage() {
           <h2 className="font-heading text-xl font-semibold">
             Curious what guests say about the property itself?
           </h2>
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="text-foreground mt-2 text-sm">
             Read verified reviews from stays at our featured Miami property.
           </p>
           <div className="mt-6 flex justify-center">

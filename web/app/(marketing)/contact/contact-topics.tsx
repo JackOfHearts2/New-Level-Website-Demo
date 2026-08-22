@@ -44,7 +44,7 @@ function TopicChip({
         "shine-shape font-heading relative rounded-full border px-4 py-1.5 text-sm font-medium transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-0.5",
         selected
           ? "bg-primary border-primary text-primary-foreground"
-          : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+          : "border-border text-foreground hover:border-primary/50 hover:text-foreground"
       )}
     >
       <span className="glow-card__ring" aria-hidden />

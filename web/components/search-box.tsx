@@ -72,7 +72,7 @@ export function SearchBox() {
           className="mt-4 flex flex-wrap items-end gap-3"
         >
           <label className="min-w-[200px] flex-1 text-sm">
-            <span className="text-muted-foreground font-heading text-sm font-medium">
+            <span className="text-foreground font-heading text-sm font-medium">
               Search
             </span>
             <input
@@ -80,7 +80,7 @@ export function SearchBox() {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               placeholder="Keyword, address, or neighborhood"
-              className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="border-border placeholder:text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
             />
           </label>
 
@@ -130,7 +130,7 @@ export function SearchBox() {
             <button
               type="button"
               onClick={handleReset}
-              className="font-heading text-muted-foreground hover:text-foreground rounded-lg px-4 py-2 text-sm font-semibold"
+              className="font-heading text-foreground hover:text-foreground rounded-lg px-4 py-2 text-sm font-semibold"
             >
               Reset
             </button>
@@ -167,7 +167,7 @@ function SearchTab({
       onClick={onSelect}
       className={cn(
         "shine-shape font-heading relative rounded-full px-4 py-2 text-sm font-semibold transition-[color,background-color,transform] duration-300 hover:-translate-y-0.5",
-        selected ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+        selected ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"
       )}
     >
       <span className="glow-card__ring" aria-hidden />

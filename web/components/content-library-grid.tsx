@@ -56,7 +56,7 @@ export function ContentLibraryGrid() {
                 <ShineCircle className="bg-background/90 text-foreground absolute top-3 left-3 flex size-8 items-center justify-center rounded-full">
                   {Icon && <Icon className="size-4" />}
                 </ShineCircle>
-                <ShinePill className="font-heading bg-background/90 text-muted-foreground absolute top-3 right-3 rounded-full px-2 py-1 text-xs font-semibold uppercase">
+                <ShinePill className="font-heading bg-background/90 text-foreground absolute top-3 right-3 rounded-full px-2 py-1 text-xs font-semibold uppercase">
                   Example
                 </ShinePill>
               </div>
@@ -90,7 +90,7 @@ function LibraryTab({
       onClick={onSelect}
       className={cn(
         "shine-shape font-heading relative rounded-full px-4 py-2 text-sm font-semibold transition-[color,background-color,transform] duration-300 hover:-translate-y-0.5",
-        selected ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+        selected ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"
       )}
     >
       <span className="glow-card__ring" aria-hidden />

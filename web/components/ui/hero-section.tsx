@@ -153,7 +153,7 @@ export function HeroSection({
                   {/* The Explore Properties / Request a Tour CTA row that
                       used to sit here has been pulled per client feedback,
                       pending a better home for it elsewhere on the page. */}
-                  <p className="mx-auto mt-8 mb-12 max-w-2xl text-balance text-lg text-muted-foreground">
+                  <p className="mx-auto mt-8 mb-12 max-w-2xl text-balance text-lg text-foreground">
                     A South Florida Real Estate group matching standout
                     properties to the moments they&apos;re made for —
                     corporate offsites, family gatherings, private events,
@@ -206,7 +206,7 @@ const HeroHeader = ({
                 aria-label="home"
                 className="flex items-center space-x-2"
               >
-                <div className="relative h-14 w-60">
+                <div className="relative h-16 w-64">
                   {/* fill + object-contain instead of fixed width/height —
                       an admin-uploaded logo isn't guaranteed to match the
                       original asset's aspect ratio, and fixed dimensions
@@ -215,7 +215,7 @@ const HeroHeader = ({
                     src={logoUrl}
                     alt="New Level"
                     fill
-                    sizes="240px"
+                    sizes="256px"
                     priority
                     className="object-contain object-left dark:hidden"
                   />
@@ -223,7 +223,7 @@ const HeroHeader = ({
                     src={logoUrlDark}
                     alt="New Level"
                     fill
-                    sizes="240px"
+                    sizes="256px"
                     priority
                     className="hidden object-contain object-left dark:block"
                   />
@@ -255,7 +255,7 @@ const HeroHeader = ({
               <div className="w-full lg:hidden">
                 <NavMenuMobile onNavigate={() => setMenuState(false)} />
               </div>
-              <div className="flex w-full flex-wrap items-center gap-3 sm:flex-nowrap md:w-fit">
+              <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:flex-nowrap md:w-fit">
                 <ThemeToggle />
                 <ProfileMenu />
                 <Link

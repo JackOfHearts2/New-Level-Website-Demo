@@ -25,7 +25,7 @@ export function TestimonialProfileStack({
           </div>
           <GlowCard className="relative z-10 -mt-6 w-full max-w-xl p-8 md:-ml-16 md:mt-0">
             <h2 className="font-heading text-2xl font-bold">{t.name}</h2>
-            <p className="text-muted-foreground mt-1 text-sm font-medium">{t.role}</p>
+            <p className="text-foreground mt-1 text-sm font-medium">{t.role}</p>
             <p className="text-foreground mt-6 text-base leading-relaxed text-balance">
               &ldquo;{t.text}&rdquo;
             </p>

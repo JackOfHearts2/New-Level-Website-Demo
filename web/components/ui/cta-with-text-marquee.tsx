@@ -96,7 +96,7 @@ export function CtaWithTextMarquee() {
             <h2 className="font-heading text-5xl leading-tight font-bold tracking-tight text-balance md:text-6xl lg:text-7xl">
               Ready for your next move?
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed md:text-xl">
+            <p className="text-foreground text-lg leading-relaxed md:text-xl">
               Whether you&apos;re buying, investing, managing a portfolio, or
               planning something worth celebrating — New Level is ready when
               you are.

@@ -31,13 +31,13 @@ export default function BrokersCornerPage() {
           </ShineCircle>
           <div>
             <h2 className="font-heading font-semibold">Shelley Lozier</h2>
-            <p className="text-muted-foreground text-sm">Founder &amp; Principal Broker</p>
+            <p className="text-foreground text-sm">Founder &amp; Principal Broker</p>
           </div>
           <div className="sm:ml-auto">
             <CtaLink href="/contact">Ask Shelley a Question</CtaLink>
           </div>
         </div>
-        <p className="text-muted-foreground mt-8 text-balance">{BROKERS_CORNER.bio}</p>
+        <p className="text-foreground mt-8 text-balance">{BROKERS_CORNER.bio}</p>
       </section>
 
       <section className="mx-auto max-w-4xl px-6 pb-24">
@@ -49,7 +49,7 @@ export default function BrokersCornerPage() {
             <Play className="text-primary size-6 fill-current" />
           </ShineCircle>
         </div>
-        <p className="text-muted-foreground mt-4 text-center text-sm">
+        <p className="text-foreground mt-4 text-center text-sm">
           Full video series coming soon.
         </p>
       </section>

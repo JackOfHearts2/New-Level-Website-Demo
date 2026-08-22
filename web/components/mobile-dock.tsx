@@ -41,7 +41,7 @@ export function MobileDock() {
                 "flex size-11 items-center justify-center rounded-full transition-colors",
                 active
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  : "text-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               <item.icon className="size-5" />
