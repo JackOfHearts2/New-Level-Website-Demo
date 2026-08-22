@@ -86,7 +86,7 @@ export function ImageForm({
         />
       ) : (
         <p className="text-muted-foreground text-sm">
-          No custom photo uploaded — the live site is showing a built-in default.
+          No custom photo uploaded, the live site is showing a built-in default.
         </p>
       )}
       <input
@@ -105,7 +105,7 @@ export function ImageForm({
       )}
       {state?.ok && (
         <p className="text-sm text-[#72D35B]" role="status">
-          Saved — the live homepage now reflects this change.
+          Saved: the live homepage now reflects this change.
         </p>
       )}
     </div>

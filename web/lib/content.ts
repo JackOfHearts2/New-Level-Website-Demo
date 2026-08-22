@@ -6,9 +6,9 @@ export const NLG_BRAND = {
   name: "New Level",
   tagline: "Real Estate. Redefined.",
   aboutShort:
-    "At New Level, we believe excellence starts with connection. Real Estate isn't just about buildings or numbers — it's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership.",
+    "At New Level, we believe excellence starts with connection. Real Estate isn't just about buildings or numbers. It's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership.",
   aboutLong:
-    "At New Level, we believe excellence starts with connection. Real Estate isn't just about buildings or numbers — it's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership, helping clients invest with confidence and achieve results that stand out. Across brokerage, investments, property management and events, we're here to help — Real Estate, Redefined.",
+    "At New Level, we believe excellence starts with connection. Real Estate isn't just about buildings or numbers. It's about people, purpose, and creating lasting value. Our team brings years of expertise and a modern perspective to every partnership, helping clients invest with confidence and achieve results that stand out. Across brokerage, investments, property management and events, we're here to help: Real Estate, Redefined.",
   mission:
     "At New Level, we believe Real Estate should elevate people, communities, and portfolios. Our purpose is to create lasting impact through innovation, integrity, and world-class service.",
   story:
@@ -49,30 +49,30 @@ export const PAGES = {
   contentLibrary: {
     eyebrow: "Content Library",
     heading: "What we're posting, all in one place.",
-    sub: "Follow along on Instagram, Facebook, TikTok and YouTube — or browse a taste of it here.",
+    sub: "Follow along on Instagram, Facebook, TikTok and YouTube, or browse a taste of it here.",
     intro:
-      "Real posts will appear here once each platform is connected — for now, this is a preview of how it'll look.",
+      "Real posts will appear here once each platform is connected. For now, this is a preview of how it'll look.",
   },
   blog: {
     eyebrow: "Blog",
     heading: "Insights on real estate, investing, and South Florida.",
-    sub: "This is where New Level's writing will live — market takes, investment thinking, and practical guidance.",
+    sub: "This is where New Level's writing will live: market takes, investment thinking, and practical guidance.",
     intro:
-      "No posts are published yet — for now, this previews the categories the blog will be organized around.",
+      "No posts are published yet. For now, this previews the categories the blog will be organized around.",
   },
   team: {
     eyebrow: "Agents & Partners",
     heading: "Our Team",
     sub: "Agents and partners who match properties to the moments they're made for.",
     intro:
-      "New Level's team blends brokerage expertise with a hospitality mindset — the same people who list and manage the portfolio are the ones who help you match a property to the moment you're planning for.",
+      "New Level's team blends brokerage expertise with a hospitality mindset: the same people who list and manage the portfolio are the ones who help you match a property to the moment you're planning for.",
   },
   services: {
     eyebrow: "Services",
     heading: "What we do.",
-    sub: "Brokerage, investment, property management and events — the full New Level offering.",
+    sub: "Brokerage, investment, property management and events: the full New Level offering.",
     intro:
-      "From a first listing conversation to years of ongoing management, New Level stays involved across the life of a property — not just the transaction that starts it.",
+      "From a first listing conversation to years of ongoing management, New Level stays involved across the life of a property, not just the transaction that starts it.",
   },
   testimonials: {
     eyebrow: "Testimonials",
@@ -82,13 +82,13 @@ export const PAGES = {
   events: {
     eyebrow: "Events",
     heading: "Come hang out with us.",
-    sub: "We love creating spaces where people connect and talk Real Estate in a way that makes sense — some educational, some just good people swapping ideas.",
+    sub: "We love creating spaces where people connect and talk Real Estate in a way that makes sense: some educational, some just good people swapping ideas.",
   },
   contact: {
     eyebrow: "Contact",
     heading: "Get in touch",
     sub: "We'd love to hear from you.",
-    intro: "Every property, every moment, every question — reach us directly.",
+    intro: "Every property, every moment, every question: reach us directly.",
   },
   brokersCorner: {
     eyebrow: "The Broker's Corner",
@@ -113,7 +113,7 @@ export const PAGES = {
   riskDisclosure: {
     eyebrow: "Legal",
     heading: "Risk Disclosure",
-    sub: "Real Estate involves real risk — here's the plain version.",
+    sub: "Real Estate involves real risk: here's the plain version.",
   },
   fairHousing: {
     eyebrow: "Legal",
@@ -132,15 +132,15 @@ export const LEGAL_LAST_UPDATED = "August 2026";
 export const PRIVACY_SECTIONS = [
   {
     t: "Information we collect",
-    d: "The contact and inquiry forms on this site ask for the name, email, phone number, and message details a visitor chooses to enter. This is a demo — no inquiry endpoint is currently connected, so form submissions on this site are not actually transmitted or stored anywhere; they simply confirm on-screen. The account menu shown in the navigation (Sign In / Create Account) is a UI preview only — there is no real account system behind it, and no credentials are collected.",
+    d: "The contact and inquiry forms on this site ask for the name, email, phone number, and message details a visitor chooses to enter. This is a demo: no inquiry endpoint is currently connected, so form submissions on this site are not actually transmitted or stored anywhere; they simply confirm on-screen. The account menu shown in the navigation (Sign In / Create Account) is a UI preview only; there is no real account system behind it, and no credentials are collected.",
   },
   {
     t: "Cookies & local storage",
-    d: "This site uses your browser's local storage to remember one preference — light or dark mode — on the device you're using. That preference never leaves your browser. A separate, short-lived session cookie is used only to keep an administrator signed in to the site's internal content-editing tools; it is not set for ordinary visitors and is not used for tracking or advertising.",
+    d: "This site uses your browser's local storage to remember one preference, light or dark mode, on the device you're using. That preference never leaves your browser. A separate, short-lived session cookie is used only to keep an administrator signed in to the site's internal content-editing tools; it is not set for ordinary visitors and is not used for tracking or advertising.",
   },
   {
     t: "How information is used",
-    d: "Where a real inquiry endpoint is eventually connected, information submitted through a form would be used only to respond to that specific inquiry — scheduling, answering questions, or following up about a property, service, or event. It would not be sold or shared with third parties for their own marketing purposes.",
+    d: "Where a real inquiry endpoint is eventually connected, information submitted through a form would be used only to respond to that specific inquiry: scheduling, answering questions, or following up about a property, service, or event. It would not be sold or shared with third parties for their own marketing purposes.",
   },
   {
     t: "Third-party services",
@@ -167,15 +167,15 @@ export const PRIVACY_SECTIONS = [
 export const TERMS_SECTIONS = [
   {
     t: "Acceptance of these terms",
-    d: "By using this site, you agree to these terms. This is a demo of a Real Estate group's website — some features described (booking, inquiries, accounts) are previews and not yet connected to live systems.",
+    d: "By using this site, you agree to these terms. This is a demo of a Real Estate group's website; some features described (booking, inquiries, accounts) are previews and not yet connected to live systems.",
   },
   {
     t: "Permitted use",
-    d: "This site is provided for browsing information about New Level, its team, services, and featured properties. You agree not to misuse the site — including attempting to disrupt it, scrape it at scale, or interfere with other visitors' use of it.",
+    d: "This site is provided for browsing information about New Level, its team, services, and featured properties. You agree not to misuse the site, including attempting to disrupt it, scrape it at scale, or interfere with other visitors' use of it.",
   },
   {
     t: "Not investment, legal, or financial advice",
-    d: "Content on this site — including property descriptions, service overviews, and any figures shown — is for general informational purposes only and does not constitute investment, legal, financial, or tax advice. Speak with a licensed professional before making a Real Estate or investment decision.",
+    d: "Content on this site, including property descriptions, service overviews, and any figures shown, is for general informational purposes only and does not constitute investment, legal, financial, or tax advice. Speak with a licensed professional before making a Real Estate or investment decision.",
   },
   {
     t: "Intellectual property",
@@ -187,7 +187,7 @@ export const TERMS_SECTIONS = [
   },
   {
     t: "No warranty",
-    d: "This site — including this demo version — is provided \"as is,\" without warranties of any kind, express or implied, including that it will be uninterrupted, error-free, or fit for a particular purpose.",
+    d: "This site, including this demo version, is provided \"as is,\" without warranties of any kind, express or implied, including that it will be uninterrupted, error-free, or fit for a particular purpose.",
   },
   {
     t: "Limitation of liability",
@@ -210,7 +210,7 @@ export const RISK_DISCLOSURE_SECTIONS = [
   },
   {
     t: "No guaranteed returns",
-    d: "Nothing on this site — including testimonials, case studies, or example figures — should be read as a projection or guarantee of income, appreciation, or investment return. Figures shown on this demo site are illustrative placeholders, not real performance data.",
+    d: "Nothing on this site, including testimonials, case studies, or example figures, should be read as a projection or guarantee of income, appreciation, or investment return. Figures shown on this demo site are illustrative placeholders, not real performance data.",
   },
   {
     t: "Property management & rental risk",
@@ -218,7 +218,7 @@ export const RISK_DISCLOSURE_SECTIONS = [
   },
   {
     t: "Liquidity risk",
-    d: "Real Estate is not a liquid asset — it can take significant time to sell a property at a desired price, and market conditions may require accepting a different price or timeline than planned.",
+    d: "Real Estate is not a liquid asset: it can take significant time to sell a property at a desired price, and market conditions may require accepting a different price or timeline than planned.",
   },
   {
     t: "Independent advice recommended",
@@ -320,7 +320,7 @@ export const POINT_OF_CONTACT = {
 export const EVENT_CTA = {
   eyebrow: "Hosting an event?",
   heading: "We can help with that too.",
-  sub: "Milestone celebrations, private dinners, corporate gatherings — see venues set up to host, not just sleep.",
+  sub: "Milestone celebrations, private dinners, corporate gatherings: see venues set up to host, not just sleep.",
   cta: "See event venues",
 };
 
@@ -335,7 +335,7 @@ export const SERVICES = [
   {
     id: "brokerage",
     t: "Brokerage & Consulting",
-    d: "Buying or selling is more than a transaction — it's a milestone. Our brokerage team makes every step smooth and transparent, from listing to closing.",
+    d: "Buying or selling is more than a transaction. It's a milestone. Our brokerage team makes every step smooth and transparent, from listing to closing.",
     long: "We blend strategic insight with hands-on execution to help investors identify, acquire, and optimize Real Estate opportunities that deliver lasting value.",
     capabilities: [
       {
@@ -363,8 +363,8 @@ export const SERVICES = [
   {
     id: "investment",
     t: "Investments",
-    d: "We help investors find opportunities that match their ambitions and risk comfort — smart, sustainable strategies to help investments grow the right way.",
-    long: "Every investor's story is different, and that's exactly how we approach it. We start by listening, learning what matters most to you, then finding opportunities that fit — investing should feel clear, collaborative, and rewarding, not complicated.",
+    d: "We help investors find opportunities that match their ambitions and risk comfort: smart, sustainable strategies to help investments grow the right way.",
+    long: "Every investor's story is different, and that's exactly how we approach it. We start by listening, learning what matters most to you, then finding opportunities that fit. Investing should feel clear, collaborative, and rewarding, not complicated.",
     capabilities: [
       {
         t: "Understand Your Goals",
@@ -388,7 +388,7 @@ export const SERVICES = [
     id: "management",
     t: "Property Management",
     d: "From tenant relations to maintenance oversight, we take care of the details that protect your property and keep it performing.",
-    long: "We handle the complexities of property management so you can focus on growing your investment portfolio — meticulous attention to detail and a commitment to maximizing returns.",
+    long: "We handle the complexities of property management so you can focus on growing your investment portfolio, with meticulous attention to detail and a commitment to maximizing returns.",
     capabilities: [
       {
         t: "Leasing & Tenant Relations",
@@ -415,8 +415,8 @@ export const SERVICES = [
   {
     id: "events",
     t: "Events & Networking",
-    d: "We love creating spaces where people connect and talk Real Estate in a way that makes sense — some educational, some just good people swapping ideas.",
-    long: "Some of our events are more educational, others are just a chance to meet good people and swap ideas — either way, you'll always walk away with something new.",
+    d: "We love creating spaces where people connect and talk Real Estate in a way that makes sense: some educational, some just good people swapping ideas.",
+    long: "Some of our events are more educational, others are just a chance to meet good people and swap ideas. Either way, you'll always walk away with something new.",
     capabilities: [] as { t: string; d: string }[],
   },
 ];
@@ -708,7 +708,7 @@ export const AUDIENCES = {
     cardLabel: "Corporate Retreats & Business Meetings",
     cardMeta: "Offsites · strategy sessions",
     headline: "A private base for the work that moves the company forward.",
-    heroSub: "Host the offsite, the board session, or the leadership reset in a full residence built for focus — not a hotel conference floor.",
+    heroSub: "Host the offsite, the board session, or the leadership reset in a full residence built for focus, not a hotel conference floor.",
     rate: 1850,
     overview: "Executive House gives your team a single private setting for multi-day work: room to break out, room to reconvene, and space to actually think between sessions. Fast connectivity, defined work zones, and full-house privacy mean the day runs on your agenda, not a venue's timetable.",
     facts: [
@@ -723,19 +723,19 @@ export const AUDIENCES = {
       { t: "Presentation display", d: "Large screen with HDMI / wireless casting for decks and demos." },
       { t: "Catering-ready kitchen", d: "Full kitchen and prep space for on-site catering or a private chef." },
       { t: "Quiet call corners", d: "Separate rooms for 1:1s and calls away from the main group." },
-      { t: "On-site parking", d: "Private parking for the team — no garage runs mid-day." },
+      { t: "On-site parking", d: "Private parking for the team, no garage runs mid-day." },
     ],
     steps: [
       { t: "Pick your dates", d: "Choose the range on the calendar. Availability shown is illustrative for this demo." },
-      { t: "See the quote", d: "Total updates live with a full tax breakdown — nothing hidden." },
+      { t: "See the quote", d: "Total updates live with a full tax breakdown, nothing hidden." },
       { t: "Send the inquiry", d: "Your dates, group size and quote come attached automatically." },
       { t: "We confirm", d: "We follow up to confirm availability and finalize the retreat details." },
     ],
     faqs: [
-      { q: "Can we run multi-day sessions with breakouts?", a: "Yes — the house is set up for a main working space plus separate breakout areas, so parallel groups don't compete for the same room." },
+      { q: "Can we run multi-day sessions with breakouts?", a: "Yes, the house is set up for a main working space plus separate breakout areas, so parallel groups don't compete for the same room." },
       { q: "Is the Wi-Fi sufficient for a full team on video?", a: "The property runs on a business-grade fiber connection intended to carry simultaneous video calls. Exact throughput can be confirmed for your group size." },
       { q: "Can we bring in catering or a private chef?", a: "Absolutely. The kitchen and prep areas are catering-ready, and we can point you to vetted local options on request." },
-      { q: "Is this a booking or an inquiry?", a: "An inquiry. Submitting sends us your details so we can confirm availability and pricing — no payment is collected and nothing is auto-confirmed." },
+      { q: "Is this a booking or an inquiry?", a: "An inquiry. Submitting sends us your details so we can confirm availability and pricing; no payment is collected and nothing is auto-confirmed." },
     ],
   },
   family: {
@@ -746,7 +746,7 @@ export const AUDIENCES = {
     headline: "Room for the whole family under one roof, finally.",
     heroSub: "Reunions, holidays, and milestone weekends where everyone stays together instead of scattering across three hotels.",
     rate: 1450,
-    overview: "When the whole family comes together, the house matters. Executive House keeps everyone in one place — shared meals, open common space, and enough bedrooms that no one draws the short straw. Kids have room to play, grandparents have quiet corners, and the kitchen is big enough to actually cook in.",
+    overview: "When the whole family comes together, the house matters. Executive House keeps everyone in one place: shared meals, open common space, and enough bedrooms that no one draws the short straw. Kids have room to play, grandparents have quiet corners, and the kitchen is big enough to actually cook in.",
     facts: [
       { k: "Sleeps", v: "Up to 16" },
       { k: "Bedrooms", v: "Multiple suites" },
@@ -769,9 +769,9 @@ export const AUDIENCES = {
     ],
     faqs: [
       { q: "How many people can actually stay comfortably?", a: "The layout is built to keep a large family group together comfortably. Share your group size in the inquiry and we'll confirm the fit for your dates." },
-      { q: "Is it suitable for kids and grandparents together?", a: "Yes — there's open common space for the group plus quieter rooms, so different generations each have their own space." },
+      { q: "Is it suitable for kids and grandparents together?", a: "Yes, there's open common space for the group plus quieter rooms, so different generations each have their own space." },
       { q: "Can we cook for a big group?", a: "The full chef's kitchen is designed for real cooking, not just reheating, so shared family meals work well here." },
-      { q: "Is this a confirmed booking?", a: "No — it's an inquiry. We follow up to confirm availability. No payment is collected in this step." },
+      { q: "Is this a confirmed booking?", a: "No, it's an inquiry. We follow up to confirm availability. No payment is collected in this step." },
     ],
   },
   events: {
@@ -782,7 +782,7 @@ export const AUDIENCES = {
     headline: "A private setting for the moments worth gathering for.",
     heroSub: "Milestone celebrations, intimate receptions, and private dinners in a residence that feels designed for the occasion.",
     rate: 2200,
-    overview: "Some occasions deserve more than a banquet room. Executive House offers a private, full-property setting for celebrations — open indoor-outdoor flow, room to host, and the discretion of a residence rather than a rented hall. You set the guest list and the tone; the house holds it.",
+    overview: "Some occasions deserve more than a banquet room. Executive House offers a private, full-property setting for celebrations: open indoor-outdoor flow, room to host, and the discretion of a residence rather than a rented hall. You set the guest list and the tone; the house holds it.",
     facts: [
       { k: "Event capacity", v: "By arrangement" },
       { k: "Flow", v: "Indoor / outdoor" },
@@ -800,14 +800,14 @@ export const AUDIENCES = {
     steps: [
       { t: "Pick your dates", d: "Choose your event date on the calendar. Availability is illustrative in this demo." },
       { t: "See the quote", d: "The estimate updates live, with a full tax breakdown." },
-      { t: "Send the inquiry", d: "Tell us your guest count — your date and quote attach automatically." },
+      { t: "Send the inquiry", d: "Tell us your guest count; your date and quote attach automatically." },
       { t: "We confirm", d: "We follow up to confirm availability and talk through event details." },
     ],
     faqs: [
       { q: "What kind of events suit the property?", a: "Intimate celebrations, milestone gatherings, private dinners and receptions. Share what you're planning in the inquiry and we'll confirm fit." },
       { q: "Is there a guest capacity for events?", a: "Event capacity is handled case by case depending on the format. Tell us your expected guest count and we'll advise for your dates." },
-      { q: "Can we bring our own caterer and vendors?", a: "Yes — the kitchen is set up as a prep base for caterers, and you're welcome to bring your own vendors." },
-      { q: "Does submitting confirm the event date?", a: "No — it's an inquiry. We follow up to confirm availability and details. No payment is collected here." },
+      { q: "Can we bring our own caterer and vendors?", a: "Yes, the kitchen is set up as a prep base for caterers, and you're welcome to bring your own vendors." },
+      { q: "Does submitting confirm the event date?", a: "No, it's an inquiry. We follow up to confirm availability and details. No payment is collected here." },
     ],
   },
   ministry: {
@@ -840,10 +840,10 @@ export const AUDIENCES = {
       { t: "We confirm", d: "We follow up to confirm availability and help with the details." },
     ],
     faqs: [
-      { q: "Is the space suitable for a whole-group gathering?", a: "Yes — there's a common area for the full group to meet, plus smaller rooms for breakout circles and quieter time." },
+      { q: "Is the space suitable for a whole-group gathering?", a: "Yes, there's a common area for the full group to meet, plus smaller rooms for breakout circles and quieter time." },
       { q: "Can the group stay overnight together?", a: "The house is set up for a group to stay together across a multi-day retreat. Share your numbers and we'll confirm the fit." },
-      { q: "Can we prepare meals together?", a: "The full kitchen and dining space are made for shared meals — cooking and eating together as a group works well here." },
-      { q: "Is this a booking?", a: "No — it's an inquiry. We follow up to confirm availability for your retreat. No payment is collected in this step." },
+      { q: "Can we prepare meals together?", a: "The full kitchen and dining space are made for shared meals. Cooking and eating together as a group works well here." },
+      { q: "Is this a booking?", a: "No, it's an inquiry. We follow up to confirm availability for your retreat. No payment is collected in this step." },
     ],
   },
   extended: {
@@ -854,7 +854,7 @@ export const AUDIENCES = {
     headline: "Settle in for the season, not just the weekend.",
     heroSub: "Extended vacations, seasonal stays, and relocations where you want the comfort of a full home, ready to live in from day one.",
     rate: 1250,
-    overview: "For longer stays, a hotel wears thin fast. Executive House lives like a home from the first night — a full kitchen, real living space, and room to settle into a routine. Whether you're between homes, working remotely for a stretch, or spending the season in Miami, it's set up for weeks, not just nights.",
+    overview: "For longer stays, a hotel wears thin fast. Executive House lives like a home from the first night: a full kitchen, real living space, and room to settle into a routine. Whether you're between homes, working remotely for a stretch, or spending the season in Miami, it's set up for weeks, not just nights.",
     facts: [
       { k: "Min. stay", v: "Weekly+" },
       { k: "Kitchen", v: "Full & equipped" },
@@ -877,15 +877,15 @@ export const AUDIENCES = {
     ],
     faqs: [
       { q: "What counts as an extended stay?", a: "Weekly and longer stays. Share your intended length in the inquiry and we'll confirm availability and the right rate structure." },
-      { q: "Is it set up for remote work?", a: "Yes — there's reliable connectivity and dedicated space to work from home comfortably over a longer stay." },
+      { q: "Is it set up for remote work?", a: "Yes, there's reliable connectivity and dedicated space to work from home comfortably over a longer stay." },
       { q: "Are long-stay rates different?", a: "Long stays are priced differently from nightly bookings. Note that all pricing in this demo is placeholder and not final." },
-      { q: "Is this a confirmed booking?", a: "No — it's an inquiry. We follow up to confirm availability and terms. No payment is collected in this step." },
+      { q: "Is this a confirmed booking?", a: "No, it's an inquiry. We follow up to confirm availability and terms. No payment is collected in this step." },
     ],
   },
 } satisfies Record<(typeof AUDIENCE_ORDER)[number], unknown>;
 
 export const HIGHLIGHTS = [
-  "Full private residence — the whole house is yours, not a shared venue",
+  "Full private residence: the whole house is yours, not a shared venue",
   "Sleeps up to 16 across multiple bedrooms",
   "Chef's kitchen plus an entertainer's bar",
   "Pool, patio and mature tropical grounds",
@@ -914,14 +914,14 @@ export const EVENT_PACKAGES = [
     id: "self",
     label: "Self-Provided",
     price: 0,
-    tagline: "You bring your own vendors — catering, entertainment, sound and content.",
+    tagline: "You bring your own vendors: catering, entertainment, sound and content.",
     includes: [] as string[],
   },
   {
     id: "essentials",
     label: "Essentials",
     price: 900,
-    tagline: "The basics handled for you — sound system and content creation.",
+    tagline: "The basics handled for you: sound system and content creation.",
     includes: ["sound", "content"],
   },
   {
@@ -929,14 +929,14 @@ export const EVENT_PACKAGES = [
     label: "Signature",
     price: 1800,
     popular: true,
-    tagline: "Full-service hosting — catering, entertainment and sound, coordinated for you.",
+    tagline: "Full-service hosting: catering, entertainment and sound, coordinated for you.",
     includes: ["catering", "dj", "sound"],
   },
   {
     id: "allInclusive",
     label: "All-Inclusive",
     price: 2400,
-    tagline: "Every New Level service in one flat add-on — nothing left to arrange.",
+    tagline: "Every New Level service in one flat add-on: nothing left to arrange.",
     includes: ["catering", "dj", "sound", "content"],
   },
 ];
@@ -964,7 +964,7 @@ export const TAX = {
 export const SECURITY_DEPOSIT = {
   amount: 500,
   appliesTo: "event",
-  blurb: "A refundable hold placed before your event date and released after check-out — not a charge today. Applies to event rentals only.",
+  blurb: "A refundable hold placed before your event date and released after check-out, not a charge today. Applies to event rentals only.",
 };
 
 export const FEES_POLICIES = {
@@ -983,20 +983,20 @@ export const FEES_POLICIES = {
   houseRules: [
     { t: "Occupancy", d: "The home is rented for the group size agreed in your inquiry. Additional overnight guests aren't permitted without prior written approval." },
     { t: "Smoking & vaping", d: "Not permitted indoors anywhere. A designated outdoor area can be arranged on request." },
-    { t: "Events & noise", d: "Amplified music must respect neighborhood quiet hours — after 10:00 PM on weekdays and 11:00 PM on weekends. Keep doors and windows closed during amplified sound." },
+    { t: "Events & noise", d: "Amplified music must respect neighborhood quiet hours: after 10:00 PM on weekdays and 11:00 PM on weekends. Keep doors and windows closed during amplified sound." },
     { t: "Parking", d: "Use the driveway and on-site spaces first and keep neighbors' frontage and driveways clear. Overflow or valet parking can be arranged for larger events." },
-    { t: "Pool & outdoor areas", d: "No lifeguard on duty — children must be supervised at all times, and glassware is discouraged poolside." },
+    { t: "Pool & outdoor areas", d: "No lifeguard on duty; children must be supervised at all times, and glassware is discouraged poolside." },
     { t: "Pets", d: "By prior arrangement only. Service animals are always welcome." },
     { t: "Care of the home", d: "Please treat furnishings and finishes with care. Damage beyond normal wear may be applied to the security deposit." },
     { t: "Prohibited", d: "No illegal substances, no firearms, and no unpermitted commercial activity on the property." },
     { t: "Check-in & check-out", d: "Access runs only within your confirmed window; late departures may incur an additional charge." },
   ],
-  rulesNote: "House rules shown here are typical examples for this kind of property — the final set is confirmed with your New Level contact before any booking.",
-  cancellation: "Cancellation terms are being finalized — placeholder for this demo. Inquiries are not bookings; nothing is charged until terms are agreed in writing.",
+  rulesNote: "House rules shown here are typical examples for this kind of property; the final set is confirmed with your New Level contact before any booking.",
+  cancellation: "Cancellation terms are being finalized: a placeholder for this demo. Inquiries are not bookings; nothing is charged until terms are agreed in writing.",
 };
 
 export const NEIGHBORHOOD = {
-  blurb: "The home sits in a quiet Miami-Dade residential pocket with quick access to the airport, highways and the city — easy for guests arriving from anywhere.",
+  blurb: "The home sits in a quiet Miami-Dade residential pocket with quick access to the airport, highways and the city, easy for guests arriving from anywhere.",
   mapQuery: "1331 NW 87th St, Miami, FL 33147",
   nearby: {
     corporate: ["Meeting / coworking space", "Business dining & catering", "Airport ~15 min", "Hotels for overflow staff"],
@@ -1010,9 +1010,9 @@ export const NEIGHBORHOOD = {
 export const REVIEWS = {
   rating: 4.9,
   count: 27,
-  howItWorks: "Reviews come from verified New Level guests after their stay or event. We show the guest's first name, the month they visited, and what they used the home for — no anonymous or incentivized reviews.",
+  howItWorks: "Reviews come from verified New Level guests after their stay or event. We show the guest's first name, the month they visited, and what they used the home for: no anonymous or incentivized reviews.",
   items: [
-    { name: "Marcus T.", when: "June 2026", use: "Corporate retreat", stars: 5, text: "Ran a three-day leadership offsite here. The breakout spaces and fast Wi-Fi meant we never had to leave — and the team actually enjoyed the downtime by the pool." },
+    { name: "Marcus T.", when: "June 2026", use: "Corporate retreat", stars: 5, text: "Ran a three-day leadership offsite here. The breakout spaces and fast Wi-Fi meant we never had to leave, and the team actually enjoyed the downtime by the pool." },
     { name: "The Reyes Family", when: "May 2026", use: "Family reunion", stars: 5, text: "Twelve of us under one roof for a long weekend. Everyone had space, the kitchen handled our big dinners, and the kids basically lived in the backyard." },
     { name: "Danielle P.", when: "April 2026", use: "Milestone birthday", stars: 5, text: "Hosted a 40th here and it felt like a private venue, not a rental. Shelley was responsive from the first message to checkout." },
     { name: "Pastor J. Alvarez", when: "March 2026", use: "Ministry retreat", stars: 4, text: "Quiet, comfortable, and room for our whole group to gather and break out. A calm place to reset for the weekend." },

@@ -18,7 +18,7 @@ export function ServicesSection({
             What we do.
           </h2>
           <p className="text-foreground mt-4 text-lg text-balance">
-            Brokerage, investment, property management and events — the full
+            Brokerage, investment, property management and events: the full
             New Level offering.
           </p>
         </div>

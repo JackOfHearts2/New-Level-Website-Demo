@@ -67,7 +67,7 @@ export default function EventsPage() {
               return (
                 <div
                   key={i}
-                  title={event ? `${event.title} — ${event.time}` : undefined}
+                  title={event ? `${event.title}: ${event.time}` : undefined}
                   className={cn(
                     "flex aspect-square items-center justify-center rounded-lg text-sm",
                     day == null && "invisible",
@@ -120,7 +120,7 @@ export default function EventsPage() {
             Hosting an event?
           </h2>
           <p className="relative mx-auto mt-4 max-w-xl text-balance text-white">
-            Milestone celebrations, private dinners, corporate gatherings — see
+            Milestone celebrations, private dinners, corporate gatherings: see
             venues set up to host, not just sleep.
           </p>
           <div className="relative mt-8 flex justify-center">

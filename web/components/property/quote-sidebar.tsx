@@ -45,7 +45,7 @@ export function QuoteSidebar() {
           <div className="flex items-baseline justify-between text-sm">
             <span>
               {quote.tier === "event"
-                ? `Venue — ${quote.hours}-hour event rental (flat)`
+                ? `Venue: ${quote.hours}-hour event rental (flat)`
                 : `${money(RATE_TIERS.stay.perNight)} × ${quote.nights} night${quote.nights !== 1 ? "s" : ""}`}
             </span>
             <span className="font-heading font-semibold">{money(quote.rentalBase)}</span>
@@ -110,14 +110,14 @@ export function QuoteSidebar() {
               <span className="text-foreground font-semibold">
                 ${quote.deposit.amount}
               </span>{" "}
-              security deposit — a hold placed before your date and released after check-out, not
+              security deposit, a hold placed before your date and released after check-out, not
               a charge today.
             </p>
           )}
 
           <p className="text-foreground text-sm">
             You won&apos;t be charged to inquire. Free cancellation until{" "}
-            {fmtDate(quote.cancelCutoff)} — 1 day before check-in.
+            {fmtDate(quote.cancelCutoff)}, 1 day before check-in.
           </p>
         </div>
       )}

@@ -9,7 +9,7 @@ export default async function AdminContentPage() {
         <h1 className="font-heading text-2xl font-bold">Edit Content</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           Update the text shown on the homepage. Adding or removing entries
-          (like a new team member) isn&apos;t supported here yet — ask a
+          (like a new team member) isn&apos;t supported here yet, ask a
           developer for that.
         </p>
       </div>

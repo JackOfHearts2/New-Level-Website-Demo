@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       heading={page.heading}
       sub={page.sub}
       lastUpdated={LEGAL_LAST_UPDATED}
-      disclaimer="The policy below describes, accurately, what this specific site actually does with information today — it hasn't been reviewed by an attorney and shouldn't be treated as a finished legal document once real data collection (live forms, accounts, analytics) is connected."
+      disclaimer="The policy below describes, accurately, what this specific site actually does with information today; it hasn't been reviewed by an attorney and shouldn't be treated as a finished legal document once real data collection (live forms, accounts, analytics) is connected."
       sections={PRIVACY_SECTIONS}
     />
   );

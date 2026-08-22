@@ -52,7 +52,7 @@ export default async function PropertyPage({
             {PROPERTY.siteName}
           </h1>
           <p className="mt-3 max-w-xl text-balance text-white">
-            Presented by New Level — a South Florida Real Estate group matching standout homes to
+            Presented by New Level, a South Florida Real Estate group matching standout homes to
             the moments they&apos;re made for.
           </p>
         </PhotoTour>
@@ -194,7 +194,7 @@ export default async function PropertyPage({
       <section className="mx-auto max-w-6xl px-6 py-16">
         <h2 className="font-heading text-2xl font-bold">Send an inquiry</h2>
         <p className="text-foreground mt-1 max-w-2xl text-sm">
-          Submitting sends us your details — no payment is collected and nothing is auto-confirmed.
+          Submitting sends us your details; no payment is collected and nothing is auto-confirmed.
         </p>
         <div className="mt-8">
           <InquiryForm />

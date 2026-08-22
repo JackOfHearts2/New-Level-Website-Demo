@@ -69,7 +69,7 @@ function MonthGrid({ monthDate }: { monthDate: Date }) {
               key={i}
               type="button"
               disabled={blocked || !state.tier}
-              aria-label={blocked ? `${date.toDateString()} — unavailable` : date.toDateString()}
+              aria-label={blocked ? `${date.toDateString()}: unavailable` : date.toDateString()}
               onClick={() => dispatch({ type: "PICK_DATE", date, today })}
               className={cn(
                 "flex aspect-square items-center justify-center rounded-lg text-sm transition-colors",
@@ -129,7 +129,7 @@ export function BookingWidget() {
             </h3>
             <p className="text-foreground mt-1 text-sm">
               {state.tier === "event"
-                ? `Pick your check-in date, then your check-out date (${EVENT_MIN_HOURS}-hour minimum — usually the next day). Set the times below.`
+                ? `Pick your check-in date, then your check-out date (${EVENT_MIN_HOURS}-hour minimum, usually the next day). Set the times below.`
                 : "Pick a check-in date, then a check-out date. Ranges can't span an unavailable night."}
             </p>
 
@@ -144,10 +144,10 @@ export function BookingWidget() {
                     onChange={(e) =>
                       dispatch({ type: "SET_CHECKIN_MIN", value: Number(e.target.value) })
                     }
-                    className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                    className="border-border bg-background text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm"
                   >
                     {TIME_OPTIONS.map((m) => (
-                      <option key={m} value={m}>
+                      <option key={m} value={m} className="bg-background text-foreground">
                         {minToTime(m)}
                       </option>
                     ))}
@@ -162,10 +162,10 @@ export function BookingWidget() {
                     onChange={(e) =>
                       dispatch({ type: "SET_CHECKOUT_MIN", value: Number(e.target.value) })
                     }
-                    className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                    className="border-border bg-background text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm"
                   >
                     {TIME_OPTIONS.map((m) => (
-                      <option key={m} value={m}>
+                      <option key={m} value={m} className="bg-background text-foreground">
                         {minToTime(m)}
                       </option>
                     ))}
@@ -222,7 +222,7 @@ export function BookingWidget() {
                         </span>
                       )}
                       <div className="font-heading font-semibold">
-                        {pkg.label} — {pkg.price ? `$${pkg.price.toLocaleString()}` : "Included"}
+                        {pkg.label}: {pkg.price ? `$${pkg.price.toLocaleString()}` : "Included"}
                       </div>
                       <div className="text-foreground text-sm">{pkg.tagline}</div>
                       {pkg.includes.length > 0 && (

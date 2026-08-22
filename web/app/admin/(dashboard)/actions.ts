@@ -103,7 +103,7 @@ export async function saveContent(
   try {
     await saveSiteContent(next);
   } catch {
-    return { error: "Couldn't save — storage unavailable." };
+    return { error: "Couldn't save: storage unavailable." };
   }
 
   revalidatePath("/");
@@ -133,7 +133,7 @@ export async function saveImage(
   }
 
   const store = imageBlobStore();
-  if (!store) return { error: "Couldn't save — storage unavailable." };
+  if (!store) return { error: "Couldn't save: storage unavailable." };
 
   try {
     const bytes = await file.arrayBuffer();
@@ -159,7 +159,7 @@ export async function saveImage(
     };
     await saveSiteContent(next);
   } catch {
-    return { error: "Couldn't save — storage unavailable." };
+    return { error: "Couldn't save: storage unavailable." };
   }
 
   revalidatePath("/");

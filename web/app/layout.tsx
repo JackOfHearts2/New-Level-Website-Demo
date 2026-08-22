@@ -19,7 +19,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "New Level · Real Estate. Redefined.",
   description:
-    "New Level — a South Florida Real Estate group matching standout properties to the moments they're made for.",
+    "New Level: a South Florida Real Estate group matching standout properties to the moments they're made for.",
 };
 
 // Runs before paint to set the dark class synchronously — avoids a flash of

@@ -7,7 +7,7 @@ export default function AdminHomePage() {
         <h1 className="font-heading text-2xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           Edit what visitors see on the homepage. Changes go live as soon as
-          you save — no need to wait for anything else.
+          you save, no need to wait for anything else.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

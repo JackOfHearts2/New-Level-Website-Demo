@@ -44,7 +44,7 @@ export function SiteFooter({
           </div>
         </Link>
         <p className="text-foreground text-center text-sm leading-5 md:text-left">
-          {tagline} — a South Florida Real Estate group matching standout
+          {tagline}, a South Florida Real Estate group matching standout
           properties to the moments they&apos;re made for.
         </p>
       </div>
@@ -117,7 +117,7 @@ export function SiteFooter({
           covered. */}
       <div className="mx-auto mb-24 flex flex-col justify-between text-center text-sm md:mb-10 md:max-w-7xl">
         <p className="text-foreground">
-          &copy; {new Date().getFullYear()} {NLG_BRAND.name}. Demo site —
+          &copy; {new Date().getFullYear()} {NLG_BRAND.name}. Demo site,
           not affiliated with any live listings.
         </p>
       </div>

@@ -72,7 +72,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
             Let&apos;s find the space for your next moment.
           </h1>
           <p className="mt-4 max-w-md text-lg text-balance text-white">
-            Whether it&apos;s a property, an investment, or an event —
+            Whether it&apos;s a property, an investment, or an event,
             tell us what you&apos;re planning and we&apos;ll take it from
             there.
           </p>
@@ -82,7 +82,7 @@ export function ContactIntakeModal({ onClose }: { onClose: () => void }) {
           {submitted ? (
             <div className="py-8 text-center">
               <h2 className="font-heading text-xl font-bold">
-                Thanks — we&apos;ve got it.
+                Thanks, we&apos;ve got it.
               </h2>
               <p className="text-foreground mt-2 text-sm">
                 We&apos;ll follow up as soon as we can.

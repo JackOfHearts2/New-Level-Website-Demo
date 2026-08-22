@@ -10,7 +10,7 @@ import { ShineCircle } from "@/components/ui/shine-shape";
 type Message = { from: "bot" | "user"; text: string };
 
 const GREETING =
-  "Hi! I'm the New Level assistant. Ask me something, or tap a question below — I can answer the basics instantly. For anything more specific, our team's the better call.";
+  "Hi! I'm the New Level assistant. Ask me something, or tap a question below. I can answer the basics instantly. For anything more specific, our team's the better call.";
 
 // Simple keyword overlap against the real FAQ content — no live AI backend
 // exists behind this yet, so this stays a rule-based canned-answer bot
@@ -47,7 +47,7 @@ export function AiChatWidget({ onClose }: { onClose: () => void }) {
     const match = bestFaqMatch(question);
     const reply = match
       ? match.a
-      : "I don't have a canned answer for that one — reach out through Contact and a real person on our team will help.";
+      : "I don't have a canned answer for that one. Reach out through Contact and a real person on our team will help.";
     setMessages((m) => [...m, { from: "user", text: question }, { from: "bot", text: reply }]);
     scrollToEnd();
   }

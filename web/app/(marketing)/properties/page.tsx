@@ -139,7 +139,7 @@ export default async function PropertiesPage({
         <section className="mx-auto max-w-7xl px-6 pb-24">
           {showingFallback && (
             <p className="text-foreground mb-6 text-sm">
-              No exact matches for &ldquo;{q}&rdquo; — showing all {cat?.label} listings instead.
+              No exact matches for &ldquo;{q}&rdquo;. Showing all {cat?.label} listings instead.
             </p>
           )}
           {results.length > 0 ? (

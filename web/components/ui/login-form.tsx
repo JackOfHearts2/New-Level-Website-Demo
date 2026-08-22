@@ -52,7 +52,7 @@ export function LoginForm({
       {submitted ? (
         <div className="mt-8 text-center">
           <p className="text-sm text-white">
-            This is a preview — there&apos;s no real account system behind
+            This is a preview: there&apos;s no real account system behind
             this demo yet.
           </p>
           <button

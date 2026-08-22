@@ -58,7 +58,7 @@ export function LegalPage({
             Questions about this page?
           </h2>
           <p className="text-foreground mt-2 text-sm">
-            Reach out and we&apos;ll walk you through it — {POINT_OF_CONTACT.email}
+            Reach out and we&apos;ll walk you through it: {POINT_OF_CONTACT.email}
           </p>
           <div className="mt-6 flex justify-center">
             <CtaLink href="/contact">Contact Us</CtaLink>

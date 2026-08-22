@@ -98,7 +98,7 @@ export function CtaWithTextMarquee() {
             </h2>
             <p className="text-foreground text-lg leading-relaxed md:text-xl">
               Whether you&apos;re buying, investing, managing a portfolio, or
-              planning something worth celebrating — New Level is ready when
+              planning something worth celebrating, New Level is ready when
               you are.
             </p>
             <div className="flex flex-wrap gap-4">

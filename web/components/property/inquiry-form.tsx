@@ -20,14 +20,14 @@ export function InquiryForm() {
   const audience = state.audience ? AUDIENCES[state.audience] : null;
 
   const carried: { label: string; value: string }[] = [
-    { label: "Purpose", value: audience?.cardLabel ?? "— choose a purpose —" },
+    { label: "Purpose", value: audience?.cardLabel ?? "Choose a purpose" },
   ];
   if (state.audience === "events" && (state.eventType || state.eventTypeOther)) {
     carried.push({ label: "Type of event", value: state.eventTypeOther || state.eventType || "" });
   }
   carried.push({
     label: "Rate type",
-    value: quote.status === "ok" ? quote.tierLabel : "— choose above —",
+    value: quote.status === "ok" ? quote.tierLabel : "Choose above",
   });
   if (quote.status === "ok") {
     carried.push({ label: "Check-in", value: fmtDate(quote.checkIn) });
@@ -40,9 +40,9 @@ export function InquiryForm() {
       value: money(quote.totalNumeric) + (quote.pkg ? " + services (TBD)" : ""),
     });
   } else {
-    carried.push({ label: "Check-in", value: "—" });
-    carried.push({ label: "Check-out", value: "—" });
-    carried.push({ label: "Est. total", value: "—" });
+    carried.push({ label: "Check-in", value: "TBD" });
+    carried.push({ label: "Check-out", value: "TBD" });
+    carried.push({ label: "Est. total", value: "TBD" });
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -67,7 +67,7 @@ export function InquiryForm() {
   if (submitted) {
     return (
       <div id="inquiry" className="border-border rounded-2xl border p-8 text-center shadow-sm">
-        <h3 className="font-heading text-xl font-bold">Thanks — we&apos;ve got it.</h3>
+        <h3 className="font-heading text-xl font-bold">Thanks, we&apos;ve got it.</h3>
         <p className="text-foreground mt-2 text-sm">
           We&apos;ll follow up to confirm availability and next steps.
         </p>
@@ -119,11 +119,11 @@ export function InquiryForm() {
             <span className="font-heading text-sm font-medium">Preferred contact method</span>
             <select
               name="contact_method"
-              className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              className="border-border bg-background text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm"
             >
-              <option>Email</option>
-              <option>Phone</option>
-              <option>WhatsApp</option>
+              <option className="bg-background text-foreground">Email</option>
+              <option className="bg-background text-foreground">Phone</option>
+              <option className="bg-background text-foreground">WhatsApp</option>
             </select>
           </label>
           <label className="text-sm sm:col-span-2">

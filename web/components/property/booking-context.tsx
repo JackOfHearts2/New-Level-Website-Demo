@@ -174,7 +174,7 @@ export function computeQuote(state: BookingState): Quote {
     if (hours < EVENT_MIN_HOURS) {
       return {
         status: "below-minimum",
-        message: `Event rentals are a ${EVENT_MIN_HOURS}-hour minimum — pick a check-out at least ${EVENT_MIN_HOURS} hours after check-in (e.g. 3:00 PM to 3:00 PM the next day).`,
+        message: `Event rentals are a ${EVENT_MIN_HOURS}-hour minimum: pick a check-out at least ${EVENT_MIN_HOURS} hours after check-in (e.g. 3:00 PM to 3:00 PM the next day).`,
       };
     }
     rentalBase = RATE_TIERS.event.base;

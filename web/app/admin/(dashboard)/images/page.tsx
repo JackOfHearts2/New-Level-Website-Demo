@@ -21,7 +21,7 @@ export default async function AdminImagesPage() {
         <h1 className="font-heading text-2xl font-bold">Edit Images</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           Choose a new photo to replace one below. It&apos;s resized
-          automatically — no need to shrink it yourself first.
+          automatically, no need to shrink it yourself first.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

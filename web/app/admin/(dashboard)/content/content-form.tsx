@@ -218,7 +218,7 @@ export function ContentForm({ content }: { content: SiteContent }) {
       )}
       {state?.ok && (
         <p className="text-sm text-[#72D35B]" role="status">
-          Saved — the live homepage now reflects these changes.
+          Saved: the live homepage now reflects these changes.
         </p>
       )}
       <SaveButton />

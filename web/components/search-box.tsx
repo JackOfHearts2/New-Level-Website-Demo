@@ -90,11 +90,17 @@ export function SearchBox() {
               <select
                 value={activeChild ?? ""}
                 onChange={(e) => setActiveChild(e.target.value || null)}
-                className="border-border mt-1 rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="border-border bg-background text-foreground mt-1 rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
               >
-                <option value="">Rental type…</option>
+                <option value="" className="bg-background text-foreground">
+                  Rental type…
+                </option>
                 {children.map((child) => (
-                  <option key={child.id} value={child.id}>
+                  <option
+                    key={child.id}
+                    value={child.id}
+                    className="bg-background text-foreground"
+                  >
                     {child.label}
                   </option>
                 ))}
@@ -112,13 +118,13 @@ export function SearchBox() {
               <span className="sr-only">{FILTER_LABELS[key]}</span>
               <select
                 defaultValue=""
-                className="border-border mt-1 rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="border-border bg-background text-foreground mt-1 rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
               >
-                <option value="" disabled>
+                <option value="" disabled className="bg-background text-foreground">
                   {FILTER_LABELS[key]}
                 </option>
                 {SEARCH_FILTERS[key].map((opt) => (
-                  <option key={opt} value={opt}>
+                  <option key={opt} value={opt} className="bg-background text-foreground">
                     {opt}
                   </option>
                 ))}

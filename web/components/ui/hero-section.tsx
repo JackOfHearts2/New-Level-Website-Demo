@@ -155,7 +155,7 @@ export function HeroSection({
                       pending a better home for it elsewhere on the page. */}
                   <p className="mx-auto mt-8 mb-12 max-w-2xl text-balance text-lg text-foreground">
                     A South Florida Real Estate group matching standout
-                    properties to the moments they&apos;re made for —
+                    properties to the moments they&apos;re made for:
                     corporate offsites, family gatherings, private events,
                     retreats and extended stays.
                   </p>

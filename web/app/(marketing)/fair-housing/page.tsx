@@ -15,7 +15,7 @@ export default function FairHousingPage() {
       heading={page.heading}
       sub={page.sub}
       lastUpdated={LEGAL_LAST_UPDATED}
-      disclaimer="This statement reflects New Level's stated commitment to equal housing opportunity. It hasn't been reviewed by an attorney — a real brokerage should confirm this language against current federal, state, and local fair housing requirements before publishing it live."
+      disclaimer="This statement reflects New Level's stated commitment to equal housing opportunity. It hasn't been reviewed by an attorney; a real brokerage should confirm this language against current federal, state, and local fair housing requirements before publishing it live."
       sections={FAIR_HOUSING_SECTIONS}
     />
   );
