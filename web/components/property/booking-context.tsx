@@ -3,12 +3,14 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
 import {
   AUDIENCE_ORDER,
+  DEPOSIT_POLICY,
   EVENT_DEFAULT_CHECKIN_MIN,
   EVENT_DEFAULT_CHECKOUT_MIN,
   EVENT_MIN_HOURS,
   EVENT_PACKAGES,
   RATE_TIERS,
-  SECURITY_DEPOSIT,
+  STAY_DEFAULT_CHECKIN_MIN,
+  STAY_DEFAULT_CHECKOUT_MIN,
   TAX,
 } from "@/lib/content";
 
@@ -19,6 +21,14 @@ const DAY_MS = 86400000;
 
 export function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+export function minToTime(min: number) {
+  const h24 = Math.floor(min / 60);
+  const m = min % 60;
+  const period = h24 >= 12 ? "PM" : "AM";
+  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+  return `${h12}:${String(m).padStart(2, "0")} ${period}`;
 }
 
 function nextDay(d: Date) {
@@ -79,7 +89,15 @@ function reducer(state: BookingState, action: BookingAction): BookingState {
     case "SET_EVENT_TYPE_OTHER":
       return { ...state, eventTypeOther: action.value };
     case "SET_TIER":
-      return { ...state, tier: action.tier, start: null, end: null };
+      return {
+        ...state,
+        tier: action.tier,
+        start: null,
+        end: null,
+        checkinMin: action.tier === "event" ? EVENT_DEFAULT_CHECKIN_MIN : STAY_DEFAULT_CHECKIN_MIN,
+        checkoutMin:
+          action.tier === "event" ? EVENT_DEFAULT_CHECKOUT_MIN : STAY_DEFAULT_CHECKOUT_MIN,
+      };
     case "SET_PACKAGE":
       return { ...state, packageId: action.id };
     case "SET_CHECKIN_MIN":
@@ -152,7 +170,8 @@ export type Quote =
       pkg: (typeof EVENT_PACKAGES)[number] | null;
       addonsTotal: number;
       totalNumeric: number;
-      deposit: typeof SECURITY_DEPOSIT | null;
+      depositAmount: number;
+      balanceAmount: number;
       cancelCutoff: Date;
     };
 
@@ -194,6 +213,8 @@ export function computeQuote(state: BookingState): Quote {
       : null;
   const addonsTotal = pkg ? pkg.price : 0;
   const totalNumeric = rentalBase + taxTotal + addonsTotal;
+  const depositAmount = Math.round(totalNumeric * DEPOSIT_POLICY.percent);
+  const balanceAmount = totalNumeric - depositAmount;
   const cancelCutoff = new Date(state.start!);
   cancelCutoff.setDate(cancelCutoff.getDate() - 1);
 
@@ -213,7 +234,8 @@ export function computeQuote(state: BookingState): Quote {
     pkg: pkg && pkg.price > 0 ? pkg : null,
     addonsTotal,
     totalNumeric,
-    deposit: state.tier === "event" ? SECURITY_DEPOSIT : null,
+    depositAmount,
+    balanceAmount,
     cancelCutoff,
   };
 }

@@ -21,16 +21,12 @@ export function SaveButton({
 }) {
   const { user, loading } = useSession();
   const [saved, setSaved] = useState(false);
-  const [checking, setChecking] = useState(true);
+  const [lookupDone, setLookupDone] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      setSaved(false);
-      setChecking(false);
-      return;
-    }
+    if (loading || !user) return;
+    let cancelled = false;
     const supabase = createClient();
     supabase
       .from("saved_properties")
@@ -39,10 +35,20 @@ export function SaveButton({
       .eq("property_slug", propertySlug)
       .maybeSingle()
       .then(({ data }) => {
+        if (cancelled) return;
         setSaved(!!data);
-        setChecking(false);
+        setLookupDone(true);
       });
+    return () => {
+      cancelled = true;
+    };
   }, [user, loading, propertySlug]);
+
+  // No user → nothing to look up, and nothing can be "saved." Derived at
+  // render time rather than reset via an effect, so there's no synchronous
+  // setState call needed for that branch.
+  const effectiveSaved = user ? saved : false;
+  const checking = loading || (!!user && !lookupDone);
 
   async function toggle() {
     if (!user) {
@@ -50,7 +56,7 @@ export function SaveButton({
       return;
     }
     const supabase = createClient();
-    if (saved) {
+    if (effectiveSaved) {
       await supabase
         .from("saved_properties")
         .delete()
@@ -71,15 +77,17 @@ export function SaveButton({
         type="button"
         onClick={toggle}
         disabled={checking}
-        aria-pressed={saved}
+        aria-pressed={effectiveSaved}
         className={cn(
           "font-heading inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60",
-          saved ? "bg-primary text-primary-foreground border-transparent" : "hover:bg-muted",
+          effectiveSaved
+            ? "bg-primary text-primary-foreground border-transparent"
+            : "hover:bg-muted",
           className
         )}
       >
-        <Heart className={cn("size-4", saved && "fill-current")} />
-        {saved ? "Saved" : "Save"}
+        <Heart className={cn("size-4", effectiveSaved && "fill-current")} />
+        {effectiveSaved ? "Saved" : "Save"}
       </button>
 
       <AnimatePresence>

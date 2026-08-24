@@ -4,6 +4,7 @@ import { useState } from "react";
 import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
 import { AUDIENCES } from "@/lib/content";
 import { useBooking } from "./booking-context";
+import { PaymentSimulator } from "./payment-simulator";
 
 function money(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -16,6 +17,7 @@ function fmtDate(d: Date) {
 export function InquiryForm() {
   const { state, quote } = useBooking();
   const [submitted, setSubmitted] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Not GlowCard — it can't render as a <form>, and this needs to stay a
   // real form element for onSubmit — so the same glow-card classes/hook
@@ -69,6 +71,19 @@ export function InquiryForm() {
     setSubmitted(true);
   }
 
+  if (submitted && confirmed && quote.status === "ok") {
+    return (
+      <div id="inquiry">
+        <PaymentSimulator
+          onDone={() => {
+            setSubmitted(false);
+            setConfirmed(false);
+          }}
+        />
+      </div>
+    );
+  }
+
   if (submitted) {
     return (
       <GlowCard id="inquiry" className="p-8 text-center">
@@ -76,6 +91,23 @@ export function InquiryForm() {
         <p className="text-foreground mt-2 text-sm">
           We&apos;ll follow up to confirm availability and next steps.
         </p>
+
+        {quote.status === "ok" && (
+          <div className="border-border mx-auto mt-6 max-w-sm border-t pt-6">
+            <p className="text-foreground text-sm">
+              In the real flow, we&apos;d confirm your dates by hand first — for this demo, you
+              can simulate that confirmation and see what reserving with a deposit looks like.
+            </p>
+            <button
+              type="button"
+              onClick={() => setConfirmed(true)}
+              className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 mt-4 rounded-xl px-6 py-2.5 text-sm font-semibold"
+            >
+              Simulate: availability confirmed → continue to deposit
+            </button>
+          </div>
+        )}
+
         <p className="text-foreground mt-4 text-sm">
           Demo mode: this inquiry wasn&apos;t actually sent anywhere.
         </p>

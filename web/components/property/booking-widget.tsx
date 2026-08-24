@@ -8,17 +8,9 @@ import {
   EVENT_ADDONS,
   RATE_TIERS,
 } from "@/lib/content";
-import { isBlocked, useBooking, type Tier } from "./booking-context";
+import { isBlocked, minToTime, useBooking, type Tier } from "./booking-context";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
-
-function minToTime(min: number) {
-  const h24 = Math.floor(min / 60);
-  const m = min % 60;
-  const period = h24 >= 12 ? "PM" : "AM";
-  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
-  return `${h12}:${String(m).padStart(2, "0")} ${period}`;
-}
 
 const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => i * 30);
 
@@ -124,55 +116,51 @@ export function BookingWidget() {
       {state.tier && (
         <>
           <div className="mt-8">
-            <h3 className="font-heading text-lg font-bold">
-              {state.tier === "event" ? "Select your check-in & check-out" : "Select your dates"}
-            </h3>
+            <h3 className="font-heading text-lg font-bold">Select your check-in &amp; check-out</h3>
             <p className="text-foreground mt-1 text-sm">
               {state.tier === "event"
                 ? `Pick your check-in date, then your check-out date (${EVENT_MIN_HOURS}-hour minimum, usually the next day). Set the times below.`
-                : "Pick a check-in date, then a check-out date. Ranges can't span an unavailable night."}
+                : "Pick a check-in date, then a check-out date. Ranges can't span an unavailable night. Set your arrival/departure times below."}
             </p>
 
-            {state.tier === "event" && (
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <label className="text-sm">
-                  <span className="text-foreground font-heading text-sm font-medium">
-                    Check-in time
-                  </span>
-                  <select
-                    value={state.checkinMin}
-                    onChange={(e) =>
-                      dispatch({ type: "SET_CHECKIN_MIN", value: Number(e.target.value) })
-                    }
-                    className="border-border bg-background text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                  >
-                    {TIME_OPTIONS.map((m) => (
-                      <option key={m} value={m} className="bg-background text-foreground">
-                        {minToTime(m)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="text-sm">
-                  <span className="text-foreground font-heading text-sm font-medium">
-                    Check-out time
-                  </span>
-                  <select
-                    value={state.checkoutMin}
-                    onChange={(e) =>
-                      dispatch({ type: "SET_CHECKOUT_MIN", value: Number(e.target.value) })
-                    }
-                    className="border-border bg-background text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                  >
-                    {TIME_OPTIONS.map((m) => (
-                      <option key={m} value={m} className="bg-background text-foreground">
-                        {minToTime(m)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            )}
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <label className="text-sm">
+                <span className="text-foreground font-heading text-sm font-medium">
+                  Check-in time
+                </span>
+                <select
+                  value={state.checkinMin}
+                  onChange={(e) =>
+                    dispatch({ type: "SET_CHECKIN_MIN", value: Number(e.target.value) })
+                  }
+                  className="border-border bg-background text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                >
+                  {TIME_OPTIONS.map((m) => (
+                    <option key={m} value={m} className="bg-background text-foreground">
+                      {minToTime(m)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm">
+                <span className="text-foreground font-heading text-sm font-medium">
+                  Check-out time
+                </span>
+                <select
+                  value={state.checkoutMin}
+                  onChange={(e) =>
+                    dispatch({ type: "SET_CHECKOUT_MIN", value: Number(e.target.value) })
+                  }
+                  className="border-border bg-background text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                >
+                  {TIME_OPTIONS.map((m) => (
+                    <option key={m} value={m} className="bg-background text-foreground">
+                      {minToTime(m)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
 
             <div className="mt-4 flex items-center justify-between">
               <button

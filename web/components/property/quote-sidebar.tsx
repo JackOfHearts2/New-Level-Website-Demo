@@ -4,8 +4,8 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGlowRing } from "@/components/ui/glow-card";
-import { RATE_TIERS } from "@/lib/content";
-import { useBooking } from "./booking-context";
+import { RATE_TIERS, DEPOSIT_POLICY } from "@/lib/content";
+import { minToTime, useBooking } from "./booking-context";
 
 function money(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -16,7 +16,7 @@ function fmtDate(d: Date) {
 }
 
 export function QuoteSidebar() {
-  const { quote } = useBooking();
+  const { state, quote } = useBooking();
   const [showTaxDetail, setShowTaxDetail] = useState(false);
   // Not GlowCard directly — its base classes force position:relative, which
   // would fight the sticky positioning this sidebar needs. sticky is a
@@ -46,7 +46,8 @@ export function QuoteSidebar() {
       ) : (
         <div className="mt-4 space-y-4">
           <p className="text-foreground text-sm">
-            {fmtDate(quote.checkIn)} → {fmtDate(quote.checkOut)}
+            {fmtDate(quote.checkIn)} ({minToTime(state.checkinMin)}) →{" "}
+            {fmtDate(quote.checkOut)} ({minToTime(state.checkoutMin)})
           </p>
 
           <div className="flex items-baseline justify-between text-sm">
@@ -111,20 +112,23 @@ export function QuoteSidebar() {
               : "Estimate only. Rates are placeholder; total excludes the unresolved 3% CDT."}
           </p>
 
-          {quote.deposit && (
-            <p className="text-foreground border-border border-t pt-3 text-sm">
-              Plus a refundable{" "}
-              <span className="text-foreground font-semibold">
-                ${quote.deposit.amount}
-              </span>{" "}
-              security deposit, a hold placed before your date and released after check-out, not
-              a charge today.
-            </p>
-          )}
+          <div className="border-border space-y-2 border-t pt-3 text-sm">
+            <div className="flex items-baseline justify-between">
+              <span className="text-foreground">
+                Deposit to reserve ({Math.round(DEPOSIT_POLICY.percent * 100)}%)
+              </span>
+              <span className="font-heading font-semibold">{money(quote.depositAmount)}</span>
+            </div>
+            <div className="text-foreground flex items-baseline justify-between">
+              <span>Balance, auto-charged {fmtDate(quote.cancelCutoff)}</span>
+              <span>{money(quote.balanceAmount)}</span>
+            </div>
+          </div>
 
           <p className="text-foreground text-sm">
-            You won&apos;t be charged to inquire. Free cancellation until{" "}
-            {fmtDate(quote.cancelCutoff)}, 1 day before check-in.
+            You won&apos;t be charged to inquire — we confirm availability first, then you&apos;ll
+            reserve with a deposit. Free cancellation with a full deposit refund any time before{" "}
+            {fmtDate(quote.cancelCutoff)}. {DEPOSIT_POLICY.cancellation.afterFullCharge}
           </p>
         </div>
       )}

@@ -1205,6 +1205,8 @@ export const RATE_TIERS = {
 export const EVENT_MIN_HOURS = 24;
 export const EVENT_DEFAULT_CHECKIN_MIN = 15 * 60; // 3:00 PM
 export const EVENT_DEFAULT_CHECKOUT_MIN = 15 * 60; // 3:00 PM
+export const STAY_DEFAULT_CHECKIN_MIN = 15 * 60; // 3:00 PM
+export const STAY_DEFAULT_CHECKOUT_MIN = 11 * 60; // 11:00 AM
 
 export const EVENT_ADDONS = [
   { id: "catering", label: "Catering", desc: "Food & beverage service", price: 850 },
@@ -1265,10 +1267,22 @@ export const TAX = {
   cdt: { label: "Convention Development Tax (unresolved)", rate: 0.03 },
 };
 
-export const SECURITY_DEPOSIT = {
-  amount: 500,
-  appliesTo: "event",
-  blurb: "A refundable hold placed before your event date and released after check-out, not a charge today. Applies to event rentals only.",
+// Reserving a date requires a deposit (percentage of the total, both rate
+// tiers) rather than the old flat $500 event-only security deposit. The
+// remaining balance auto-charges at the same moment the free-cancellation
+// window closes — see computeQuote()'s `cancelCutoff` in booking-context.tsx,
+// which this policy treats as both "last free cancellation" and "balance
+// auto-charge date," 24 hours before check-in.
+export const DEPOSIT_POLICY = {
+  percent: 0.2,
+  fullChargeHoursBeforeCheckin: 24,
+  cancellation: {
+    beforeFullCharge:
+      "Cancel any time before your balance is auto-charged and your full deposit is refunded.",
+    afterFullCharge:
+      "Cancel after the balance is charged but before check-in and 50% of your total is refunded.",
+    afterCheckin: "No refund once check-in has occurred (no-show).",
+  },
 };
 
 export const FEES_POLICIES = {
@@ -1279,7 +1293,7 @@ export const FEES_POLICIES = {
     "Starter linens & essentials",
   ],
   extra: [
-    { t: "Refundable security deposit", v: "$500 · event rentals only" },
+    { t: "Deposit to reserve", v: "20% of total, both rate types" },
     { t: "Cleaning fee", v: "$150" },
     { t: "Event package (if New Level provides services)", v: "$900–$2,400" },
     { t: "Lodging taxes", v: "13% (shown in quote)" },
@@ -1296,7 +1310,7 @@ export const FEES_POLICIES = {
     { t: "Check-in & check-out", d: "Access runs only within your confirmed window; late departures may incur an additional charge." },
   ],
   rulesNote: "House rules shown here are typical examples for this kind of property; the final set is confirmed with your New Level contact before any booking.",
-  cancellation: "Cancellation terms are being finalized: a placeholder for this demo. Inquiries are not bookings; nothing is charged until terms are agreed in writing.",
+  cancellation: "Inquiries are free and non-committal; nothing is charged until you reserve with a deposit. Once reserved: a full deposit refund any time before your balance auto-charges (24 hours before check-in); a 50% refund of the total if you cancel after that charge but before check-in; no refund on a no-show. See the quote panel above for your specific dates and amounts.",
 };
 
 export const NEIGHBORHOOD = {
