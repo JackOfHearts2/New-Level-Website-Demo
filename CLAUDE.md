@@ -382,6 +382,32 @@ if you add more hover states later: hover means "this does something," not decor
 
 ## Gotchas discovered the hard way
 
+- **(`web/` rebuild) Framer Motion's `AnimatePresence` + `exit` on a page-level route wrapper is
+  unsafe with Next.js App Router client-side navigation — don't reintroduce it.**
+  `components/page-transition.tsx` used to wrap every route's `{children}` in
+  `<AnimatePresence><motion.div key={pathname} ... exit="exit">`. Real, reproduced bug: an
+  impatient double-click on a link (completely ordinary real-visitor behavior, not an edge case)
+  could fire two navigations to the same route close together. `AnimatePresence`'s `exit`
+  lifecycle deliberately keeps a "removed" child mounted in the DOM until its exit animation
+  finishes — that intentional lingering is exactly the window where the second navigation's
+  instance could end up orphaned: frozen at its exit style (`opacity: 0`) but still `display:
+  block` and still occupying full layout height, sitting as an invisible sibling next to the
+  correctly-rendered page. On short pages this was invisible (just extra blank scroll space below
+  the fold); on the tallest page on the site (`/property`, ~8500px) the orphaned node landed
+  *first* in DOM order and pushed the real, visible content that far down — the page looked
+  completely blank (nav bar visible, nothing else) until a hard refresh. Confirmed via live DOM
+  inspection (`getComputedStyle` on the two sibling nodes), not just code reading. Two narrower
+  fixes were tried first and did **not** work — dropping `mode="wait"`, and giving the wrapper a
+  guaranteed-unique `key` per navigation — because the actual mechanism is `exit` itself keeping a
+  stale node mounted, not `mode` or key reuse. The fix that held up under repeated real-click
+  testing: drop `AnimatePresence` and `exit` entirely, keep only `initial`/`animate` on a plain
+  `motion.div` keyed by `pathname`. Without `exit`, React tears down the outgoing page's DOM
+  synchronously the moment the key changes, the same as any other keyed element, so there's no
+  window for a duplicate to survive. If a future page-transition redesign wants exit animations
+  back, it needs a different mechanism than `AnimatePresence` wrapping raw route content (e.g.
+  something that can't leave a stale node mounted past its own page's lifetime), and should be
+  stress-tested with genuinely rapid repeated clicks to the same link before shipping, not just a
+  single clean click.
 - **The property page rewrites its own URL** (`history.replaceState`) when a purpose is selected.
   Anything reading `location.search` must run *before* render, or preserve its params — this
   silently broke `?edit=1` once.
