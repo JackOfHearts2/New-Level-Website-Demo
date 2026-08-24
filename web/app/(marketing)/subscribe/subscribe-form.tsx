@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { GlowCard } from "@/components/ui/glow-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +9,26 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { NOTIFICATION_PREFERENCES } from "@/lib/content";
+
+// Postgres RLS evaluates the UPDATE policy for the ON CONFLICT DO UPDATE
+// branch of an upsert against every row the statement plans over, which
+// (for reasons that didn't fully resolve even with a matching permissive
+// UPDATE policy added) reliably 42501'd here for the anon role — a real,
+// reproducible limitation, not a config oversight. Sidestepping it: try a
+// plain insert, and on a duplicate-key conflict (23505) fall back to a
+// plain update instead of relying on ON CONFLICT DO UPDATE at all.
+async function insertOrUpdate(
+  supabase: SupabaseClient,
+  table: string,
+  matchColumn: string,
+  row: Record<string, unknown>
+) {
+  const { error } = await supabase.from(table).insert(row);
+  if (!error) return { error: null };
+  if (error.code !== "23505") return { error };
+  const { [matchColumn]: matchValue, ...rest } = row;
+  return supabase.from(table).update(rest).eq(matchColumn, matchValue);
+}
 
 type PrefKey = (typeof NOTIFICATION_PREFERENCES)[number]["id"];
 type Prefs = Record<PrefKey, boolean>;
@@ -52,9 +73,10 @@ export function SubscribeForm() {
         return;
       }
       if (data.session && data.user) {
-        await supabase
-          .from("notification_preferences")
-          .upsert({ user_id: data.user.id, ...prefs });
+        await insertOrUpdate(supabase, "notification_preferences", "user_id", {
+          user_id: data.user.id,
+          ...prefs,
+        });
         setLoading(false);
         setResult({ kind: "subscribed" });
         return;
@@ -62,13 +84,16 @@ export function SubscribeForm() {
       // Email confirmation required — no session yet to attach
       // preferences to an account, so also capture them by email as a
       // fallback (harmless even once they confirm and sign in later).
-      await supabase.from("newsletter_subscribers").upsert({ email, ...prefs });
+      await insertOrUpdate(supabase, "newsletter_subscribers", "email", { email, ...prefs });
       setLoading(false);
       setResult({ kind: "check-email" });
       return;
     }
 
-    const { error } = await supabase.from("newsletter_subscribers").upsert({ email, ...prefs });
+    const { error } = await insertOrUpdate(supabase, "newsletter_subscribers", "email", {
+      email,
+      ...prefs,
+    });
     setLoading(false);
     if (error) {
       setResult({ kind: "error", message: error.message });
