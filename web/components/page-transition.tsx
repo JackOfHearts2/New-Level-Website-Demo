@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -47,20 +48,33 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const variants = pickPreset(pathname);
 
+  // A guaranteed-unique key per navigation, not just `pathname` itself.
+  // Confirmed root cause of the real "blank page" bug: AnimatePresence
+  // keys its children by this value, and if a second navigation to the
+  // same route fires (e.g. an impatient double-click) while the first
+  // instance's enter/exit animation for that same key is still in
+  // flight, framer-motion's presence bookkeeping collides on the reused
+  // key — the earlier instance gets orphaned mid-animation (frozen at
+  // its exit style, `opacity: 0`) instead of being cleaned up, while a
+  // second, correctly-rendered instance mounts alongside it. Both are
+  // plain block-level elements, so the invisible orphaned one (full page
+  // height) still occupies layout space and shoves the real, visible
+  // page thousands of pixels down off-screen — confirmed directly by
+  // inspecting the live DOM after reproducing it. Deriving the key from
+  // a counter that only advances when the pathname actually changes
+  // means every real navigation gets a fresh key, so this collision
+  // can't happen no matter how the navigation was triggered.
+  const [lastPathname, setLastPathname] = useState(pathname);
+  const [navId, setNavId] = useState(0);
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname);
+    setNavId((n) => n + 1);
+  }
+
   return (
-    // mode="wait" previously held the incoming page unmounted until the
-    // outgoing page's exit animation fully resolved. On heavier routes
-    // (the property page especially - booking widget, Supabase session
-    // hooks, photo lightbox all mounting at once) that handoff could get
-    // interrupted, leaving the new page's motion.div stuck at its
-    // `initial` (opacity: 0) state forever - a real, reproduced bug: the
-    // page would flash and then go permanently blank until a hard
-    // refresh. Default (sync) mode lets the new page mount and animate in
-    // immediately alongside the old page's exit, which avoids that stuck
-    // handoff entirely.
     <AnimatePresence initial={false}>
       <motion.div
-        key={pathname}
+        key={navId}
         variants={variants}
         initial="initial"
         animate="animate"
