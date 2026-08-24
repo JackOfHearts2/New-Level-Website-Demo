@@ -52,11 +52,12 @@ function DialButton({
   );
 }
 
-// On mobile the trigger now sits at the same bottom-4 height as the
+// On mobile/tablet the trigger now sits at the same bottom-4 height as the
 // MobileDock, sized down to match its size-11 icons (rather than floating
-// above it at its own larger size) — per client feedback. md:bottom-6 +
-// md:size-16 once the dock is gone (MobileDock hides at md: too) and it can
-// be its own larger, independently-placed element again.
+// above it at its own larger size) — per client feedback. lg:bottom-6 +
+// lg:size-16 once the dock is gone (MobileDock hides at lg: too, matching
+// the breakpoint SiteHeader actually switches to the desktop nav at) and
+// it can be its own larger, independently-placed element again.
 export function FloatingActions() {
   const router = useRouter();
   const [dialOpen, setDialOpen] = useState(false);
@@ -88,8 +89,8 @@ export function FloatingActions() {
       <div
         ref={rootRef}
         className={cn(
-          "fixed right-4 z-40 flex flex-col items-end gap-4 md:right-6 md:bottom-6",
-          onPropertyPage ? "bottom-24 md:bottom-6" : "bottom-4"
+          "fixed right-4 z-40 flex flex-col items-end gap-4 lg:right-6 lg:bottom-6",
+          onPropertyPage ? "bottom-24 lg:bottom-6" : "bottom-4"
         )}
       >
         <AnimatePresence>
@@ -124,9 +125,9 @@ export function FloatingActions() {
           aria-expanded={dialOpen}
           animate={dialOpen ? { rotate: 135 } : { rotate: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="bg-primary text-primary-foreground border-background animate-fab-pulse relative flex size-11 items-center justify-center rounded-full border-2 shadow-2xl md:size-16 md:border-4"
+          className="bg-primary text-primary-foreground border-background animate-fab-pulse relative flex size-11 items-center justify-center rounded-full border-2 shadow-2xl lg:size-16 lg:border-4"
         >
-          <Plus className="size-4 md:size-7" strokeWidth={2.5} />
+          <Plus className="size-4 lg:size-7" strokeWidth={2.5} />
         </motion.button>
       </div>
 

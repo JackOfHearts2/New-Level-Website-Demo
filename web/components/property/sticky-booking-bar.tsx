@@ -47,9 +47,13 @@ export function StickyBookingBar() {
   }, []);
 
   return (
+    // lg:hidden — this replaces MobileDock on this page (see MobileDock's
+    // own comment) and needs the same breakpoint, or it doubles up with
+    // the already-sticky QuoteSidebar on desktop-width viewports, which
+    // had no gate here at all before.
     <div
       className={cn(
-        "fixed inset-x-0 bottom-4 z-30 mx-auto flex max-w-md items-center justify-between gap-4 rounded-2xl border border-border bg-background/95 p-4 shadow-xl backdrop-blur transition-all duration-300",
+        "fixed inset-x-0 bottom-4 z-30 mx-auto flex max-w-md items-center justify-between gap-4 rounded-2xl border border-border bg-background/95 p-4 shadow-xl backdrop-blur transition-all duration-300 lg:hidden",
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
       )}
     >

@@ -12,9 +12,14 @@ const ITEMS = [
   { href: "/contact", icon: Mail, label: "Contact" },
 ];
 
-// Fixed bottom quick-access bar, mobile only (md:hidden) — a supplement to
-// the hamburger menu, not a replacement: the hamburger still covers full
-// site navigation, this covers the handful of things worth one tap away.
+// Fixed bottom quick-access bar, mobile/tablet only (lg:hidden, matching
+// the breakpoint SiteHeader actually switches to the desktop nav at) — a
+// supplement to the hamburger menu, not a replacement: the hamburger still
+// covers full site navigation, this covers the handful of things worth one
+// tap away. Was previously md:hidden (768px), which hid the dock a full
+// 256px before the desktop nav appeared at lg (1024px) — a dead zone where
+// a tablet-portrait visitor got neither the dock nor a desktop-style nav
+// bar, just the bare hamburger toggle with no quick-access row.
 export function MobileDock() {
   const pathname = usePathname();
 
@@ -26,7 +31,7 @@ export function MobileDock() {
   return (
     <nav
       aria-label="Quick navigation"
-      className="fixed inset-x-0 bottom-4 z-30 flex justify-center px-4 md:hidden"
+      className="fixed inset-x-0 bottom-4 z-30 flex justify-center px-4 lg:hidden"
     >
       <div className="bg-background/80 border-border flex items-center gap-1 rounded-full border p-1.5 shadow-lg backdrop-blur-xl">
         {ITEMS.map((item) => {
