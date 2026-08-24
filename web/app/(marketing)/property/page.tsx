@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import { Star, MapPin } from "lucide-react";
+import { Star, MapPin, BedDouble, Bath, Users } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
@@ -8,6 +8,7 @@ import { ShineBox, ShineListItem } from "@/components/ui/shine-shape";
 import { cn } from "@/lib/utils";
 import {
   PROPERTY,
+  PROPERTY_SPECS,
   HIGHLIGHTS,
   FEES_POLICIES,
   NEIGHBORHOOD,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/content";
 import { PropertyBookingProvider, type AudienceId } from "@/components/property/booking-context";
 import { SaveButton } from "@/components/property/save-button";
+import { ShareButton } from "@/components/property/share-button";
 import { PhotoTour } from "@/components/property/photo-tour";
 import { PurposeSelector } from "@/components/property/purpose-selector";
 import { AudienceContent } from "@/components/property/audience-content";
@@ -57,9 +59,14 @@ export default async function PropertyPage({
             Presented by New Level, a South Florida Real Estate group matching standout homes to
             the moments they&apos;re made for.
           </p>
-          <div className="mt-4">
+          <div className="mt-4 flex flex-wrap gap-3">
             <SaveButton
               propertySlug="nw-87th-street"
+              className="border-white/40 text-white hover:bg-white/10"
+            />
+            <ShareButton
+              href="/property"
+              title={PROPERTY.siteName}
               className="border-white/40 text-white hover:bg-white/10"
             />
           </div>
@@ -72,6 +79,34 @@ export default async function PropertyPage({
       {/* Highlights */}
       <section className="mx-auto max-w-5xl px-6 py-16">
         <h2 className="font-heading text-2xl font-bold">Highlights</h2>
+
+        {/* Real specs from the property's own listing, not placeholder
+            numbers — see PROPERTY_SPECS in lib/content.ts. */}
+        <div className="mt-6 flex flex-wrap gap-6">
+          <div className="flex items-center gap-2">
+            <BedDouble className="text-primary size-5" />
+            <span className="text-sm">
+              <strong className="font-heading font-semibold">{PROPERTY_SPECS.bedrooms}</strong>{" "}
+              bedrooms · <strong className="font-heading font-semibold">{PROPERTY_SPECS.beds}</strong>{" "}
+              beds
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Bath className="text-primary size-5" />
+            <span className="text-sm">
+              <strong className="font-heading font-semibold">{PROPERTY_SPECS.bathrooms}</strong>{" "}
+              bathrooms
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users className="text-primary size-5" />
+            <span className="text-sm">
+              Sleeps up to{" "}
+              <strong className="font-heading font-semibold">{PROPERTY_SPECS.maxGuests}</strong>
+            </span>
+          </div>
+        </div>
+
         <ul className="mt-6 grid gap-3 sm:grid-cols-2">
           {HIGHLIGHTS.map((h) => (
             <ShineListItem key={h} className="border-border rounded-xl border p-4 text-sm">
@@ -79,6 +114,18 @@ export default async function PropertyPage({
             </ShineListItem>
           ))}
         </ul>
+
+        <div className="mt-10">
+          <h3 className="font-heading text-lg font-semibold">Where you&apos;ll sleep</h3>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {PROPERTY_SPECS.bedBreakdown.map((b) => (
+              <GlowCard key={b.room} className="p-4">
+                <div className="font-heading text-sm font-semibold">{b.room}</div>
+                <div className="text-foreground mt-1 text-sm">{b.bed}</div>
+              </GlowCard>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Booking + quote */}

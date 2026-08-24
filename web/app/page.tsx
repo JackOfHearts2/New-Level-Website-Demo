@@ -9,6 +9,7 @@ import { CtaWithTextMarquee } from "@/components/ui/cta-with-text-marquee";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { MobileDock } from "@/components/mobile-dock";
 import { FloatingActions } from "@/components/floating-actions";
+import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { SiteTour } from "@/components/site-tour";
 import { getSiteContent } from "@/lib/site-content";
 
@@ -53,6 +54,7 @@ export default async function Home({
       />
       <MobileDock />
       <FloatingActions />
+      <ScrollToTopButton />
       <SiteTour startTour={tour === "1"} />
     </>
   );

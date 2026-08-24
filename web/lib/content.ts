@@ -995,6 +995,24 @@ export const PROPERTY = {
   categories: ["luxury-short-term", "short-term", "events", "extended-stay"],
 };
 
+// Real specs, pulled directly from the property's actual Airbnb listing
+// (client-provided link, 2026-08-24) — not placeholder numbers. Replaces
+// earlier placeholder copy that claimed "sleeps up to 16" and a pool;
+// neither is accurate for this property (max 9 guests, no pool listed
+// among its amenities — private patio/balcony instead).
+export const PROPERTY_SPECS = {
+  bedrooms: 4,
+  beds: 4,
+  bathrooms: 3,
+  maxGuests: 9,
+  bedBreakdown: [
+    { room: "Bedroom 1", bed: "1 king bed" },
+    { room: "Bedroom 2", bed: "1 queen bed" },
+    { room: "Bedroom 3", bed: "1 queen bed" },
+    { room: "Bedroom 4", bed: "1 king bed" },
+  ],
+};
+
 export const AUDIENCE_ORDER = ["corporate", "family", "events", "ministry", "extended"] as const;
 
 export const AUDIENCE_PHOTOS: Record<(typeof AUDIENCE_ORDER)[number], { hero: string; overview: string }> = {
@@ -1016,7 +1034,7 @@ export const AUDIENCES = {
     rate: 1850,
     overview: "Executive House gives your team a single private setting for multi-day work: room to break out, room to reconvene, and space to actually think between sessions. Fast connectivity, defined work zones, and full-house privacy mean the day runs on your agenda, not a venue's timetable.",
     facts: [
-      { k: "Sleeps", v: "Up to 16" },
+      { k: "Sleeps", v: "Up to 9" },
       { k: "Work zones", v: "3 breakout areas" },
       { k: "Connectivity", v: "Business fiber" },
       { k: "Ideal length", v: "2–5 nights" },
@@ -1052,16 +1070,16 @@ export const AUDIENCES = {
     rate: 1450,
     overview: "When the whole family comes together, the house matters. Executive House keeps everyone in one place: shared meals, open common space, and enough bedrooms that no one draws the short straw. Kids have room to play, grandparents have quiet corners, and the kitchen is big enough to actually cook in.",
     facts: [
-      { k: "Sleeps", v: "Up to 16" },
-      { k: "Bedrooms", v: "Multiple suites" },
+      { k: "Sleeps", v: "Up to 9" },
+      { k: "Bedrooms", v: "4 bedrooms" },
       { k: "Kitchen", v: "Full chef's kitchen" },
-      { k: "Outdoor", v: "Pool & patio" },
+      { k: "Outdoor", v: "Private patio" },
     ],
     included: [
-      { t: "Space for everyone", d: "Multiple bedrooms and suites so the whole family stays under one roof." },
+      { t: "Space for everyone", d: "4 bedrooms across the home so the whole family stays under one roof." },
       { t: "Chef's kitchen", d: "Room to cook big shared meals together, not just reheat." },
       { t: "Open common areas", d: "Large living and dining space designed for the group to gather." },
-      { t: "Pool & patio", d: "Outdoor space for the afternoon and slow evenings together." },
+      { t: "Private patio", d: "Outdoor space for the afternoon and slow evenings together." },
       { t: "Family-friendly layout", d: "Quiet corners for grandparents, open room for the kids." },
       { t: "Parking for the crew", d: "On-site parking for multiple vehicles arriving together." },
     ],
@@ -1094,11 +1112,11 @@ export const AUDIENCES = {
       { k: "Setting", v: "Full private home" },
     ],
     included: [
-      { t: "Indoor-outdoor flow", d: "Open living space that connects to the patio and pool for hosting." },
+      { t: "Indoor-outdoor flow", d: "Open living space that connects to the private patio for hosting." },
       { t: "Catering-ready kitchen", d: "Full prep space for caterers or a private chef to work from." },
       { t: "Private setting", d: "The discretion of a full residence rather than a public venue." },
       { t: "Room to host", d: "Generous common areas that hold a gathering without feeling packed." },
-      { t: "Evening ambiance", d: "Patio and pool space that carries a celebration into the night." },
+      { t: "Evening ambiance", d: "Patio space that carries a celebration into the night." },
       { t: "On-site parking", d: "Parking for guests arriving to the property." },
     ],
     steps: [
@@ -1124,7 +1142,7 @@ export const AUDIENCES = {
     rate: 1500,
     overview: "Executive House offers ministry groups a private, unhurried setting to gather, plan, and rest. Room to meet as a whole group and space to break into smaller circles; a full kitchen for shared meals; and the quiet of a residence rather than a conference center. A welcoming space for retreats across traditions.",
     facts: [
-      { k: "Sleeps", v: "Up to 16" },
+      { k: "Sleeps", v: "Up to 9" },
       { k: "Gathering", v: "Full-group room" },
       { k: "Meals", v: "Shared kitchen" },
       { k: "Setting", v: "Quiet & private" },
@@ -1170,7 +1188,7 @@ export const AUDIENCES = {
       { t: "Full kitchen", d: "Everything you need to cook and eat in through a long stay." },
       { t: "Remote-work ready", d: "Reliable connectivity and space to work from home comfortably." },
       { t: "Real living space", d: "Room to settle into a routine, not just pass through." },
-      { t: "Pool & outdoor", d: "Private outdoor space for the everyday, not just the visit." },
+      { t: "Private patio", d: "Private outdoor space for the everyday, not just the visit." },
       { t: "Long-stay pricing", d: "Rates structured for weekly and monthly stays (placeholder in this demo)." },
     ],
     steps: [
@@ -1190,10 +1208,10 @@ export const AUDIENCES = {
 
 export const HIGHLIGHTS = [
   "Full private residence: the whole house is yours, not a shared venue",
-  "Sleeps up to 16 across multiple bedrooms",
-  "Chef's kitchen plus an entertainer's bar",
-  "Pool, patio and mature tropical grounds",
-  "Gated frontage with on-site parking",
+  "4 bedrooms, 4 beds and 3 bathrooms, sleeps up to 9",
+  "Fully equipped kitchen: dishwasher, oven, stove and dining table",
+  "Private patio for outdoor time",
+  "Free driveway and street parking",
   "Works for a single-day event or a multi-night stay",
 ];
 
@@ -1303,7 +1321,7 @@ export const FEES_POLICIES = {
     { t: "Smoking & vaping", d: "Not permitted indoors anywhere. A designated outdoor area can be arranged on request." },
     { t: "Events & noise", d: "Amplified music must respect neighborhood quiet hours: after 10:00 PM on weekdays and 11:00 PM on weekends. Keep doors and windows closed during amplified sound." },
     { t: "Parking", d: "Use the driveway and on-site spaces first and keep neighbors' frontage and driveways clear. Overflow or valet parking can be arranged for larger events." },
-    { t: "Pool & outdoor areas", d: "No lifeguard on duty; children must be supervised at all times, and glassware is discouraged poolside." },
+    { t: "Patio & outdoor areas", d: "Keep the patio tidy after use and be mindful of neighbors, especially in the evening." },
     { t: "Pets", d: "By prior arrangement only. Service animals are always welcome." },
     { t: "Care of the home", d: "Please treat furnishings and finishes with care. Damage beyond normal wear may be applied to the security deposit." },
     { t: "Prohibited", d: "No illegal substances, no firearms, and no unpermitted commercial activity on the property." },
@@ -1330,10 +1348,14 @@ export const REVIEWS = {
   count: 27,
   howItWorks: "Reviews come from verified New Level guests after their stay or event. We show the guest's first name, the month they visited, and what they used the home for: no anonymous or incentivized reviews.",
   items: [
-    { name: "Marcus T.", when: "June 2026", use: "Corporate retreat", stars: 5, text: "Ran a three-day leadership offsite here. The breakout spaces and fast Wi-Fi meant we never had to leave, and the team actually enjoyed the downtime by the pool." },
+    { name: "Marcus T.", when: "June 2026", use: "Corporate retreat", stars: 5, text: "Ran a three-day leadership offsite here. The breakout spaces and fast Wi-Fi meant we never had to leave, and the team actually enjoyed the downtime on the patio." },
     { name: "The Reyes Family", when: "May 2026", use: "Family reunion", stars: 5, text: "Twelve of us under one roof for a long weekend. Everyone had space, the kitchen handled our big dinners, and the kids basically lived in the backyard." },
     { name: "Danielle P.", when: "April 2026", use: "Milestone birthday", stars: 5, text: "Hosted a 40th here and it felt like a private venue, not a rental. Shelley was responsive from the first message to checkout." },
     { name: "Pastor J. Alvarez", when: "March 2026", use: "Ministry retreat", stars: 4, text: "Quiet, comfortable, and room for our whole group to gather and break out. A calm place to reset for the weekend." },
+    // Client-requested inside joke — deliberately absurd, doesn't move
+    // REVIEWS.rating/count above since those are fixed, not computed from
+    // this array.
+    { name: "Gary D.", when: "February 2026", use: "Weekend getaway", stars: 1, text: "Docked four stars because the bath towels were folded into rectangles instead of triangles. Also, a lizard on the patio made prolonged eye contact with me in a way I can only describe as judgmental. Would not stay again on principle." },
   ],
 };
 

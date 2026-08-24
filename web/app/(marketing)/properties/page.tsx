@@ -7,6 +7,7 @@ import { ShinePill, ShineListItem } from "@/components/ui/shine-shape";
 import { CtaLink } from "@/components/ui/cta-link";
 import { FaqList } from "@/components/faq-list";
 import { CATEGORY_ICONS } from "@/components/property-category-icons";
+import { CardActions } from "@/components/property/card-actions";
 import {
   PROPERTY_CATEGORIES,
   OTHER_PROPERTIES,
@@ -44,24 +45,27 @@ function matchesKeyword(item: ListingDescriptor, q: string) {
 
 function RealPropertyCard({ href }: { href: string }) {
   return (
-    <GlowCard
-      href={href}
-      className="group hover:-translate-y-1 block overflow-hidden p-0 transition-transform duration-300"
-    >
-      <div className="relative aspect-[4/3]">
-        <Image
-          src="/photos/00.jpg"
-          alt={PROPERTY.siteName}
-          fill
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-      </div>
-      <div className="p-4">
-        <h3 className="font-heading font-semibold">{PROPERTY.siteName}</h3>
-        <p className="text-foreground text-sm">{PROPERTY.address}</p>
-      </div>
-    </GlowCard>
+    <div className="relative">
+      <GlowCard
+        href={href}
+        className="group hover:-translate-y-1 block overflow-hidden p-0 transition-transform duration-300"
+      >
+        <div className="relative aspect-[4/3]">
+          <Image
+            src="/photos/00.jpg"
+            alt={PROPERTY.siteName}
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-4">
+          <h3 className="font-heading font-semibold">{PROPERTY.siteName}</h3>
+          <p className="text-foreground text-sm">{PROPERTY.address}</p>
+        </div>
+      </GlowCard>
+      <CardActions propertySlug="nw-87th-street" href={href} shareTitle={PROPERTY.siteName} />
+    </div>
   );
 }
 
