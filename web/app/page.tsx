@@ -9,10 +9,16 @@ import { CtaWithTextMarquee } from "@/components/ui/cta-with-text-marquee";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { MobileDock } from "@/components/mobile-dock";
 import { FloatingActions } from "@/components/floating-actions";
+import { SiteTour } from "@/components/site-tour";
 import { getSiteContent } from "@/lib/site-content";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ tour?: string }>;
+}) {
   const content = await getSiteContent();
+  const { tour } = await searchParams;
 
   return (
     <>
@@ -27,10 +33,16 @@ export default async function Home() {
           aboutShort={content.brand.aboutShort}
           trustStats={content.trustStats}
         />
-        <ServicesSection services={content.services} />
-        <EventCtaSection eventCta={content.eventCta} />
+        <div data-tour="services">
+          <ServicesSection services={content.services} />
+        </div>
+        <div data-tour="events">
+          <EventCtaSection eventCta={content.eventCta} />
+        </div>
         <TeamSection team={content.team} />
-        <TestimonialsSection testimonials={content.testimonials} />
+        <div data-tour="testimonials">
+          <TestimonialsSection testimonials={content.testimonials} />
+        </div>
       </div>
       <CtaWithTextMarquee />
       <SiteFooter
@@ -41,6 +53,7 @@ export default async function Home() {
       />
       <MobileDock />
       <FloatingActions />
+      <SiteTour startTour={tour === "1"} />
     </>
   );
 }

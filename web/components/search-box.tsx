@@ -65,7 +65,7 @@ export function SearchBox() {
     // wedged into the gap between the hero and the rest of the page. Plain
     // positive spacing on every breakpoint instead, so it reads as its own
     // clearly-separated section.
-    <div className="relative z-10 mx-auto mt-10 max-w-5xl px-4 sm:px-6">
+    <div data-tour="search" className="relative z-10 mx-auto mt-10 max-w-5xl px-4 sm:px-6">
       <GlowCard className="bg-background/95 rounded-3xl p-4 backdrop-blur-xl sm:p-6">
         <div role="tablist" className="flex flex-wrap gap-2">
           {SEARCH_CATEGORIES.map((cat) => (

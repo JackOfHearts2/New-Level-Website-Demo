@@ -136,13 +136,20 @@ export function TestimonialCarousel({
           style={{ transformStyle: "preserve-3d" }}
         >
           <motion.div
-            drag="x"
-            dragElastic={0.15}
-            className="relative flex h-full origin-center w-full cursor-grab justify-center active:cursor-grabbing"
+            // onPan (not drag="x"): `drag` always applies its own gesture
+            // delta as a translateX on the element in addition to whatever
+            // else is in its transform — that's what was pulling the whole
+            // ring sideways off-center instead of it staying put with only
+            // the cards rotating around the middle. onPan gives the same
+            // pointer delta/velocity data without any automatic transform
+            // of its own, leaving rotateY (bound to `rotation`) as the only
+            // thing driving this element's transform.
+            className="relative flex h-full origin-center w-full cursor-grab touch-pan-y justify-center active:cursor-grabbing"
             style={{
               rotateY: rotation,
               transformStyle: "preserve-3d",
             }}
+            onPanStart={() => activeAnimation.current?.stop()}
             // info.offset is cumulative since the drag started, not a
             // per-frame delta — adding it into rotation on every pointermove
             // tick (the previous code) compounded every tick, so the total
@@ -150,8 +157,8 @@ export function TestimonialCarousel({
             // depended on how many move events fired, not on how far the
             // mouse actually moved. info.delta is the true per-tick change,
             // which is what should accumulate into rotation.
-            onDrag={(_, info) => rotation.set(rotation.get() + info.delta.x * 0.3)}
-            onDragEnd={(_, info) => animateTo(rotation.get() + info.velocity.x * 0.15)}
+            onPan={(_, info) => rotation.set(rotation.get() + info.delta.x * 0.3)}
+            onPanEnd={(_, info) => animateTo(rotation.get() + info.velocity.x * 0.15)}
           >
             {faces.map((t, i) => (
               <TestimonialFace

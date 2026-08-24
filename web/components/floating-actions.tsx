@@ -88,6 +88,7 @@ export function FloatingActions() {
     <>
       <div
         ref={rootRef}
+        data-tour="contact"
         className={cn(
           "fixed right-4 z-40 flex flex-col items-end gap-4 lg:right-6 lg:bottom-6",
           onPropertyPage ? "bottom-24 lg:bottom-6" : "bottom-4"

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
-import { User, LogIn, UserPlus, LogOut, Heart, HelpCircle, Mail } from "lucide-react";
+import { User, LogIn, UserPlus, LogOut, Heart, Compass, HelpCircle, Mail } from "lucide-react";
 import { ShineCircle } from "@/components/ui/shine-shape";
 import { LoginModal } from "@/components/login-modal";
 import { createClient } from "@/lib/supabase/client";
@@ -74,6 +74,7 @@ export function ProfileMenu() {
       <button
         ref={buttonRef}
         type="button"
+        data-tour="account"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Account menu"
@@ -171,6 +172,15 @@ export function ProfileMenu() {
           >
             <Heart className="text-foreground size-4" />
             Saved Properties
+          </Link>
+          <Link
+            href="/?tour=1"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
+          >
+            <Compass className="text-foreground size-4" />
+            Take a Tour
           </Link>
           <Link
             href="/faq"
