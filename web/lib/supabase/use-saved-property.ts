@@ -23,11 +23,18 @@ export function useSavedProperty(propertySlug: string) {
       .eq("user_id", user.id)
       .eq("property_slug", propertySlug)
       .maybeSingle()
-      .then(({ data }) => {
-        if (cancelled) return;
-        setSaved(!!data);
-        setLookupDone(true);
-      });
+      .then(
+        ({ data }) => {
+          if (cancelled) return;
+          setSaved(!!data);
+          setLookupDone(true);
+        },
+        (err) => {
+          if (cancelled) return;
+          console.error("saved_properties lookup failed:", err);
+          setLookupDone(true);
+        }
+      );
     return () => {
       cancelled = true;
     };

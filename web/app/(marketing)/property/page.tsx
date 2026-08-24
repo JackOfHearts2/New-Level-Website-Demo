@@ -77,12 +77,15 @@ export default async function PropertyPage({
       <PurposeSelector />
       <AudienceContent />
 
-      {/* Highlights — client feedback: this read as too small/easy to miss
-          for the property's headline facts. Full-bleed, high-contrast band
-          instead of a plain list blending into the rest of the page. */}
-      <section className="bg-primary text-primary-foreground py-16">
+      {/* Highlights — client feedback: too small/easy to miss for the
+          property's headline facts, but a solid bg-primary band ("burn
+          your iris") was too far the other way. bg-accent is the site's
+          existing soft green-tint token (used for eyebrow pills
+          elsewhere) — a full-bleed band of it reads as clearly its own
+          section without the glare of the full-saturation brand green. */}
+      <section className="bg-accent py-16">
         <div className="mx-auto max-w-5xl px-6">
-          <ShinePill className="bg-background/15 text-primary-foreground font-heading rounded-full px-4 py-1.5 text-sm font-bold tracking-wide uppercase">
+          <ShinePill className="bg-primary text-primary-foreground font-heading rounded-full px-4 py-1.5 text-sm font-bold tracking-wide uppercase">
             Highlights
           </ShinePill>
           <h2 className="font-heading mt-4 text-3xl font-bold text-balance md:text-4xl">
@@ -93,19 +96,19 @@ export default async function PropertyPage({
               numbers — see PROPERTY_SPECS in lib/content.ts. */}
           <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
             <div className="flex items-center gap-2">
-              <BedDouble className="size-6" />
+              <BedDouble className="text-primary size-6" />
               <span className="font-heading text-lg font-semibold">
                 {PROPERTY_SPECS.bedrooms} bedrooms · {PROPERTY_SPECS.beds} beds
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Bath className="size-6" />
+              <Bath className="text-primary size-6" />
               <span className="font-heading text-lg font-semibold">
                 {PROPERTY_SPECS.bathrooms} bathrooms
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Users className="size-6" />
+              <Users className="text-primary size-6" />
               <span className="font-heading text-lg font-semibold">
                 Sleeps up to {PROPERTY_SPECS.maxGuests}
               </span>
@@ -118,9 +121,9 @@ export default async function PropertyPage({
               return (
                 <li
                   key={h.text}
-                  className="border-background/20 bg-background/10 flex items-start gap-3 rounded-2xl border p-5"
+                  className="border-border bg-background flex items-start gap-3 rounded-2xl border p-5"
                 >
-                  {Icon && <Icon className="mt-0.5 size-6 shrink-0" />}
+                  {Icon && <Icon className="text-primary mt-0.5 size-6 shrink-0" />}
                   <span className="text-base font-medium text-balance">{h.text}</span>
                 </li>
               );

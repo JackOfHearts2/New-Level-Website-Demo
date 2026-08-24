@@ -13,12 +13,32 @@ export function useSession() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
+    // Defensive: an uncaught throw here (e.g. a malformed/stale auth
+    // cookie left over from an interrupted sign-in elsewhere) previously
+    // had no error boundary to catch it, which crashed the entire page's
+    // render tree — the "blank until refresh" bug. Falling back to
+    // "signed out" is a safe default either way; a real error.tsx now
+    // also exists as a second line of defense.
+    let supabase: ReturnType<typeof createClient>;
+    try {
+      supabase = createClient();
+    } catch (err) {
+      console.error("Supabase client init failed:", err);
+      // Deferred rather than called synchronously in the effect body.
+      const id = setTimeout(() => setLoading(false), 0);
+      return () => clearTimeout(id);
+    }
 
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      setLoading(false);
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        setUser(data.user);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Supabase getUser failed:", err);
+        setLoading(false);
+      });
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
