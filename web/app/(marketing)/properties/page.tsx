@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
-import { ShinePill } from "@/components/ui/shine-shape";
+import { ShinePill, ShineListItem } from "@/components/ui/shine-shape";
+import { CtaLink } from "@/components/ui/cta-link";
+import { FaqList } from "@/components/faq-list";
+import { CATEGORY_ICONS } from "@/components/property-category-icons";
 import {
   PROPERTY_CATEGORIES,
   OTHER_PROPERTIES,
@@ -121,22 +124,52 @@ export default async function PropertiesPage({
     );
   }
 
-  // ?category=<id>[&q=<keyword>] — single filtered grid
+  // ?category=<id>[&q=<keyword>] — a real per-category landing page, not
+  // just a filtered grid with a swapped headline: what to expect, who it's
+  // for, and category-specific FAQs, alongside the matching listings.
   if (category) {
     const cat = PROPERTY_CATEGORIES.find((c) => c.id === category);
     const all = cat ? listingsForCategory(cat.id) : [];
     const filtered = q ? all.filter((item) => matchesKeyword(item, q)) : all;
     const showingFallback = !!q && filtered.length === 0 && all.length > 0;
     const results = showingFallback ? all : filtered;
+    const Icon = cat ? CATEGORY_ICONS[cat.icon] : undefined;
+    const ctaHref = cat?.id === "events" ? "/events" : "/contact";
+    const ctaLabel = cat?.id === "events" ? "See our upcoming events" : "Talk to us about this";
 
     return (
       <>
-        <PageHero
-          eyebrow="Properties"
-          heading={cat?.label ?? "Properties"}
-          sub={cat?.blurb}
-        />
+        <PageHero eyebrow="Properties" heading={cat?.label ?? "Properties"} sub={cat?.blurb} />
+
+        {cat && Icon && (
+          <div className="mx-auto -mt-8 mb-8 flex justify-center">
+            <div className="bg-accent text-accent-foreground flex size-14 items-center justify-center rounded-2xl">
+              <Icon className="size-7" />
+            </div>
+          </div>
+        )}
+
+        {cat && (
+          <section className="mx-auto max-w-3xl px-6 pb-16">
+            <GlowCard className="p-8">
+              <h2 className="font-heading text-lg font-semibold">What to expect</h2>
+              <p className="text-foreground mt-3 text-balance">{cat.whatToExpect}</p>
+            </GlowCard>
+            <div className="mt-6">
+              <h2 className="font-heading text-lg font-semibold">Ideal for</h2>
+              <ul className="mt-4 space-y-3">
+                {cat.idealFor.map((item) => (
+                  <ShineListItem key={item} className="border-border rounded-xl border p-4 text-sm">
+                    {item}
+                  </ShineListItem>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
+
         <section className="mx-auto max-w-7xl px-6 pb-24">
+          <h2 className="font-heading mb-6 text-2xl font-bold">Available listings</h2>
           {showingFallback && (
             <p className="text-foreground mb-6 text-sm">
               No exact matches for &ldquo;{q}&rdquo;. Showing all {cat?.label} listings instead.
@@ -154,6 +187,41 @@ export default async function PropertiesPage({
             </p>
           )}
         </section>
+
+        {cat && cat.faqs.length > 0 && (
+          <section className="mx-auto max-w-3xl px-6 pb-16">
+            <h2 className="font-heading text-center text-2xl font-bold">
+              Questions about {cat.label.toLowerCase()}
+            </h2>
+            <div className="mt-8">
+              <FaqList faqs={cat.faqs} />
+            </div>
+          </section>
+        )}
+
+        <section className="mx-auto max-w-3xl px-6 pb-16 text-center">
+          <GlowCard className="p-8">
+            <h2 className="font-heading text-xl font-semibold">Not seeing what you need?</h2>
+            <p className="text-foreground mt-2 text-sm">
+              Tell us what you&apos;re looking for and we&apos;ll help you find it.
+            </p>
+            <div className="mt-6 flex justify-center">
+              <CtaLink href={ctaHref}>{ctaLabel}</CtaLink>
+            </div>
+          </GlowCard>
+        </section>
+
+        <section className="mx-auto max-w-5xl px-6 pb-24">
+          <h2 className="font-heading text-center text-lg font-semibold">Other categories</h2>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            {PROPERTY_CATEGORIES.filter((c) => c.id !== cat?.id).map((c) => (
+              <GlowCard key={c.id} href={`/properties?category=${c.id}`} className="px-5 py-2.5">
+                <span className="font-heading text-sm font-semibold">{c.label}</span>
+              </GlowCard>
+            ))}
+          </div>
+        </section>
+
         <CrossNav current="properties" />
       </>
     );

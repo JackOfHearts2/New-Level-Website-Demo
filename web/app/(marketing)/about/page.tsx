@@ -148,7 +148,7 @@ export default function AboutPage() {
           {SERVICES.map((service) => (
             <GlowCard
               key={service.id}
-              href={`/services#${service.id}`}
+              href={service.id === "events" ? "/events" : `/services/${service.id}`}
               className="hover:-translate-y-1 flex flex-col p-6 transition-transform duration-300"
             >
               <h3 className="font-heading text-lg font-semibold">{service.t}</h3>

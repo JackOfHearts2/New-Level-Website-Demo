@@ -359,6 +359,16 @@ export const SERVICES = [
         d: "Thorough due diligence and contingency planning to protect your capital.",
       },
     ],
+    howItWorks: [
+      { t: "Initial consultation", d: "A free conversation about what you're buying, selling, or comparing, and what timeline you're working with." },
+      { t: "Market analysis", d: "We pull comparable sales/rentals and current conditions so pricing decisions are grounded in real data, not guesswork." },
+      { t: "Listing or search", d: "For sellers: professional listing, marketing, and showings. For buyers: a curated search matched to your criteria." },
+      { t: "Negotiation & closing", d: "We handle offers, counteroffers, and coordination with lenders/title through to closing day." },
+    ],
+    faqs: [
+      { q: "Do I need to already have a property in mind?", a: "No — plenty of clients start with just a goal or a budget. We help narrow it down from there." },
+      { q: "What does the consultation cost?", a: "Nothing. The first conversation is always free, with no obligation to move forward." },
+    ],
   },
   {
     id: "investment",
@@ -382,6 +392,16 @@ export const SERVICES = [
         t: "Monitor & Grow",
         d: "We keep tracking performance and identifying future opportunities as the market evolves.",
       },
+    ],
+    howItWorks: [
+      { t: "Goals & risk conversation", d: "Before any property talk, we figure out what you're actually optimizing for — cash flow, appreciation, diversification." },
+      { t: "Strategy & target markets", d: "A concrete plan: which property types, which South Florida markets, and what return profile fits." },
+      { t: "Sourcing & underwriting", d: "We bring opportunities (including off-market access) and run the numbers with you before you commit." },
+      { t: "Ongoing performance tracking", d: "Once you own it, we keep watching performance and flag the next opportunity when it fits your strategy." },
+    ],
+    faqs: [
+      { q: "What's the minimum investment to get started?", a: "There's no fixed minimum — it depends on the market and property type. Tell us your budget and we'll show you what's realistic." },
+      { q: "Do you only source properties you also manage?", a: "No — Property Management is available if you want it, but it's not required to work with our investment team." },
     ],
   },
   {
@@ -411,6 +431,16 @@ export const SERVICES = [
         d: "Transparent, proactive updates on performance and market insights.",
       },
     ],
+    howItWorks: [
+      { t: "Onboarding walkthrough", d: "We assess the property, set up systems, and get it listing-ready if it isn't occupied yet." },
+      { t: "Tenant placement", d: "Marketing, showings, screening, and lease signing handled end to end." },
+      { t: "Day-to-day management", d: "Maintenance requests, vendor coordination, rent collection, and tenant communication." },
+      { t: "Monthly reporting", d: "A clear statement of income, expenses, and anything that needs an owner decision." },
+    ],
+    faqs: [
+      { q: "What if I already have a tenant in place?", a: "That's fine — we can take over management of an existing lease without any disruption to the tenant." },
+      { q: "How are maintenance emergencies handled?", a: "We maintain a vetted vendor network and a response process for after-hours emergencies, so an owner is never the first call." },
+    ],
   },
   {
     id: "events",
@@ -418,6 +448,15 @@ export const SERVICES = [
     d: "We love creating spaces where people connect and talk Real Estate in a way that makes sense: some educational, some just good people swapping ideas.",
     long: "Some of our events are more educational, others are just a chance to meet good people and swap ideas. Either way, you'll always walk away with something new.",
     capabilities: [] as { t: string; d: string }[],
+    howItWorks: [
+      { t: "Pick a purpose", d: "Educational workshop, networking mixer, or a private venue rental — see the Events page for what's upcoming and to inquire about your own." },
+      { t: "We handle the space", d: "Venue setup, from a simple mixer to a fully catered private event." },
+      { t: "Show up and connect", d: "That's really it — the goal is a genuine, low-pressure room, not a sales pitch." },
+    ],
+    faqs: [
+      { q: "Do I need to be a client to attend an event?", a: "No — most New Level events are open to anyone interested in South Florida real estate, clients or not." },
+      { q: "Can I host a private event at one of your properties?", a: "Yes — see Private Events under Properties for venue-style rentals, packages, and pricing." },
+    ],
   },
 ];
 
@@ -535,10 +574,10 @@ export const NAV_MENU = [
     href: "/properties",
     children: [
       { label: "All properties", href: "/properties" },
-      { label: "Luxury Short-Term Rentals", href: "/properties#luxury-short-term" },
-      { label: "Short-Term Rentals", href: "/properties#short-term" },
-      { label: "Extended Stays", href: "/properties#extended-stay" },
-      { label: "Private Events", href: "/properties#events" },
+      { label: "Luxury Short-Term Rentals", href: "/properties?category=luxury-short-term" },
+      { label: "Short-Term Rentals", href: "/properties?category=short-term" },
+      { label: "Extended Stays", href: "/properties?category=extended-stay" },
+      { label: "Private Events", href: "/properties?category=events" },
     ],
   },
   {
@@ -555,21 +594,23 @@ export const NAV_MENU = [
     label: "Services",
     href: "/services",
     children: [
-      { label: "Brokerage & Consulting", href: "/services#brokerage" },
-      { label: "Property Management", href: "/services#management" },
-      { label: "Investment", href: "/services#investment" },
+      { label: "All services", href: "/services" },
+      { label: "Brokerage & Consulting", href: "/services/brokerage" },
+      { label: "Property Management", href: "/services/management" },
+      { label: "Investment", href: "/services/investment" },
     ],
   },
   {
     label: "Blog",
     href: "/blog",
     children: [
-      { label: "Market Insights", href: "/blog?category=market-insights" },
-      { label: "Investment Strategies", href: "/blog?category=investment-strategies" },
-      { label: "Buying & Selling Tips", href: "/blog?category=buying-selling-tips" },
-      { label: "Property Management", href: "/blog?category=property-management" },
-      { label: "South Florida Spotlight", href: "/blog?category=south-florida-spotlight" },
-      { label: "Client Success Stories", href: "/blog?category=client-success-stories" },
+      { label: "All articles", href: "/blog" },
+      { label: "Market Insights", href: "/blog/market-insights" },
+      { label: "Investment Strategies", href: "/blog/investment-strategies" },
+      { label: "Buying & Selling Tips", href: "/blog/buying-selling-tips" },
+      { label: "Property Management", href: "/blog/property-management" },
+      { label: "South Florida Spotlight", href: "/blog/south-florida-spotlight" },
+      { label: "Client Success Stories", href: "/blog/client-success-stories" },
     ],
   },
   { label: "Testimonials", href: "/testimonials" },
@@ -577,36 +618,82 @@ export const NAV_MENU = [
   { label: "Contact", href: "/contact" },
 ];
 
+// No posts are published yet (see blog/[category]/page.tsx) — rather than
+// fabricate fake articles, each category previews the actual *topics* it
+// will cover and why that category is worth following, so the page still
+// reads as substantive rather than a bare "coming soon."
 export const BLOG_CATEGORIES = [
   {
     id: "market-insights",
     label: "Market Insights",
     blurb: "Where South Florida real estate is heading, in plain terms.",
+    whyItMatters:
+      "Prices, inventory, and demand shift constantly in South Florida's market. This is where we'll translate what's actually happening into plain-language takes, instead of raw data you have to interpret yourself.",
+    topics: [
+      "Quarterly market recaps for the neighborhoods we work in most",
+      "What rising or falling inventory actually means for buyers vs. sellers",
+      "How interest rate moves tend to play out locally, not just nationally",
+    ],
   },
   {
     id: "investment-strategies",
     label: "Investment Strategies",
     blurb: "How to think about building and protecting a real estate portfolio.",
+    whyItMatters:
+      "Good investment decisions come from frameworks, not hot tips. This category will cover how we actually think about risk, diversification, and timing for real estate specifically.",
+    topics: [
+      "Cash flow vs. appreciation: picking a strategy that matches your goals",
+      "When it makes sense to diversify into a new property type or market",
+      "Common first-time investor mistakes, and how to avoid them",
+    ],
   },
   {
     id: "buying-selling-tips",
     label: "Buying & Selling Tips",
     blurb: "Practical guidance for whichever side of the table you're on.",
+    whyItMatters:
+      "Buying or selling a home is infrequent enough that the process itself is easy to get wrong. This category is the practical, step-by-step guidance we'd normally only give one-on-one.",
+    topics: [
+      "What actually moves an offer to the top of a seller's pile",
+      "A realistic closing timeline, and where delays tend to happen",
+      "Staging and pricing decisions that actually affect final sale price",
+    ],
   },
   {
     id: "property-management",
     label: "Property Management",
     blurb: "What actually keeps a rental or managed property running well.",
+    whyItMatters:
+      "The difference between a property that performs and one that doesn't is almost always in the management details. This is where we'll share what we've learned running that side of the business.",
+    topics: [
+      "Tenant screening practices that actually reduce turnover",
+      "Preventative maintenance schedules that save money long-term",
+      "How to read a monthly owner statement like a manager does",
+    ],
   },
   {
     id: "south-florida-spotlight",
     label: "South Florida Spotlight",
     blurb: "Neighborhood-by-neighborhood looks at the markets we work in.",
+    whyItMatters:
+      "\"South Florida\" covers a lot of very different markets. This category zooms into specific neighborhoods so you're comparing the right things, not the region as one blob.",
+    topics: [
+      "Neighborhood profiles: who each area actually fits best",
+      "Where new development is concentrated, and what it means for value",
+      "Local amenities and lifestyle factors that don't show up in listing data",
+    ],
   },
   {
     id: "client-success-stories",
     label: "Client Success Stories",
     blurb: "Real outcomes from working with New Level.",
+    whyItMatters:
+      "Numbers on a services page only go so far. This category will be real (client-approved) stories of what a specific deal, investment, or management relationship actually looked like.",
+    topics: [
+      "Before-and-after stories from investment and management clients",
+      "What a first-time buyer's experience actually looked like, start to finish",
+      "Lessons learned from deals that didn't go as originally planned",
+    ],
   },
 ];
 
@@ -663,9 +750,9 @@ export const FOOTER_NAV = [
   {
     title: "Services",
     links: [
-      { label: "Brokerage & Consulting", href: "/services#brokerage" },
-      { label: "Property Management", href: "/services#management" },
-      { label: "Investment", href: "/services#investment" },
+      { label: "Brokerage & Consulting", href: "/services/brokerage" },
+      { label: "Property Management", href: "/services/management" },
+      { label: "Investment", href: "/services/investment" },
       { label: "Events & Networking", href: "/events" },
     ],
   },
@@ -693,14 +780,179 @@ export const FOOTER_NAV = [
 // Properties + the property detail page — ported verbatim from ../content.js.
 // =============================================================================
 
+// Beyond `label`/`blurb` (used everywhere as a short tag), each category
+// carries enough of its own content to stand as a real landing page rather
+// than a filtered grid with a swapped headline: `icon` gives it a shape-
+// differentiated visual identity (never a second color, per the sitewide
+// one-green rule), `whatToExpect`/`idealFor` frame the category in
+// decision-relevant terms, and `faqs` answers the questions specific to
+// that kind of stay/sale rather than the generic sitewide FAQ list.
 export const PROPERTY_CATEGORIES = [
-  { id: "luxury-short-term", label: "Luxury Short-Term Rentals", blurb: "High-end stays for discerning guests." },
-  { id: "short-term", label: "Short-Term Rentals", blurb: "Flexible stays, days to a few weeks." },
-  { id: "long-term", label: "Long-Term Rentals", blurb: "Month-to-month and annual leases." },
-  { id: "extended-stay", label: "Extended Stays", blurb: "Weeks to months, fully furnished." },
-  { id: "events", label: "Private Events", blurb: "Venues set up to host, not just sleep." },
-  { id: "for-sale", label: "For Sale", blurb: "Properties available for purchase." },
-  { id: "investment", label: "Investment", blurb: "Opportunities for portfolio growth." },
+  {
+    id: "luxury-short-term",
+    label: "Luxury Short-Term Rentals",
+    blurb: "High-end stays for discerning guests.",
+    icon: "Gem",
+    whatToExpect:
+      "Fully furnished, design-forward homes booked by the night or the week, with a service level closer to a boutique hotel than a typical rental: professional cleaning between every stay, concierge-style communication, and amenities picked for the property rather than the lowest common denominator.",
+    idealFor: [
+      "A milestone trip where the property is part of the occasion, not just where you sleep",
+      "Visiting executives or clients who expect a polished, private space over a hotel suite",
+      "Photo or content shoots that need a distinctive, camera-ready backdrop",
+    ],
+    faqs: [
+      {
+        q: "How is this different from a regular short-term rental?",
+        a: "Same night-by-night flexibility, but the properties are selected and presented for it: higher-end finishes, styled interiors, and a service standard (cleaning, communication, turnover) that matches what guests expect at that price point.",
+      },
+      {
+        q: "Is a deposit required?",
+        a: "Yes — reserving a date puts down a percentage of the total as a deposit, with the balance charged closer to check-in. The exact breakdown is shown once you pick your dates on a property's page.",
+      },
+      {
+        q: "Can these be booked for a single night?",
+        a: "It depends on the property's minimum-night policy, shown on its own listing. Some are set up for single-night stays; others have a short minimum to keep turnover manageable.",
+      },
+    ],
+  },
+  {
+    id: "short-term",
+    label: "Short-Term Rentals",
+    blurb: "Flexible stays, days to a few weeks.",
+    icon: "Luggage",
+    whatToExpect:
+      "Furnished homes for guests who need somewhere for a few nights to a few weeks — vacations, family visits, a bridge between two leases — without committing to a hotel or a long-term lease. Booking, pricing, and cancellation terms are all shown up front on the property page.",
+    idealFor: [
+      "Vacations and family visits where a house beats a hotel room",
+      "Contractors or relocating employees who need a home base for a few weeks",
+      "Anyone bridging the gap between move-out and move-in dates",
+    ],
+    faqs: [
+      {
+        q: "What's the shortest stay I can book?",
+        a: "Each listing shows its own minimum night count. Most short-term properties are set up for anywhere from a couple of nights up to a few weeks.",
+      },
+      {
+        q: "Are utilities and Wi-Fi included?",
+        a: "Yes — short-term stays are priced all-in. What's included versus billed separately is spelled out in that property's Fees & Policies section.",
+      },
+    ],
+  },
+  {
+    id: "long-term",
+    label: "Long-Term Rentals",
+    blurb: "Month-to-month and annual leases.",
+    icon: "KeyRound",
+    whatToExpect:
+      "Traditional leasing: a signed lease term (typically 12 months, with month-to-month options on some units), a security deposit, and the tenant handling their own utilities and day-to-day setup — the same structure as renting anywhere, backed by New Level's property management team for maintenance and communication.",
+    idealFor: [
+      "Anyone relocating to South Florida who wants a real home base, not a hotel",
+      "Tenants who want the stability of a lease instead of month-to-month uncertainty",
+      "Owners looking to place a reliable long-term tenant through a managed process",
+    ],
+    faqs: [
+      {
+        q: "What's the typical lease term?",
+        a: "Most long-term listings are 12-month leases, though some owners offer month-to-month terms — check the specific listing or ask us directly.",
+      },
+      {
+        q: "What does the application process look like?",
+        a: "Standard screening: income verification, background/credit check, and references, coordinated through our property management team once you've found a unit you want.",
+      },
+    ],
+  },
+  {
+    id: "extended-stay",
+    label: "Extended Stays",
+    blurb: "Weeks to months, fully furnished.",
+    icon: "CalendarRange",
+    whatToExpect:
+      "The middle ground between a short-term rental and a full lease: furnished, move-in-ready homes booked for weeks to a few months, with pricing and terms structured for a longer stay rather than a nightly rate.",
+    idealFor: [
+      "Traveling professionals or insurance-displacement stays needing a furnished home for a defined stretch of time",
+      "Snowbirds spending a season in South Florida",
+      "Anyone who wants a real kitchen and living space without signing a full-year lease",
+    ],
+    faqs: [
+      {
+        q: "How is pricing structured for an extended stay?",
+        a: "Extended stays are typically quoted at a weekly or monthly rate that's lower than the equivalent nightly short-term rate, reflecting the longer commitment.",
+      },
+      {
+        q: "Can an extended stay convert into a long-term lease?",
+        a: "In many cases, yes — talk to us before your stay ends if you'd like to explore converting to a standard lease on the same unit.",
+      },
+    ],
+  },
+  {
+    id: "events",
+    label: "Private Events",
+    blurb: "Venues set up to host, not just sleep.",
+    icon: "PartyPopper",
+    whatToExpect:
+      "Properties chosen and set up for gatherings — pool decks, open floor plans, parking for guests — rented as a full-day or full-night venue rather than an overnight stay. See the Events page for our calendar and package tiers (Self-Provided through All-Inclusive).",
+    idealFor: [
+      "Birthdays, showers, weddings, graduations, and religious or corporate gatherings",
+      "Anyone who wants a private residential feel instead of a banquet hall",
+      "Groups who want catering/entertainment/sound handled for them via a package",
+    ],
+    faqs: [
+      {
+        q: "How is an event rental priced differently from a stay?",
+        a: "Event rentals are a flat 24-hour rate rather than a per-night rate, plus a refundable security deposit and an optional service package (catering, entertainment, sound, content creation).",
+      },
+      {
+        q: "Can I bring my own vendors instead of a package?",
+        a: "Yes — the Self-Provided package is exactly that: you bring your own catering, entertainment, and sound, and only pay the base venue rate.",
+      },
+    ],
+  },
+  {
+    id: "for-sale",
+    label: "For Sale",
+    blurb: "Properties available for purchase.",
+    icon: "Tag",
+    whatToExpect:
+      "Full-service brokerage representation for buying or selling: market analysis, showings, negotiation, and coordination through closing. This demo currently has one active listing plus placeholders for what's coming — reach out and we'll walk you through anything on or off this list.",
+    idealFor: [
+      "Buyers ready to purchase a primary residence or second home in South Florida",
+      "Sellers who want a full-service brokerage handling pricing, marketing, and negotiation",
+      "Anyone comparing buying versus renting before committing either way",
+    ],
+    faqs: [
+      {
+        q: "Do you represent both buyers and sellers?",
+        a: "Yes — our licensed team works both sides of a sale, from first valuation conversation through closing.",
+      },
+      {
+        q: "Can you help me sell somewhere outside your current listings?",
+        a: "Absolutely — this list reflects what's active in this demo today, not the limit of what we work on. Contact us about any property you're looking to sell.",
+      },
+    ],
+  },
+  {
+    id: "investment",
+    label: "Investment",
+    blurb: "Opportunities for portfolio growth.",
+    icon: "TrendingUp",
+    whatToExpect:
+      "Properties and opportunities evaluated for return rather than lifestyle: rental yield, appreciation potential, and how a purchase fits a broader portfolio strategy. Pairs directly with our Investment service — see Services for how we structure that relationship.",
+    idealFor: [
+      "First-time investors who want a strategy built around their goals and risk tolerance",
+      "Existing portfolio owners looking to diversify into new markets or property types",
+      "Anyone evaluating a specific property primarily on projected returns",
+    ],
+    faqs: [
+      {
+        q: "Do you only work with experienced investors?",
+        a: "No — we work with first-time and experienced investors alike. Every relationship starts with understanding your goals and risk comfort before we talk about specific properties.",
+      },
+      {
+        q: "Can New Level manage an investment property after purchase?",
+        a: "Yes — our Property Management service is built for exactly that handoff, so you don't need a separate manager once you close.",
+      },
+    ],
+  },
 ];
 
 // `photo` fields reuse the real 87th St. property's own photo set as demo

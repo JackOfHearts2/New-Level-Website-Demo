@@ -3,20 +3,17 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
-import { cn } from "@/lib/utils";
 import { PAGES, BLOG_CATEGORIES } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Blog · New Level",
 };
 
-export default async function BlogPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ category?: string }>;
-}) {
+// "All Articles" overview — each category card links into its own
+// dedicated /blog/[category] page (see that route) instead of everything
+// funneling into one shared list.
+export default function BlogPage() {
   const page = PAGES.blog;
-  const { category } = await searchParams;
 
   return (
     <>
@@ -30,19 +27,12 @@ export default async function BlogPage({
       <section className="mx-auto max-w-6xl px-6 pb-24">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {BLOG_CATEGORIES.map((cat) => (
-            <GlowCard
-              key={cat.id}
-              id={cat.id}
-              className={cn(
-                "scroll-mt-32 p-6",
-                category === cat.id && "border-primary bg-accent"
-              )}
-            >
+            <GlowCard key={cat.id} href={`/blog/${cat.id}`} className="p-6">
               <h2 className="font-heading text-lg font-semibold">{cat.label}</h2>
               <p className="text-foreground mt-2 text-sm text-balance">{cat.blurb}</p>
-              <p className="text-foreground mt-4 text-sm italic">
-                No posts published yet.
-              </p>
+              <span className="text-primary font-heading mt-4 inline-block text-sm font-semibold">
+                Explore →
+              </span>
             </GlowCard>
           ))}
         </div>
@@ -53,7 +43,7 @@ export default async function BlogPage({
             like us to write about?
           </p>
           <div className="mt-6 flex justify-center">
-            <CtaLink href="/contact">Get in Touch</CtaLink>
+            <CtaLink href="/subscribe">Subscribe for Updates</CtaLink>
           </div>
         </div>
       </section>
