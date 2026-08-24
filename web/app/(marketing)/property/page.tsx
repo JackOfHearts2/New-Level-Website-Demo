@@ -151,43 +151,43 @@ export default async function PropertyPage({
       <section className="bg-muted/50 py-16">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="font-heading text-2xl font-bold">Fees &amp; policies</h2>
-          <div className="mt-8 grid gap-8 sm:grid-cols-2">
-            <div>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            <GlowCard className="p-6">
               <h3 className="font-heading text-sm font-semibold">Included in your rate</h3>
               <ul className="text-foreground mt-3 space-y-2 text-sm">
                 {FEES_POLICIES.included.map((i) => (
-                  <li key={i}>{i}</li>
+                  <ShineListItem key={i}>{i}</ShineListItem>
                 ))}
               </ul>
-            </div>
-            <div>
+            </GlowCard>
+            <GlowCard className="p-6">
               <h3 className="font-heading text-sm font-semibold">Add-ons &amp; extras</h3>
               <ul className="mt-3 space-y-2 text-sm">
                 {FEES_POLICIES.extra.map((i) => (
-                  <li key={i.t} className="flex justify-between gap-4">
+                  <ShineListItem key={i.t} className="flex justify-between gap-4">
                     <span className="text-foreground">{i.t}</span>
                     <span className="text-right font-medium">{i.v}</span>
-                  </li>
+                  </ShineListItem>
                 ))}
               </ul>
-            </div>
+            </GlowCard>
           </div>
-          <div className="mt-10">
+          <div className="mt-6">
             <h3 className="font-heading text-sm font-semibold">House rules</h3>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {FEES_POLICIES.houseRules.map((r) => (
-                <div key={r.t}>
+                <GlowCard key={r.t} className="p-4">
                   <div className="text-sm font-semibold">{r.t}</div>
                   <div className="text-foreground text-sm">{r.d}</div>
-                </div>
+                </GlowCard>
               ))}
             </div>
             <p className="text-foreground mt-4 text-sm">{FEES_POLICIES.rulesNote}</p>
           </div>
-          <div className="mt-8 border-t border-border pt-6">
+          <GlowCard className="mt-6 p-6">
             <h3 className="font-heading text-sm font-semibold">Cancellation</h3>
             <p className="text-foreground mt-2 text-sm">{FEES_POLICIES.cancellation}</p>
-          </div>
+          </GlowCard>
         </div>
       </section>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
@@ -14,12 +14,21 @@ const FILTER_LABELS: Record<keyof typeof SEARCH_FILTERS, string> = {
   maxPrice: "Max Price",
 };
 
+type Filters = Record<keyof typeof SEARCH_FILTERS, string>;
+const EMPTY_FILTERS: Filters = {
+  neighborhood: "",
+  beds: "",
+  baths: "",
+  minPrice: "",
+  maxPrice: "",
+};
+
 export function SearchBox() {
   const router = useRouter();
   const [activeTop, setActiveTop] = useState(SEARCH_CATEGORIES[0].id);
   const [activeChild, setActiveChild] = useState<string | null>(null);
   const [keyword, setKeyword] = useState("");
-  const formRef = useRef<HTMLFormElement>(null);
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
 
   const activeCategory = SEARCH_CATEGORIES.find((c) => c.id === activeTop)!;
   const children = "children" in activeCategory ? activeCategory.children : undefined;
@@ -33,8 +42,13 @@ export function SearchBox() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedId) return;
+    // The demo's ~8-listing dataset isn't real MLS inventory, so these can't
+    // drive a real structured filter — but folding a selected filter into
+    // the same keyword search (matchesKeyword() in properties/page.tsx) at
+    // least makes it affect the result set instead of being decorative.
+    const terms = [keyword.trim(), ...Object.values(filters).filter(Boolean)].join(" ").trim();
     const params = new URLSearchParams({ category: selectedId });
-    if (keyword.trim()) params.set("q", keyword.trim());
+    if (terms) params.set("q", terms);
     router.push(`/properties?${params.toString()}`);
   }
 
@@ -42,9 +56,7 @@ export function SearchBox() {
     setKeyword("");
     setActiveChild(null);
     setActiveTop(SEARCH_CATEGORIES[0].id);
-    // The 5 filter dropdowns below are uncontrolled (decorative — see their
-    // comment in lib/content.ts) so a native form reset is enough for them.
-    formRef.current?.reset();
+    setFilters(EMPTY_FILTERS);
   }
 
   return (
@@ -66,11 +78,7 @@ export function SearchBox() {
           ))}
         </div>
 
-        <form
-          ref={formRef}
-          onSubmit={handleSubmit}
-          className="mt-4 flex flex-wrap items-end gap-3"
-        >
+        <form onSubmit={handleSubmit} className="mt-4 flex flex-wrap items-end gap-3">
           <label className="min-w-[200px] flex-1 text-sm">
             <span className="text-foreground font-heading text-sm font-medium">
               Search
@@ -114,39 +122,23 @@ export function SearchBox() {
               especially once several of these sat side by side. Matches the
               "Rental type…" select above, which already worked this way. */}
           {(Object.keys(SEARCH_FILTERS) as (keyof typeof SEARCH_FILTERS)[]).map((key) => (
-            <label key={key} className="text-sm">
-              <span className="sr-only">{FILTER_LABELS[key]}</span>
-              <select
-                defaultValue=""
-                className="border-border bg-background text-foreground mt-1 rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                <option value="" disabled className="bg-background text-foreground">
-                  {FILTER_LABELS[key]}
-                </option>
-                {SEARCH_FILTERS[key].map((opt) => (
-                  <option key={opt} value={opt} className="bg-background text-foreground">
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <FilterSelect
+              key={key}
+              label={FILTER_LABELS[key]}
+              options={SEARCH_FILTERS[key]}
+              value={filters[key]}
+              onChange={(v) => setFilters((f) => ({ ...f, [key]: v }))}
+            />
           ))}
 
           <div className="ml-auto flex gap-2">
-            <button
-              type="button"
-              onClick={handleReset}
-              className="font-heading text-foreground hover:text-foreground rounded-lg px-4 py-2 text-sm font-semibold"
-            >
-              Reset
-            </button>
-            <button
+            <ResetSearchButton label="Reset" variant="ghost" onClick={handleReset} />
+            <ResetSearchButton
+              label="Search"
+              variant="primary"
               type="submit"
               disabled={!selectedId}
-              className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-lg px-6 py-2 text-sm font-semibold disabled:opacity-50"
-            >
-              Search
-            </button>
+            />
           </div>
         </form>
       </GlowCard>
@@ -174,6 +166,82 @@ function SearchTab({
       className={cn(
         "shine-shape font-heading relative rounded-full px-4 py-2 text-sm font-semibold transition-[color,background-color,transform] duration-300 hover:-translate-y-0.5",
         selected ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"
+      )}
+    >
+      <span className="glow-card__ring" aria-hidden />
+      {label}
+    </button>
+  );
+}
+
+// A <select> can't host a child <span> ring element the way GlowCard's other
+// wrappers do (only <option>s are valid children), so the glow ring lives on
+// this label wrapper instead — same useGlowRing + glow-card__ring pattern,
+// just anchored one element up.
+function FilterSelect({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: readonly string[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const ref = useGlowRing<HTMLLabelElement>();
+  return (
+    <label
+      ref={ref}
+      className="glow-card relative rounded-lg border border-border text-sm transition-transform duration-300 hover:-translate-y-0.5"
+    >
+      <span className="glow-card__ring" aria-hidden />
+      <span className="sr-only">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-background text-foreground rounded-lg px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+      >
+        <option value="" className="bg-background text-foreground">
+          {label}
+        </option>
+        {options
+          .filter((opt) => opt !== "Any")
+          .map((opt) => (
+            <option key={opt} value={opt} className="bg-background text-foreground">
+              {opt}
+            </option>
+          ))}
+      </select>
+    </label>
+  );
+}
+
+function ResetSearchButton({
+  label,
+  variant,
+  onClick,
+  type = "button",
+  disabled,
+}: {
+  label: string;
+  variant: "ghost" | "primary";
+  onClick?: () => void;
+  type?: "button" | "submit";
+  disabled?: boolean;
+}) {
+  const ref = useGlowRing<HTMLButtonElement>();
+  return (
+    <button
+      ref={ref}
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "glow-card relative font-heading rounded-lg px-4 py-2 text-sm font-semibold transition-transform duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0",
+        variant === "primary"
+          ? "bg-primary text-primary-foreground hover:bg-primary/80 border-transparent px-6"
+          : "text-foreground border-transparent"
       )}
     >
       <span className="glow-card__ring" aria-hidden />

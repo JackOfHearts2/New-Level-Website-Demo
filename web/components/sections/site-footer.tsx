@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
 import { FOOTER_NAV, NLG_BRAND } from "@/lib/content";
 import type { SOCIALS } from "@/lib/content";
 import { SOCIAL_ICONS } from "@/components/social-icons";
@@ -63,9 +63,13 @@ export function SiteFooter({
                     <li key={link.label} className="flow-root">
                       <Link
                         href={link.href}
-                        className="text-foreground hover:text-foreground text-sm transition-colors"
+                        className="group text-foreground hover:text-primary inline-flex items-center gap-1 text-sm transition-colors"
                       >
-                        {link.label}
+                        <span className="relative">
+                          {link.label}
+                          <span className="bg-primary absolute -bottom-0.5 left-0 h-px w-0 transition-[width] duration-300 group-hover:w-full" />
+                        </span>
+                        <ArrowUpRight className="size-3 -translate-x-1 opacity-0 transition-[transform,opacity] duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
                       </Link>
                     </li>
                   ))}

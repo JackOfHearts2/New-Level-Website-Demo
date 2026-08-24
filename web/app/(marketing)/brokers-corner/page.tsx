@@ -4,8 +4,8 @@ import { Play } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { ShinePill, ShineCircle, ShineBox } from "@/components/ui/shine-shape";
-import { CtaLink } from "@/components/ui/cta-link";
 import { GlowCard } from "@/components/ui/glow-card";
+import { AskBrokerButton } from "@/components/ask-broker-button";
 import { PAGES, BROKERS_CORNER } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default function BrokersCornerPage() {
             <p className="text-foreground text-sm">Founder &amp; Principal Broker</p>
           </div>
           <div className="sm:ml-auto">
-            <CtaLink href="/contact">Ask Shelley a Question</CtaLink>
+            <AskBrokerButton />
           </div>
         </GlowCard>
         <p className="text-foreground mt-8 text-balance">{BROKERS_CORNER.bio}</p>

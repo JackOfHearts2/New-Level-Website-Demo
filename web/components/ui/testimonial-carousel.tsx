@@ -2,13 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import {
-  motion,
-  useAnimation,
-  useMotionValue,
-  useReducedMotion,
-  useTransform,
-} from "framer-motion";
+import { motion, useAnimation, useMotionValue, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlowCard } from "@/components/ui/glow-card";
@@ -111,7 +105,6 @@ export function TestimonialCarousel({
   const radius = cylinderWidth / (2 * Math.PI);
 
   const rotation = useMotionValue(0);
-  const transform = useTransform(rotation, (v) => `rotate3d(0, 1, 0, ${v}deg)`);
   const controls = useAnimation();
 
   function step(direction: 1 | -1) {
@@ -135,17 +128,23 @@ export function TestimonialCarousel({
         >
           <motion.div
             drag="x"
-            dragElastic={0.06}
+            dragElastic={0.15}
             className="relative flex h-full origin-center w-full cursor-grab justify-center active:cursor-grabbing"
             style={{
-              transform,
               rotateY: rotation,
               transformStyle: "preserve-3d",
             }}
-            onDrag={(_, info) => rotation.set(rotation.get() + info.offset.x * 0.05)}
+            // info.offset is cumulative since the drag started, not a
+            // per-frame delta — adding it into rotation on every pointermove
+            // tick (the previous code) compounded every tick, so the total
+            // rotation ballooned quadratically with drag distance and
+            // depended on how many move events fired, not on how far the
+            // mouse actually moved. info.delta is the true per-tick change,
+            // which is what should accumulate into rotation.
+            onDrag={(_, info) => rotation.set(rotation.get() + info.delta.x * 0.3)}
             onDragEnd={(_, info) => {
               controls.start({
-                rotateY: rotation.get() + info.velocity.x * 0.05,
+                rotateY: rotation.get() + info.velocity.x * 0.15,
                 transition: reduceMotion
                   ? { duration: 0 }
                   : { type: "spring", stiffness: 100, damping: 30, mass: 0.1 },

@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, Plus, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGlowRing } from "@/components/ui/glow-card";
-import { ContactIntakeModal } from "@/components/contact-intake-modal";
 import { AiChatWidget } from "@/components/ai-chat-widget";
 
 const DIAL_ITEMS = [
@@ -59,8 +58,9 @@ function DialButton({
 // md:size-16 once the dock is gone (MobileDock hides at md: too) and it can
 // be its own larger, independently-placed element again.
 export function FloatingActions() {
+  const router = useRouter();
   const [dialOpen, setDialOpen] = useState(false);
-  const [modal, setModal] = useState<"contact" | "chat" | null>(null);
+  const [modal, setModal] = useState<"chat" | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   // /property has its own edge-to-edge StickyBookingBar at this same
   // bottom-4 spot (replacing the MobileDock there) — bump up to clear it
@@ -102,8 +102,16 @@ export function FloatingActions() {
                 className={item.className}
                 index={i}
                 onClick={() => {
-                  setModal(item.id);
                   setDialOpen(false);
+                  // "Contact us" goes straight to the real /contact page —
+                  // it has the full point-of-contact info (phone included)
+                  // and topic selector; the standalone quick-contact modal
+                  // this used to open was a thinner duplicate of it.
+                  if (item.id === "contact") {
+                    router.push("/contact");
+                  } else {
+                    setModal(item.id);
+                  }
                 }}
               />
             ))}
@@ -123,9 +131,6 @@ export function FloatingActions() {
       </div>
 
       <AnimatePresence>
-        {modal === "contact" && (
-          <ContactIntakeModal key="contact" onClose={() => setModal(null)} />
-        )}
         {modal === "chat" && <AiChatWidget key="chat" onClose={() => setModal(null)} />}
       </AnimatePresence>
     </>
