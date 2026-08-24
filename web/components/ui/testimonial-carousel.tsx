@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useAnimation, useMotionValue, useReducedMotion } from "framer-motion";
+import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlowCard } from "@/components/ui/glow-card";
@@ -105,14 +105,23 @@ export function TestimonialCarousel({
   const radius = cylinderWidth / (2 * Math.PI);
 
   const rotation = useMotionValue(0);
-  const controls = useAnimation();
+  const activeAnimation = useRef<ReturnType<typeof animate> | null>(null);
+
+  // rotateY is bound directly to the `rotation` MotionValue via style below,
+  // so animating it has to go through `animate(rotation, ...)` (the
+  // standalone imperative animate, operating on that exact MotionValue) —
+  // not useAnimation()'s controls.start({ rotateY: ... }), which drives its
+  // own internal value under the "rotateY" key and never touches `rotation`
+  // at all. That mismatch was the actual bug behind "the arrows don't do
+  // anything": step() and the post-drag momentum fling were both calling
+  // controls.start() and silently animating a value nothing reads from.
+  function animateTo(target: number) {
+    activeAnimation.current?.stop();
+    activeAnimation.current = animate(rotation, target, reduceMotion ? { duration: 0 } : SPRING);
+  }
 
   function step(direction: 1 | -1) {
-    controls.stop();
-    controls.start({
-      rotateY: rotation.get() - direction * angleStep,
-      transition: reduceMotion ? { duration: 0 } : SPRING,
-    });
+    animateTo(rotation.get() - direction * angleStep);
   }
 
   return (
@@ -142,15 +151,7 @@ export function TestimonialCarousel({
             // mouse actually moved. info.delta is the true per-tick change,
             // which is what should accumulate into rotation.
             onDrag={(_, info) => rotation.set(rotation.get() + info.delta.x * 0.3)}
-            onDragEnd={(_, info) => {
-              controls.start({
-                rotateY: rotation.get() + info.velocity.x * 0.15,
-                transition: reduceMotion
-                  ? { duration: 0 }
-                  : { type: "spring", stiffness: 100, damping: 30, mass: 0.1 },
-              });
-            }}
-            animate={controls}
+            onDragEnd={(_, info) => animateTo(rotation.get() + info.velocity.x * 0.15)}
           >
             {faces.map((t, i) => (
               <TestimonialFace
