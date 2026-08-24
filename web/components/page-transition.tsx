@@ -48,7 +48,17 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   const variants = pickPreset(pathname);
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    // mode="wait" previously held the incoming page unmounted until the
+    // outgoing page's exit animation fully resolved. On heavier routes
+    // (the property page especially - booking widget, Supabase session
+    // hooks, photo lightbox all mounting at once) that handoff could get
+    // interrupted, leaving the new page's motion.div stuck at its
+    // `initial` (opacity: 0) state forever - a real, reproduced bug: the
+    // page would flash and then go permanently blank until a hard
+    // refresh. Default (sync) mode lets the new page mount and animate in
+    // immediately alongside the old page's exit, which avoids that stuck
+    // handoff entirely.
+    <AnimatePresence initial={false}>
       <motion.div
         key={pathname}
         variants={variants}
