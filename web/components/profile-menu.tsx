@@ -165,7 +165,7 @@ export function ProfileMenu() {
           <div className="border-border my-2 border-t" />
 
           <Link
-            href="/properties"
+            href="/saved-properties"
             role="menuitem"
             onClick={() => setOpen(false)}
             className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"

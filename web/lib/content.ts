@@ -1206,13 +1206,18 @@ export const AUDIENCES = {
   },
 } satisfies Record<(typeof AUDIENCE_ORDER)[number], unknown>;
 
+// Each highlight carries a lucide icon name (see HIGHLIGHT_ICONS in
+// property/page.tsx) — shape-differentiated, not color-coded, matching the
+// sitewide icon convention. Client feedback: this section reads as too
+// small/easy to miss for something meant to be the property's headline
+// facts — rendered as a bold full-width band, not a plain list.
 export const HIGHLIGHTS = [
-  "Full private residence: the whole house is yours, not a shared venue",
-  "4 bedrooms, 4 beds and 3 bathrooms, sleeps up to 9",
-  "Fully equipped kitchen: dishwasher, oven, stove and dining table",
-  "Private patio for outdoor time",
-  "Free driveway and street parking",
-  "Works for a single-day event or a multi-night stay",
+  { icon: "Home", text: "Full private residence: the whole house is yours, not a shared venue" },
+  { icon: "BedDouble", text: "4 bedrooms, 4 beds and 3 bathrooms, sleeps up to 9" },
+  { icon: "ChefHat", text: "Fully equipped kitchen: dishwasher, oven, stove and dining table" },
+  { icon: "Trees", text: "Private patio for outdoor time" },
+  { icon: "Car", text: "Free driveway and street parking" },
+  { icon: "CalendarCheck", text: "Works for a single-day event or a multi-night stay" },
 ];
 
 export const RATE_TIERS = {
@@ -1349,13 +1354,16 @@ export const REVIEWS = {
   howItWorks: "Reviews come from verified New Level guests after their stay or event. We show the guest's first name, the month they visited, and what they used the home for: no anonymous or incentivized reviews.",
   items: [
     { name: "Marcus T.", when: "June 2026", use: "Corporate retreat", stars: 5, text: "Ran a three-day leadership offsite here. The breakout spaces and fast Wi-Fi meant we never had to leave, and the team actually enjoyed the downtime on the patio." },
-    { name: "The Reyes Family", when: "May 2026", use: "Family reunion", stars: 5, text: "Twelve of us under one roof for a long weekend. Everyone had space, the kitchen handled our big dinners, and the kids basically lived in the backyard." },
-    { name: "Danielle P.", when: "April 2026", use: "Milestone birthday", stars: 5, text: "Hosted a 40th here and it felt like a private venue, not a rental. Shelley was responsive from the first message to checkout." },
+    // Guest count corrected to fit the property's real 9-guest max (was
+    // "Twelve of us," left over from the same placeholder-capacity error
+    // fixed elsewhere — see PROPERTY_SPECS.
+    { name: "The Reyes Family", when: "May 2026", use: "Family reunion", stars: 5, text: "Eight of us under one roof for a long weekend. Everyone had space, the kitchen handled our big dinners, and the kids basically lived on the patio." },
     { name: "Pastor J. Alvarez", when: "March 2026", use: "Ministry retreat", stars: 4, text: "Quiet, comfortable, and room for our whole group to gather and break out. A calm place to reset for the weekend." },
     // Client-requested inside joke — deliberately absurd, doesn't move
     // REVIEWS.rating/count above since those are fixed, not computed from
     // this array.
     { name: "Gary D.", when: "February 2026", use: "Weekend getaway", stars: 1, text: "Docked four stars because the bath towels were folded into rectangles instead of triangles. Also, a lizard on the patio made prolonged eye contact with me in a way I can only describe as judgmental. Would not stay again on principle." },
+    { name: "Priscilla V.", when: "January 2026", use: "Girls' weekend", stars: 1, text: "One star because the ceiling fan only had three speed settings and I personally require a minimum of seven. Also the driveway felt \"too paved\" for my taste. Shelley was very gracious about the whole thing, which honestly made it worse somehow." },
   ],
 };
 

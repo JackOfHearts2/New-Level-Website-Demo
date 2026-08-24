@@ -4,7 +4,8 @@ import { Star, MapPin, BedDouble, Bath, Users } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
-import { ShineBox, ShineListItem } from "@/components/ui/shine-shape";
+import { ShineBox, ShineListItem, ShinePill } from "@/components/ui/shine-shape";
+import { HIGHLIGHT_ICONS } from "@/components/property/highlight-icons";
 import { cn } from "@/lib/utils";
 import {
   PROPERTY,
@@ -76,55 +77,68 @@ export default async function PropertyPage({
       <PurposeSelector />
       <AudienceContent />
 
-      {/* Highlights */}
-      <section className="mx-auto max-w-5xl px-6 py-16">
-        <h2 className="font-heading text-2xl font-bold">Highlights</h2>
+      {/* Highlights — client feedback: this read as too small/easy to miss
+          for the property's headline facts. Full-bleed, high-contrast band
+          instead of a plain list blending into the rest of the page. */}
+      <section className="bg-primary text-primary-foreground py-16">
+        <div className="mx-auto max-w-5xl px-6">
+          <ShinePill className="bg-background/15 text-primary-foreground font-heading rounded-full px-4 py-1.5 text-sm font-bold tracking-wide uppercase">
+            Highlights
+          </ShinePill>
+          <h2 className="font-heading mt-4 text-3xl font-bold text-balance md:text-4xl">
+            Why this house works
+          </h2>
 
-        {/* Real specs from the property's own listing, not placeholder
-            numbers — see PROPERTY_SPECS in lib/content.ts. */}
-        <div className="mt-6 flex flex-wrap gap-6">
-          <div className="flex items-center gap-2">
-            <BedDouble className="text-primary size-5" />
-            <span className="text-sm">
-              <strong className="font-heading font-semibold">{PROPERTY_SPECS.bedrooms}</strong>{" "}
-              bedrooms · <strong className="font-heading font-semibold">{PROPERTY_SPECS.beds}</strong>{" "}
-              beds
-            </span>
+          {/* Real specs from the property's own listing, not placeholder
+              numbers — see PROPERTY_SPECS in lib/content.ts. */}
+          <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+            <div className="flex items-center gap-2">
+              <BedDouble className="size-6" />
+              <span className="font-heading text-lg font-semibold">
+                {PROPERTY_SPECS.bedrooms} bedrooms · {PROPERTY_SPECS.beds} beds
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Bath className="size-6" />
+              <span className="font-heading text-lg font-semibold">
+                {PROPERTY_SPECS.bathrooms} bathrooms
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="size-6" />
+              <span className="font-heading text-lg font-semibold">
+                Sleeps up to {PROPERTY_SPECS.maxGuests}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Bath className="text-primary size-5" />
-            <span className="text-sm">
-              <strong className="font-heading font-semibold">{PROPERTY_SPECS.bathrooms}</strong>{" "}
-              bathrooms
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users className="text-primary size-5" />
-            <span className="text-sm">
-              Sleeps up to{" "}
-              <strong className="font-heading font-semibold">{PROPERTY_SPECS.maxGuests}</strong>
-            </span>
-          </div>
+
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            {HIGHLIGHTS.map((h) => {
+              const Icon = HIGHLIGHT_ICONS[h.icon];
+              return (
+                <li
+                  key={h.text}
+                  className="border-background/20 bg-background/10 flex items-start gap-3 rounded-2xl border p-5"
+                >
+                  {Icon && <Icon className="mt-0.5 size-6 shrink-0" />}
+                  <span className="text-base font-medium text-balance">{h.text}</span>
+                </li>
+              );
+            })}
+          </ul>
         </div>
+      </section>
 
-        <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-          {HIGHLIGHTS.map((h) => (
-            <ShineListItem key={h} className="border-border rounded-xl border p-4 text-sm">
-              {h}
-            </ShineListItem>
+      {/* Where you'll sleep */}
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        <h2 className="font-heading text-2xl font-bold">Where you&apos;ll sleep</h2>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {PROPERTY_SPECS.bedBreakdown.map((b) => (
+            <GlowCard key={b.room} className="p-5">
+              <div className="font-heading font-semibold">{b.room}</div>
+              <div className="text-foreground mt-1 text-sm">{b.bed}</div>
+            </GlowCard>
           ))}
-        </ul>
-
-        <div className="mt-10">
-          <h3 className="font-heading text-lg font-semibold">Where you&apos;ll sleep</h3>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {PROPERTY_SPECS.bedBreakdown.map((b) => (
-              <GlowCard key={b.room} className="p-4">
-                <div className="font-heading text-sm font-semibold">{b.room}</div>
-                <div className="text-foreground mt-1 text-sm">{b.bed}</div>
-              </GlowCard>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -207,7 +221,7 @@ export default async function PropertyPage({
           <h2 className="font-heading text-2xl font-bold">Fees &amp; policies</h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             <GlowCard className="p-6">
-              <h3 className="font-heading text-sm font-semibold">Included in your rate</h3>
+              <h3 className="font-heading text-lg font-bold">Included in your rate</h3>
               <ul className="text-foreground mt-3 space-y-2 text-sm">
                 {FEES_POLICIES.included.map((i) => (
                   <ShineListItem key={i}>{i}</ShineListItem>
@@ -215,7 +229,7 @@ export default async function PropertyPage({
               </ul>
             </GlowCard>
             <GlowCard className="p-6">
-              <h3 className="font-heading text-sm font-semibold">Add-ons &amp; extras</h3>
+              <h3 className="font-heading text-lg font-bold">Add-ons &amp; extras</h3>
               <ul className="mt-3 space-y-2 text-sm">
                 {FEES_POLICIES.extra.map((i) => (
                   <ShineListItem key={i.t} className="flex justify-between gap-4">
@@ -227,19 +241,23 @@ export default async function PropertyPage({
             </GlowCard>
           </div>
           <div className="mt-6">
-            <h3 className="font-heading text-sm font-semibold">House rules</h3>
+            <h3 className="font-heading text-lg font-bold">House rules</h3>
+            {/* Client feedback: too small, and the rule titles (Occupancy,
+                Smoking & vaping, etc.) needed to be bigger/unmistakable —
+                matched to the p-6/text-lg treatment used just above for
+                Included/Add-ons instead of a smaller p-4/text-sm card. */}
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {FEES_POLICIES.houseRules.map((r) => (
-                <GlowCard key={r.t} className="p-4">
-                  <div className="text-sm font-semibold">{r.t}</div>
-                  <div className="text-foreground text-sm">{r.d}</div>
+                <GlowCard key={r.t} className="p-6">
+                  <div className="font-heading text-base font-bold">{r.t}</div>
+                  <div className="text-foreground mt-1 text-sm">{r.d}</div>
                 </GlowCard>
               ))}
             </div>
             <p className="text-foreground mt-4 text-sm">{FEES_POLICIES.rulesNote}</p>
           </div>
           <GlowCard className="mt-6 p-6">
-            <h3 className="font-heading text-sm font-semibold">Cancellation</h3>
+            <h3 className="font-heading text-lg font-bold">Cancellation</h3>
             <p className="text-foreground mt-2 text-sm">{FEES_POLICIES.cancellation}</p>
           </GlowCard>
         </div>
