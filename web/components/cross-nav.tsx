@@ -10,6 +10,7 @@ const SITE_PAGES = [
   { key: "testimonials", label: "Testimonials", href: "/testimonials" },
   { key: "events", label: "Events", href: "/events" },
   { key: "contact", label: "Contact", href: "/contact" },
+  { key: "subscribe", label: "Subscribe", href: "/subscribe" },
   { key: "brokersCorner", label: "The Broker's Corner", href: "/brokers-corner" },
   { key: "contentLibrary", label: "Content Library", href: "/content-library" },
   { key: "faq", label: "FAQs", href: "/faq" },

@@ -90,6 +90,13 @@ export const PAGES = {
     sub: "We'd love to hear from you.",
     intro: "Every property, every moment, every question: reach us directly.",
   },
+  subscribe: {
+    eyebrow: "Stay in the loop",
+    heading: "Subscribe to updates",
+    sub: "New listings, events, and content, sent only for what you actually want to hear about.",
+    intro:
+      "Create an account to also save properties as you browse, or just subscribe with your email.",
+  },
   brokersCorner: {
     eyebrow: "The Broker's Corner",
     heading: "Insights, experience, and real conversations about Real Estate.",
@@ -263,6 +270,16 @@ export const FAQS = [
     a: "Absolutely. Strategic partnerships are a key part of our growth model. If you're interested in co-investing or development collaborations, contact us to schedule a call.",
   },
 ];
+
+// Shared between the /subscribe form and (once built) any future account
+// settings page — keys match the notification_preferences /
+// newsletter_subscribers table columns directly.
+export const NOTIFICATION_PREFERENCES = [
+  { id: "property_alerts", label: "New property listings", blurb: "New or updated listings that match what we know you're interested in." },
+  { id: "content_updates", label: "Content & social updates", blurb: "New posts from the Content Library and Blog once they go live." },
+  { id: "site_updates", label: "Site updates", blurb: "New features or sections added to the site itself." },
+  { id: "events", label: "Events & networking", blurb: "New events added to the calendar." },
+] as const;
 
 export const CONTACT_TOPICS = [
   { id: "property", label: "Property Inquiry" },

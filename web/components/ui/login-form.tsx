@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { User, Lock, ArrowRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 // The reference used a custom WebGL shader (SmokeyBackground) behind the
 // card — client asked for "our gradient instead," so this is our existing
@@ -16,10 +17,12 @@ function BrandGradientBackdrop() {
   );
 }
 
-// Glassmorphism sign-in/create-account card with animated floating labels —
-// per the client's pasted reference. No real auth system exists behind
-// this site yet (see ProfileMenu's own note on that), so this stays a
-// UI-only preview: submitting doesn't do anything except acknowledge that.
+type Status = { kind: "idle" } | { kind: "error"; message: string } | { kind: "check-email" };
+
+// Real Supabase auth (email/password + Google OAuth) — see
+// lib/supabase/client.ts and app/auth/callback/route.ts. Replaces the
+// earlier UI-only preview now that the client has confirmed building
+// real accounts (see project_supabase_connection memory).
 export function LoginForm({
   onClose,
   initialMode = "signin",
@@ -28,12 +31,60 @@ export function LoginForm({
   initialMode?: "signin" | "signup";
 }) {
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const [loading, setLoading] = useState(false);
   const isSignIn = mode === "signin";
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") ?? "");
+    const password = String(form.get("password") ?? "");
+    const supabase = createClient();
+    setLoading(true);
+    setStatus({ kind: "idle" });
+
+    if (isSignIn) {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      setLoading(false);
+      if (error) {
+        setStatus({ kind: "error", message: error.message });
+        return;
+      }
+      onClose();
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    setLoading(false);
+    if (error) {
+      setStatus({ kind: "error", message: error.message });
+      return;
+    }
+    if (!data.session) {
+      // Email confirmation is on for this project — no session yet.
+      setStatus({ kind: "check-email" });
+      return;
+    }
+    onClose();
+  }
+
+  async function handleGoogle() {
+    const supabase = createClient();
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) {
+      setLoading(false);
+      setStatus({
+        kind: "error",
+        message:
+          "Google sign-in isn't finished being set up on our end yet — try email/password for now.",
+      });
+    }
+    // On success the browser is redirected to Google, so nothing else to do here.
   }
 
   return (
@@ -49,11 +100,10 @@ export function LoginForm({
         </p>
       </div>
 
-      {submitted ? (
+      {status.kind === "check-email" ? (
         <div className="mt-8 text-center">
           <p className="text-sm text-white">
-            This is a preview: there&apos;s no real account system behind
-            this demo yet.
+            Check your email to confirm your account, then sign in.
           </p>
           <button
             type="button"
@@ -68,6 +118,7 @@ export function LoginForm({
           <div className="relative z-0">
             <input
               type="email"
+              name="email"
               id="floating_email"
               className="peer block w-full appearance-none border-0 border-b-2 border-white/40 bg-transparent px-0 py-2.5 text-sm text-white focus:border-primary focus:ring-0 focus:outline-none"
               placeholder=" "
@@ -85,9 +136,11 @@ export function LoginForm({
           <div className="relative z-0">
             <input
               type="password"
+              name="password"
               id="floating_password"
               className="peer block w-full appearance-none border-0 border-b-2 border-white/40 bg-transparent px-0 py-2.5 text-sm text-white focus:border-primary focus:ring-0 focus:outline-none"
               placeholder=" "
+              minLength={6}
               required
             />
             <label
@@ -99,19 +152,18 @@ export function LoginForm({
             </label>
           </div>
 
-          {isSignIn && (
-            <div className="flex items-center justify-between">
-              <button type="button" className="text-xs text-white hover:underline">
-                Forgot Password?
-              </button>
-            </div>
+          {status.kind === "error" && (
+            <p className="text-sm text-red-200" role="alert">
+              {status.message}
+            </p>
           )}
 
           <button
             type="submit"
-            className="font-heading group bg-primary hover:bg-primary/80 flex w-full items-center justify-center rounded-lg py-3 text-sm font-semibold text-primary-foreground transition-all duration-300"
+            disabled={loading}
+            className="font-heading group bg-primary hover:bg-primary/80 flex w-full items-center justify-center rounded-lg py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 disabled:opacity-60"
           >
-            {isSignIn ? "Sign In" : "Create Account"}
+            {loading ? "Please wait…" : isSignIn ? "Sign In" : "Create Account"}
             <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
           </button>
 
@@ -123,7 +175,9 @@ export function LoginForm({
 
           <button
             type="button"
-            className="flex w-full items-center justify-center rounded-lg bg-white/90 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:bg-white"
+            onClick={handleGoogle}
+            disabled={loading}
+            className="flex w-full items-center justify-center rounded-lg bg-white/90 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:bg-white disabled:opacity-60"
           >
             <svg className="mr-2 size-5" viewBox="0 0 48 48">
               <path
@@ -148,12 +202,15 @@ export function LoginForm({
         </form>
       )}
 
-      {!submitted && (
+      {status.kind !== "check-email" && (
         <p className="mt-6 text-center text-xs text-white">
           {isSignIn ? "Don't have an account? " : "Already have an account? "}
           <button
             type="button"
-            onClick={() => setMode(isSignIn ? "signup" : "signin")}
+            onClick={() => {
+              setMode(isSignIn ? "signup" : "signin");
+              setStatus({ kind: "idle" });
+            }}
             className="font-semibold text-primary hover:underline"
           >
             {isSignIn ? "Sign Up" : "Sign In"}

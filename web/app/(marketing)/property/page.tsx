@@ -17,6 +17,7 @@ import {
   NLG_BRAND,
 } from "@/lib/content";
 import { PropertyBookingProvider, type AudienceId } from "@/components/property/booking-context";
+import { SaveButton } from "@/components/property/save-button";
 import { PhotoTour } from "@/components/property/photo-tour";
 import { PurposeSelector } from "@/components/property/purpose-selector";
 import { AudienceContent } from "@/components/property/audience-content";
@@ -56,6 +57,12 @@ export default async function PropertyPage({
             Presented by New Level, a South Florida Real Estate group matching standout homes to
             the moments they&apos;re made for.
           </p>
+          <div className="mt-4">
+            <SaveButton
+              propertySlug="nw-87th-street"
+              className="border-white/40 text-white hover:bg-white/10"
+            />
+          </div>
         </PhotoTour>
       </div>
 

@@ -103,7 +103,7 @@ export function CtaWithTextMarquee() {
             </p>
             <div className="flex flex-wrap gap-4">
               <CtaLink href="/contact">Contact Us</CtaLink>
-              <CtaLink href="/contact?topic=general" variant="light">
+              <CtaLink href="/subscribe" variant="light">
                 Subscribe to Updates
               </CtaLink>
             </div>

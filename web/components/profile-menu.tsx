@@ -4,21 +4,21 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
-import { User, LogIn, UserPlus, Heart, HelpCircle, Mail } from "lucide-react";
+import { User, LogIn, UserPlus, LogOut, Heart, HelpCircle, Mail } from "lucide-react";
 import { ShineCircle } from "@/components/ui/shine-shape";
 import { LoginModal } from "@/components/login-modal";
+import { createClient } from "@/lib/supabase/client";
+import { useSession } from "@/lib/supabase/use-session";
 
 const PANEL_WIDTH = 224; // w-56
 const PANEL_HEIGHT = 284; // approx rendered height, used for flip-up decisions
 const VIEWPORT_MARGIN = 16;
 
-// This is a UI-only preview of an account menu — there's no real
-// sign-in/accounts system behind this site yet (see CLAUDE.md's "Migration
-// in progress" notes), so "Sign In"/"Create Account" are inert for now,
-// same convention already used for the homepage search bar's decorative
-// filter dropdowns. The other three items route to real existing pages
-// rather than invent destinations that don't exist.
+// Real Supabase session (see lib/supabase/use-session.ts) drives Guest vs.
+// signed-in state here — Sign In/Create Account/Sign Out now do something
+// real. Saved Properties/Help Center/Contact Us stay plain links either way.
 export function ProfileMenu() {
+  const { user } = useSession();
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
@@ -106,38 +106,60 @@ export function ProfileMenu() {
             <ShineCircle className="bg-muted flex size-9 items-center justify-center rounded-full">
               <User className="text-foreground size-4" />
             </ShineCircle>
-            <div>
-              <div className="font-heading text-sm font-semibold">Guest</div>
-              <div className="text-foreground text-sm">Not signed in</div>
+            <div className="min-w-0">
+              <div className="font-heading truncate text-sm font-semibold">
+                {user ? user.user_metadata?.full_name || user.email : "Guest"}
+              </div>
+              <div className="text-foreground truncate text-sm">
+                {user ? user.email : "Not signed in"}
+              </div>
             </div>
           </div>
 
           <div className="border-border my-2 border-t" />
 
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              setAuthMode("signin");
-              setOpen(false);
-            }}
-            className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
-          >
-            <LogIn className="text-foreground size-4" />
-            Sign In
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              setAuthMode("signup");
-              setOpen(false);
-            }}
-            className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
-          >
-            <UserPlus className="text-foreground size-4" />
-            Create Account
-          </button>
+          {user ? (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={async () => {
+                const supabase = createClient();
+                await supabase.auth.signOut();
+                setOpen(false);
+              }}
+              className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
+            >
+              <LogOut className="text-foreground size-4" />
+              Sign Out
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setAuthMode("signin");
+                  setOpen(false);
+                }}
+                className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
+              >
+                <LogIn className="text-foreground size-4" />
+                Sign In
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setAuthMode("signup");
+                  setOpen(false);
+                }}
+                className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
+              >
+                <UserPlus className="text-foreground size-4" />
+                Create Account
+              </button>
+            </>
+          )}
 
           <div className="border-border my-2 border-t" />
 
