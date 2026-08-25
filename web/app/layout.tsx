@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, DM_Sans } from "next/font/google";
 import { AmbientBackground } from "@/components/ambient-background";
 import "./globals.css";
@@ -43,7 +43,10 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     siteName: "New Level",
-    images: ["/photos/00.jpg"],
+    // Explicit width/height (the real dimensions of this file) so
+    // platforms that need them upfront (some Slack/iMessage previews)
+    // render a proper large-image card instead of a small/cropped one.
+    images: [{ url: "/photos/00.jpg", width: 1600, height: 1066, alt: SITE_TITLE }],
     type: "website",
   },
   twitter: {
@@ -52,6 +55,14 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: ["/photos/00.jpg"],
   },
+};
+
+// Separate from `metadata` on purpose - Next.js requires themeColor here,
+// not in the metadata export (it warns/drops it otherwise). Tints mobile
+// browser chrome (Android's address bar, iOS Safari's status bar area)
+// with the brand green instead of the browser default.
+export const viewport: Viewport = {
+  themeColor: "#72d35b",
 };
 
 // Runs before paint to set the dark class synchronously — avoids a flash of
