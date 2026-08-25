@@ -49,17 +49,31 @@ export function useSavedProperty(propertySlug: string) {
   async function toggle() {
     if (!user) return "needs-auth" as const;
     const supabase = createClient();
+    // Real bug found in a site audit: this used to flip the heart/save
+    // icon's state unconditionally, regardless of whether the delete/
+    // insert actually succeeded - a failed write (network blip, RLS
+    // rejection) showed "saved" right up until the next page load, when
+    // it would silently revert with no explanation. Only update local
+    // state once the write is confirmed to have gone through.
     if (effectiveSaved) {
-      await supabase
+      const { error } = await supabase
         .from("saved_properties")
         .delete()
         .eq("user_id", user.id)
         .eq("property_slug", propertySlug);
+      if (error) {
+        console.error("Unsaving property failed:", error);
+        return "error" as const;
+      }
       setSaved(false);
     } else {
-      await supabase
+      const { error } = await supabase
         .from("saved_properties")
         .insert({ user_id: user.id, property_slug: propertySlug });
+      if (error) {
+        console.error("Saving property failed:", error);
+        return "error" as const;
+      }
       setSaved(true);
     }
     return "ok" as const;

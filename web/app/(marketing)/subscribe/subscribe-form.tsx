@@ -73,18 +73,40 @@ export function SubscribeForm() {
         return;
       }
       if (data.session && data.user) {
-        await insertOrUpdate(supabase, "notification_preferences", "user_id", {
-          user_id: data.user.id,
-          ...prefs,
-        });
+        // The account itself is already created at this point (the thing
+        // this success message is actually reporting) - a failure saving
+        // preferences is a secondary, recoverable issue (they can be set
+        // again from an account page later), not grounds to tell the
+        // visitor their signup didn't work. Log it rather than swallowing
+        // it silently (the bug found and fixed in payment-simulator.tsx),
+        // but don't block the success state on it.
+        const { error: prefsError } = await insertOrUpdate(
+          supabase,
+          "notification_preferences",
+          "user_id",
+          { user_id: data.user.id, ...prefs }
+        );
+        if (prefsError) {
+          console.error("Saving notification preferences failed:", prefsError);
+        }
         setLoading(false);
         setResult({ kind: "subscribed" });
         return;
       }
       // Email confirmation required — no session yet to attach
       // preferences to an account, so also capture them by email as a
-      // fallback (harmless even once they confirm and sign in later).
-      await insertOrUpdate(supabase, "newsletter_subscribers", "email", { email, ...prefs });
+      // fallback (harmless even once they confirm and sign in later). Same
+      // reasoning as above: the signup itself already succeeded, so a
+      // failure here is logged, not surfaced as a blocking error.
+      const { error: fallbackError } = await insertOrUpdate(
+        supabase,
+        "newsletter_subscribers",
+        "email",
+        { email, ...prefs }
+      );
+      if (fallbackError) {
+        console.error("Saving fallback newsletter subscription failed:", fallbackError);
+      }
       setLoading(false);
       setResult({ kind: "check-email" });
       return;

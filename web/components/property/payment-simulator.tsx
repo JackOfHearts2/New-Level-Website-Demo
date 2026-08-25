@@ -72,7 +72,7 @@ export function PaymentSimulator({ onDone }: { onDone: () => void }) {
     await new Promise((r) => setTimeout(r, 1200));
 
     const supabase = createClient();
-    await supabase.from("reservations").insert({
+    const { error: insertError } = await supabase.from("reservations").insert({
       user_id: user?.id ?? null,
       property_slug: "nw-87th-street",
       tier: quote.tier,
@@ -85,6 +85,18 @@ export function PaymentSimulator({ onDone }: { onDone: () => void }) {
     });
 
     setProcessing(false);
+
+    // Real bug found in a site audit: this used to ignore the insert's
+    // result entirely, so a failed write (network issue, RLS rejection,
+    // Supabase hiccup) still showed "Deposit received!" - a false success
+    // on the one step in this whole demo that's supposed to leave a real
+    // trace. Surface the failure and let the guest retry instead.
+    if (insertError) {
+      console.error("Reservation insert failed:", insertError);
+      setError("Something went wrong saving your reservation. Please try again.");
+      return;
+    }
+
     setDone(true);
   };
 
