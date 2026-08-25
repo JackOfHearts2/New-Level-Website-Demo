@@ -9,7 +9,14 @@ import { GlowCard } from "@/components/ui/glow-card";
 
 type Testimonial = { name: string; role: string; text: string; photo: string };
 
-const SPRING = { type: "spring" as const, stiffness: 100, damping: 30, mass: 0.1 };
+// mass: 1 (not the previous 0.1) with this stiffness/damping pairing is
+// close to critically damped - a real, visible glide to the target over
+// ~0.8-1s. The old mass: 0.1 made the same stiffness/damping massively
+// overdamped for such a light "object," which in spring-physics terms
+// settles almost instantly - it looked like a snap/jump-cut rather than
+// a carousel rotating, which is what "the carousel moves too fast" was
+// describing.
+const SPRING = { type: "spring" as const, stiffness: 45, damping: 14, mass: 1 };
 
 function TestimonialFace({
   t,
@@ -23,7 +30,19 @@ function TestimonialFace({
       // (which look roughly the same mirrored), our cards have real text —
       // without this, a card rotated past 90° shows its mirrored/backwards
       // content instead of just disappearing.
-      className="absolute top-0 left-1/2 flex h-full items-center justify-center [backface-visibility:hidden]"
+      //
+      // pointer-events-none: real root cause of "the arrows don't do
+      // anything." `translateZ` on the front-facing card, combined with
+      // the ring's `perspective`, makes the browser compute that card's
+      // hit-testable box far larger than its own container (confirmed
+      // directly via `elementFromPoint` and `getBoundingClientRect` on a
+      // live deploy: a front face reported a 652px-tall box against a
+      // ~416px container, extending well past the carousel into the
+      // arrow-button row below it) - so every click/hover aimed at the
+      // buttons was silently landing on this decorative card instead.
+      // These cards have no interaction of their own (no link/button
+      // inside), so it's safe to make them fully pass-through.
+      className="pointer-events-none absolute top-0 left-1/2 flex h-full items-center justify-center [backface-visibility:hidden]"
       style={{
         width: faceWidth,
         marginLeft: -faceWidth / 2,

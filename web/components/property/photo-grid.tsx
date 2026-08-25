@@ -20,11 +20,11 @@ function swipeDirection(info: PanInfo): -1 | 0 | 1 {
 // some composition to it, not just a scrollable row of same-size crops.
 const TILES = [
   { photo: "00", span: "md:col-span-2" },
-  { photo: "09", span: "" },
-  { photo: "11", span: "" },
-  { photo: "06", span: "md:col-span-2" },
-  { photo: "24", span: "" },
-  { photo: "34", span: "" },
+  { photo: "04", span: "" },
+  { photo: "05", span: "" },
+  { photo: "01", span: "md:col-span-2" },
+  { photo: "14", span: "" },
+  { photo: "20", span: "" },
 ];
 
 export function PhotoGrid() {

@@ -6,29 +6,41 @@ import { usePathname } from "next/navigation";
 // Several distinctly different, deliberately large-motion presets — picked
 // per-route (not randomly every load) so the same page always transitions
 // the same way, but different pages don't all feel like one repeated
-// effect. Kept subtle-free on purpose: real travel distance / scale delta,
-// not a small nudge, per explicit "be bold, no tiny nudges" direction.
-// Entrance-only (no `exit`) — see the note below on why.
+// effect. Kept subtle-free on purpose: real travel distance, not a small
+// nudge, per explicit "be bold, no tiny nudges" direction. Entrance-only
+// (no `exit`) — see the note below on why.
+//
+// Deliberately opacity + translate ONLY here - no `scale`, no `clip-path`.
+// Real, reported bug: the property page (by far the tallest/heaviest page
+// on the site - ~8500px, dozens of images still loading in on mount)
+// looked "janky, jagged, like something lagging" on entrance. `scale`
+// (its original preset) and `clip-path` (another preset) both force the
+// browser to rasterize/repaint their content on every frame; on a plain
+// `translate`/`opacity` animation the browser can composite the layer on
+// the GPU without touching its painted content at all, regardless of how
+// tall or image-heavy that layer is. `x`/`y` alone still reads as real,
+// bold travel distance - it's specifically `scale`/`clip-path` that were
+// expensive, not motion in general.
 const PRESETS: Variants[] = [
-  // Big vertical launch, slight overshoot on the way in.
+  // Launches up from below.
   {
-    initial: { opacity: 0, y: 90, scale: 0.96 },
-    animate: { opacity: 1, y: 0, scale: 1 },
+    initial: { opacity: 0, y: 90 },
+    animate: { opacity: 1, y: 0 },
   },
-  // Punchy zoom — starts oversized and snaps down to size.
+  // Drops in from above.
   {
-    initial: { opacity: 0, scale: 1.14 },
-    animate: { opacity: 1, scale: 1 },
+    initial: { opacity: 0, y: -90 },
+    animate: { opacity: 1, y: 0 },
   },
-  // Horizontal slide-through, like the next page is entering from off-screen.
+  // Slides in from the right.
   {
     initial: { opacity: 0, x: 120 },
     animate: { opacity: 1, x: 0 },
   },
-  // Vertical wipe reveal via clip-path — the page "unrolls" into view.
+  // Slides in from the left.
   {
-    initial: { opacity: 1, clipPath: "inset(0% 0% 100% 0%)" },
-    animate: { opacity: 1, clipPath: "inset(0% 0% 0% 0%)" },
+    initial: { opacity: 0, x: -120 },
+    animate: { opacity: 1, x: 0 },
   },
 ];
 

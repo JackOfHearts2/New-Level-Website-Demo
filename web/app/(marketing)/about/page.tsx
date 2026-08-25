@@ -92,7 +92,7 @@ export default function AboutPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="group border-border relative aspect-[4/3] overflow-hidden rounded-2xl border shadow-sm transition-shadow duration-300 hover:shadow-lg">
             <Image
-              src="/photos/35.jpg"
+              src="/photos/27.jpg"
               alt="Screened patio at 1331 NW 87th Street"
               fill
               sizes="(min-width: 640px) 50vw, 100vw"
@@ -101,7 +101,7 @@ export default function AboutPage() {
           </div>
           <div className="group border-border relative aspect-[4/3] overflow-hidden rounded-2xl border shadow-sm transition-shadow duration-300 hover:shadow-lg">
             <Image
-              src="/photos/10.jpg"
+              src="/photos/04.jpg"
               alt="Kitchen at 1331 NW 87th Street"
               fill
               sizes="(min-width: 640px) 50vw, 100vw"

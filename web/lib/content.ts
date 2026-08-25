@@ -331,7 +331,7 @@ export const POINT_OF_CONTACT = {
   phone: "+1 (305) 000-0000",
   whatsapp: "13050000000",
   initials: "SL",
-  email: "jackbruncoquillon@gmail.com",
+  email: "placeholder@newlevelassociates.com",
 };
 
 export const EVENT_CTA = {
@@ -980,7 +980,7 @@ export const OTHER_PROPERTIES = [
   { title: "Bay Harbor villa", meta: "Sleeps 10 · Waterfront", rate: "from $600 / night", soon: true, categories: ["luxury-short-term", "short-term"], photo: "05" },
   { title: "Wynwood loft", meta: "Sleeps 6 · Events", rate: "from $900 / day", soon: true, categories: ["events", "short-term"], photo: "14" },
   { title: "Coral Gables estate", meta: "Sleeps 20 · Retreats", rate: "from $750 / night", soon: true, categories: ["extended-stay", "events", "long-term"], photo: "22" },
-  { title: "Brickell Skyline Residence", meta: "3 BR · Downtown", rate: "Listed at $1.4M", soon: true, categories: ["for-sale", "investment"], photo: "30" },
+  { title: "Brickell Skyline Residence", meta: "3 BR · Downtown", rate: "Listed at $1.4M", soon: true, categories: ["for-sale", "investment"], photo: "23" },
 ];
 
 // Agent contact info and inquiry inbox live in POINT_OF_CONTACT (used
@@ -1006,21 +1006,21 @@ export const PROPERTY_SPECS = {
   bathrooms: 3,
   maxGuests: 9,
   bedBreakdown: [
-    { room: "Bedroom 1", bed: "1 king bed" },
-    { room: "Bedroom 2", bed: "1 queen bed" },
-    { room: "Bedroom 3", bed: "1 queen bed" },
-    { room: "Bedroom 4", bed: "1 king bed" },
+    { room: "Bedroom 1", bed: "1 king bed", photo: "05" },
+    { room: "Bedroom 2", bed: "1 queen bed", photo: "08" },
+    { room: "Bedroom 3", bed: "1 queen bed", photo: "11" },
+    { room: "Bedroom 4", bed: "1 king bed", photo: "12" },
   ],
 };
 
 export const AUDIENCE_ORDER = ["corporate", "family", "events", "ministry", "extended"] as const;
 
 export const AUDIENCE_PHOTOS: Record<(typeof AUDIENCE_ORDER)[number], { hero: string; overview: string }> = {
-  corporate: { hero: "06", overview: "03" },
-  family: { hero: "00", overview: "09" },
-  events: { hero: "11", overview: "09" },
-  ministry: { hero: "12", overview: "16" },
-  extended: { hero: "02", overview: "34" },
+  corporate: { hero: "03", overview: "04" },
+  family: { hero: "00", overview: "05" },
+  events: { hero: "01", overview: "02" },
+  ministry: { hero: "20", overview: "21" },
+  extended: { hero: "11", overview: "12" },
 };
 
 export const AUDIENCES = {
@@ -1369,8 +1369,8 @@ export const REVIEWS = {
 
 // Teaser strip on the hero — fixed set of 8 photo indices (zero-padded,
 // matching the /photos/NN.jpg filenames copied into web/public/photos).
-export const GALLERY_STRIP = ["00", "09", "11", "06", "24", "34", "02", "03"];
-export const TOTAL_PROPERTY_PHOTOS = 39;
+export const GALLERY_STRIP = ["00", "01", "04", "05", "08", "14", "20", "27"];
+export const TOTAL_PROPERTY_PHOTOS = 29;
 
 // Full-resolution album hosted by the property photographer.
 export const PROPERTY_ALBUM_URL =
@@ -1404,7 +1404,7 @@ export const CONTENT_LIBRARY_POSTS = [
   {
     platform: "facebook",
     caption: "Another closing, another happy client",
-    photo: "35",
+    photo: "27",
   },
   {
     platform: "tiktok",
@@ -1424,6 +1424,6 @@ export const CONTENT_LIBRARY_POSTS = [
   {
     platform: "youtube",
     caption: "What makes New Level different",
-    photo: "30",
+    photo: "28",
   },
 ];
