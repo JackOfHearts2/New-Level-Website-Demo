@@ -33,7 +33,14 @@ export default function EventsPage() {
         />
 
         <div className="space-y-4">
-          {EVENTS_CALENDAR.map((event) => (
+          {/* Real bug found in a site audit: this used to map over every
+              entry unconditionally, so a past event (e.g. one dated
+              earlier this month) stayed listed as if still upcoming
+              indefinitely - misleading on a page titled "come hang out
+              with us." Filtered to today-or-later, reusing the same
+              todayKey the calendar's own month-anchoring already computes
+              above. */}
+          {EVENTS_CALENDAR.filter((event) => event.date >= todayKey).map((event) => (
             <GlowCard
               key={event.date + event.title}
               href="/contact"
