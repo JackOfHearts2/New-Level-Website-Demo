@@ -15,24 +15,10 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Baseline security headers - site audit finding: none of these existed
-# before (Netlify/Next already add a couple of basics like HSTS and
-# X-Content-Type-Options automatically, confirmed via a live response
-# check, but nothing here overlaps those). Deliberately NOT adding a
-# Content-Security-Policy here: this app loads Google Fonts, talks to
-# Supabase, and layout.tsx injects an inline script for the theme toggle
-# (dangerouslySetInnerHTML, needed to run before paint) - a CSP strict
-# enough to matter would need careful nonce wiring and real testing
-# against every page before shipping, which isn't safe to do blind.
-[[headers]]
-  for = "/*"
-  [headers.values]
-    # Clickjacking protection - matters concretely here since /admin/login
-    # is a real password form; without this, the login page could be
-    # framed on an attacker's page to trick a click.
-    X-Frame-Options = "DENY"
-    # Don't leak full URLs (including any query params) to external sites
-    # when a visitor clicks an outbound link.
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    # Explicitly deny browser features this site has no use for.
-    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+# Security headers live in next.config.ts's headers() function, not here -
+# confirmed live via curl that with @netlify/plugin-nextjs, every response
+# (including statically-generated pages) is served through Next's own
+# handler, which never passes through this file's [[headers]] mechanism.
+# An earlier version of this file tried setting them here; it silently had
+# no effect on any route. Don't reintroduce a [[headers]] block for
+# anything Next.js itself serves without re-verifying it actually applies.
