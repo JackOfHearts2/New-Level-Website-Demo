@@ -19,12 +19,12 @@ function swipeDirection(info: PanInfo): -1 | 0 | 1 {
 // strip — alternating large/small tiles so the photo section itself has
 // some composition to it, not just a scrollable row of same-size crops.
 const TILES = [
-  { photo: "00", span: "md:col-span-2" },
-  { photo: "04", span: "" },
-  { photo: "05", span: "" },
-  { photo: "01", span: "md:col-span-2" },
-  { photo: "14", span: "" },
-  { photo: "20", span: "" },
+  { photo: "00", span: "md:col-span-2", label: "Front exterior" },
+  { photo: "04", span: "", label: "Kitchen" },
+  { photo: "05", span: "", label: "Bedroom" },
+  { photo: "01", span: "md:col-span-2", label: "Living and dining area" },
+  { photo: "14", span: "", label: "Bathroom" },
+  { photo: "20", span: "", label: "Den" },
 ];
 
 export function PhotoGrid() {
@@ -60,7 +60,7 @@ export function PhotoGrid() {
         >
           <Image
             src={`/photos/${tile.photo}.jpg`}
-            alt=""
+            alt={tile.label}
             fill
             sizes="(min-width: 768px) 33vw, 50vw"
             className="object-cover transition-transform duration-300 hover:scale-105"
@@ -108,7 +108,7 @@ export function PhotoGrid() {
             >
               <Image
                 src={`/photos/${TILES[selected].photo}.jpg`}
-                alt=""
+                alt={TILES[selected].label}
                 fill
                 sizes="100vw"
                 className="pointer-events-none object-cover"

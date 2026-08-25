@@ -75,7 +75,7 @@ function OtherPropertyCard({ p }: { p: (typeof OTHER_PROPERTIES)[number] }) {
       <div className="relative aspect-[4/3]">
         <Image
           src={`/photos/${p.photo}.jpg`}
-          alt=""
+          alt={p.title}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover"

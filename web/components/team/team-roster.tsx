@@ -46,7 +46,7 @@ export function TeamRoster({ team }: Readonly<{ team: typeof TEAM }>) {
               >
                 <Image
                   src={member.photo}
-                  alt=""
+                  alt={member.name}
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
                   className={cn(

@@ -17,10 +17,41 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
+const SITE_TITLE = "New Level · Real Estate. Redefined.";
+const SITE_DESCRIPTION =
+  "New Level: a South Florida Real Estate group matching standout properties to the moments they're made for.";
+
 export const metadata: Metadata = {
-  title: "New Level · Real Estate. Redefined.",
-  description:
-    "New Level: a South Florida Real Estate group matching standout properties to the moments they're made for.",
+  // metadataBase is required for Next to resolve the relative OG/Twitter
+  // image URL below into an absolute one. Deliberately NOT hardcoding a
+  // domain here - this is a Netlify preview deploy, not the final site
+  // URL (the client has explicitly deferred domain/DNS work). Netlify
+  // sets URL/DEPLOY_PRIME_URL at build time to whatever this exact deploy's
+  // real address is, so this stays correct automatically through preview
+  // URL changes and any eventual domain move, with no code change needed.
+  metadataBase: new URL(
+    process.env.URL || process.env.DEPLOY_PRIME_URL || "http://localhost:3000"
+  ),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  // No OpenGraph/Twitter card metadata existed anywhere on the site before
+  // this - sharing any page's link (Slack, iMessage, social) produced an
+  // uncontrolled or blank preview. These are site-wide defaults every page
+  // inherits unless it sets its own (see property/page.tsx for an example
+  // of a page overriding these with content-specific values).
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    siteName: "New Level",
+    images: ["/photos/00.jpg"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ["/photos/00.jpg"],
+  },
 };
 
 // Runs before paint to set the dark class synchronously — avoids a flash of

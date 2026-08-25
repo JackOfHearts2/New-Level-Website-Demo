@@ -29,7 +29,7 @@ export function TeamImageAccordion({ team }: Readonly<{ team: typeof TEAM }>) {
           </div>
           <Image
             src={member.photo}
-            alt=""
+            alt={member.name}
             width={480}
             height={640}
             className={cn(

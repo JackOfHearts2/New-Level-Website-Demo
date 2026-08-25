@@ -30,8 +30,23 @@ import { InquiryForm } from "@/components/property/inquiry-form";
 import { StickyBookingBar } from "@/components/property/sticky-booking-bar";
 import { NearbyList } from "@/components/property/nearby-list";
 
+const PROPERTY_DESCRIPTION = `${PROPERTY.address} - ${PROPERTY_SPECS.bedrooms} bedrooms, ${PROPERTY_SPECS.bathrooms} bathrooms, sleeps up to ${PROPERTY_SPECS.maxGuests}. Presented by New Level, a South Florida Real Estate group.`;
+
 export const metadata: Metadata = {
   title: `${PROPERTY.siteName} · New Level`,
+  description: PROPERTY_DESCRIPTION,
+  openGraph: {
+    title: `${PROPERTY.siteName} · New Level`,
+    description: PROPERTY_DESCRIPTION,
+    images: ["/photos/00.jpg"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${PROPERTY.siteName} · New Level`,
+    description: PROPERTY_DESCRIPTION,
+    images: ["/photos/00.jpg"],
+  },
 };
 
 function isAudienceId(v: string | undefined): v is AudienceId {
@@ -308,7 +323,7 @@ export default async function PropertyPage({
               <div className="relative aspect-[4/3]">
                 <Image
                   src={`/photos/${p.photo}.jpg`}
-                  alt=""
+                  alt={p.title}
                   fill
                   sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   className="object-cover"
