@@ -382,6 +382,18 @@ if you add more hover states later: hover means "this does something," not decor
 
 ## Gotchas discovered the hard way
 
+- **(`web/` rebuild) `netlify.toml`'s `[[headers]]` block is a no-op for this site — set headers
+  in `next.config.ts` instead.** Found during a full site audit (2026-08-25) while adding
+  `X-Frame-Options`/`Referrer-Policy`/`Permissions-Policy`: added them via `netlify.toml`
+  `[[headers]]`, deployed, then confirmed via a direct `curl` against the live URL (with
+  `Cache-Control: no-cache` to guarantee an uncached response) that none of them showed up — on
+  *either* a dynamic route (`/`) or a statically-generated one (`/faq`). The response headers on
+  both showed `Cache-Status: "Next.js"`, meaning `@netlify/plugin-nextjs` serves every response
+  (build-marked-static pages included) through Next's own request handler, which never passes
+  through Netlify's TOML-based header injection layer. Moved the same headers into
+  `next.config.ts`'s `async headers()` function instead — confirmed live via the same curl check
+  that they now actually apply. **Don't add a `[[headers]]` block to `netlify.toml` for anything
+  Next.js itself serves without re-verifying live** — it silently does nothing on this site.
 - **(`web/` rebuild) Framer Motion's `AnimatePresence` + `exit` on a page-level route wrapper is
   unsafe with Next.js App Router client-side navigation — don't reintroduce it.**
   `components/page-transition.tsx` used to wrap every route's `{children}` in
