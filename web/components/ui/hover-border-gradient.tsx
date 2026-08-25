@@ -27,6 +27,7 @@ export function HoverBorderGradient({
     duration?: number;
     clockwise?: boolean;
     variant?: "dark" | "light";
+    href?: string;
   } & React.HTMLAttributes<HTMLElement>
 >) {
   const [hovered, setHovered] = useState<boolean>(false);

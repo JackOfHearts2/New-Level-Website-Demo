@@ -1,7 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import { usePathname } from "next/navigation";
+
+// Tracks whether a PageTransition instance has already mounted once in
+// this browser session - see the note on `isFirstEver` below for why this
+// lives at module scope instead of in state.
+let hasMountedOnce = false;
 
 // Several distinctly different, deliberately large-motion presets — picked
 // per-route (not randomly every load) so the same page always transitions
@@ -79,11 +85,36 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   // there's no window in which a duplicate can be left behind, no matter
   // how the navigation was triggered. This keeps a real per-page
   // entrance animation; it just doesn't get an exit choreography anymore.
+  // Skip the enter animation on the very first paint of a real page load.
+  // Real, reported complaint: the homepage would render its background,
+  // pause, pop in an image, pause again, then finally show the headline
+  // text - an unpleasant multi-stage reveal. Framer Motion bakes a
+  // component's `initial` variant into server-rendered HTML too, so an
+  // unconditional `initial="initial"` here meant every fresh page load
+  // was ALSO invisible (opacity: 0) until JS hydrated and ran this
+  // animation - stacking an extra, avoidable delay in front of whatever
+  // the page's own content was already doing (the homepage hero's own
+  // staggered reveal, tightened separately for the same complaint).
+  // `initial={false}` skips straight to the `animate` state instead - but
+  // only the first instance mounted per page load should get that; a
+  // later client-side navigation (a new key, hence a new instance) should
+  // still play the bold per-page transition as designed. A lazy `useState`
+  // initializer is the React-sanctioned place to run this kind of
+  // once-per-instance check: it's guaranteed to run exactly once per
+  // mounted instance, so the very first PageTransition in the session
+  // reads `hasMountedOnce` as false (matching on both server and client,
+  // so no hydration mismatch) and every instance after it reads true.
+  const [isFirstEver] = useState(() => {
+    const first = !hasMountedOnce;
+    hasMountedOnce = true;
+    return first;
+  });
+
   return (
     <motion.div
       key={pathname}
       variants={variants}
-      initial="initial"
+      initial={isFirstEver ? false : "initial"}
       animate="animate"
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
     >

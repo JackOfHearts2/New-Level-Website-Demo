@@ -10,6 +10,7 @@ import { NavMenu } from "@/components/nav-menu";
 import { NavMenuMobile } from "@/components/nav-menu-mobile";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProfileMenu } from "@/components/profile-menu";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { GALLERY_STRIP } from "@/lib/content";
 
 // How long each hero background image stays up before crossfading to the
@@ -36,12 +37,23 @@ function useHeroRotation(images: string[]) {
 // large-travel spring overshoot (no blur, which softens motion rather than
 // announcing it) so each hero element visibly launches into place instead
 // of quietly appearing.
+//
+// Real, reported complaint: with the original delayChildren: 0.1 /
+// staggerChildren: 0.18 / mass: 0.9 combo, the badge, headline, and
+// paragraph each took roughly 0.6-0.8s to settle and started well after
+// each other - the visitor's first several seconds on the site were
+// background, then a pause, then one element popping in, then another
+// pause, then the next. Tightened stagger/delay (badge/headline/paragraph
+// now start within ~120ms of each other instead of spanning ~460ms) and a
+// snappier spring (higher stiffness, lower mass, slightly more damping)
+// so the whole reveal reads as one crisp motion finishing well under
+// half a second, not three separate staged pop-ins.
 const transitionVariants = {
   container: {
     hidden: { opacity: 1 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.18, delayChildren: 0.1 },
+      transition: { staggerChildren: 0.06, delayChildren: 0 },
     },
   },
   item: {
@@ -56,9 +68,9 @@ const transitionVariants = {
       scale: 1,
       transition: {
         type: "spring" as const,
-        stiffness: 260,
-        damping: 18,
-        mass: 0.9,
+        stiffness: 420,
+        damping: 26,
+        mass: 0.5,
       },
     },
   },
@@ -126,16 +138,28 @@ export function HeroSection({
             <div className="mx-auto max-w-7xl px-6">
               <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                 <AnimatedGroup variants={transitionVariants}>
-                  <Link
+                  {/* This badge is deliberately its own signature design,
+                      not the shared pill treatment used elsewhere on the
+                      site: a solid black pill (stays consistent across
+                      light/dark mode, unlike theme-aware surfaces) with a
+                      brand-green light continuously chasing around its
+                      border via HoverBorderGradient - already used
+                      nowhere else on the homepage, so this reads as one
+                      distinct element rather than a variant of a pattern
+                      seen elsewhere on the page. */}
+                  <HoverBorderGradient
+                    as={Link}
                     href="/about"
-                    className="hover:bg-background bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300"
+                    duration={2.2}
+                    containerClassName="mx-auto"
+                    className="group flex items-center gap-4 px-4 py-1"
                   >
-                    <span className="text-foreground font-heading text-sm font-semibold">
+                    <span className="font-heading text-sm font-semibold">
                       New Level · Real Estate. Redefined.
                     </span>
-                    <span className="border-background block h-4 w-0.5 border-l bg-white"></span>
+                    <span className="block h-4 w-0.5 border-l border-white/30"></span>
 
-                    <div className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
+                    <div className="bg-white/10 group-hover:bg-white/20 size-6 overflow-hidden rounded-full duration-500">
                       <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
                         <span className="flex size-6">
                           <ArrowRight className="m-auto size-3" />
@@ -145,7 +169,7 @@ export function HeroSection({
                         </span>
                       </div>
                     </div>
-                  </Link>
+                  </HoverBorderGradient>
 
                   <h1 className="font-heading mt-8 max-w-4xl mx-auto text-balance text-6xl font-bold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                     Spaces for the moments that matter.
