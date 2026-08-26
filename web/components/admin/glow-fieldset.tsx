@@ -27,15 +27,29 @@ export function GlowFieldset({
    *  submitting, not just after. */
   onPreview?: () => void;
 }) {
-  const ref = useGlowRing<HTMLFieldSetElement>();
+  const ref = useGlowRing<HTMLDivElement>();
+  const headingId = `section-${legend.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`;
 
   return (
-    <fieldset
+    // A real <fieldset>/<legend> pair used to render this — client report
+    // (2026-08-27): "the border design... doesn't actually line up around
+    // the borders" and "the first portion... is too big." Root cause:
+    // <legend> has special browser-defined layout that makes it straddle
+    // the fieldset's own border-top rather than sit inside it like normal
+    // flowed content — there's no clean way to fully override that via
+    // CSS while keeping a real <legend>, and it directly fights a rounded
+    // custom border design like this one. A plain div + heading (with
+    // role="group"/aria-labelledby standing in for the semantics a real
+    // fieldset/legend would have given screen readers) sidesteps the
+    // browser quirk entirely instead of fighting it.
+    <div
       ref={ref}
+      role="group"
+      aria-labelledby={headingId}
       className={cn("glow-card relative space-y-4 rounded-2xl border border-border bg-card p-6", className)}
     >
       <span className="glow-card__ring" aria-hidden />
-      <legend className="font-heading flex items-center gap-2 px-1 text-base font-semibold">
+      <div id={headingId} className="font-heading flex items-center gap-2 text-base font-semibold">
         {legend}
         {onPreview && (
           <button
@@ -48,8 +62,8 @@ export function GlowFieldset({
             <Eye className="size-3.5" />
           </button>
         )}
-      </legend>
+      </div>
       {children}
-    </fieldset>
+    </div>
   );
 }

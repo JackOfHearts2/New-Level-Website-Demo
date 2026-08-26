@@ -6,7 +6,12 @@ import { X } from "lucide-react";
 import { GlowCard } from "@/components/ui/glow-card";
 
 const SEEN_KEY = "nlg_tour_seen";
-const WELCOME_DELAY_MS = 1500;
+// Staggered behind the cookie notice (immediate) and the floating dial's
+// own auto-reveal (~2s open, ~7s retract) — client report (2026-08-27):
+// on a first mobile visit, the cookie banner, the dial's pop-open, and
+// this welcome prompt were all appearing "all over each other." This is
+// the last of the three to show, once the dial's own cycle has settled.
+const WELCOME_DELAY_MS = 8000;
 
 type Step = {
   target: string;

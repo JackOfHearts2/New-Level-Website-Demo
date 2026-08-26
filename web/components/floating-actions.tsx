@@ -67,21 +67,52 @@ export function FloatingActions() {
   // bottom-4 spot (replacing the MobileDock there) — bump up to clear it
   // instead of sitting on top of it.
   const onPropertyPage = usePathname() === "/property";
-  const autoOpenedRef = useRef(false);
 
-  // One-time on-load reveal (client ask, 2026-08-26): open automatically so
-  // a first-time visitor sees where "Contact us"/"Chat with us" live, then
-  // retract on its own after ~5s or as soon as they start scrolling —
-  // whichever happens first — so the animation itself teaches them where
-  // it collapses to. Only fires once per mount (this component stays
-  // mounted across client-side navigation, so in practice that's once per
-  // real page load, not once per page visited).
+  // One-time PER TAB SESSION on-load reveal (client ask, 2026-08-26): open
+  // automatically so a first-time visitor sees where "Contact us"/"Chat
+  // with us" live, then retract after ~5s or as soon as they start
+  // scrolling — whichever's first — so the retract animation itself
+  // teaches them where it collapses to. A short-lived spring-pulse
+  // (animate-fab-pulse, globals.css) keeps drawing the eye afterward
+  // without popping open again.
+  //
+  // sessionStorage, not an in-memory ref — client report (2026-08-27): "I
+  // opened another page after I landed on the page initially, and it
+  // popped up again." The homepage (app/page.tsx) and every other page
+  // ((marketing)/layout.tsx) render their OWN separate FloatingActions
+  // instance (the homepage isn't nested under that layout — see the
+  // CLAUDE.md gotcha on sitewide fixed components needing both places), so
+  // a real navigation between them mounts a genuinely different component
+  // instance with its own fresh ref — an in-memory guard can't survive
+  // that the way it can survive same-tree client-side routing. sessionStorage
+  // does, and still resets on a new tab/window the way a "first load" cue
+  // should.
+  //
+  // Delayed ~2s (client report, same message): "we got the cookies
+  // popping up, we got the little animation for that [dial], and we have
+  // [the site tour prompt]... all pops up all over each other... maybe we
+  // can time them." Cookie notice shows immediately (it's a persistent,
+  // non-auto-hiding compliance banner, reasonable to lead with); this
+  // dial follows at ~2s; SiteTour's own welcome prompt was pushed later
+  // to close the sequence — see WELCOME_DELAY_MS in site-tour.tsx.
   useEffect(() => {
-    if (autoOpenedRef.current) return;
-    autoOpenedRef.current = true;
-    setDialOpen(true);
+    let alreadyShown = true;
+    try {
+      alreadyShown = sessionStorage.getItem("nlg_dial_auto_shown") === "1";
+    } catch {
+      // Storage unavailable — just skip the auto-reveal rather than risk
+      // showing it on every navigation with no way to remember it ran.
+    }
+    if (alreadyShown) return;
 
-    const timer = setTimeout(() => setDialOpen(false), 5000);
+    const openTimer = setTimeout(() => {
+      try {
+        sessionStorage.setItem("nlg_dial_auto_shown", "1");
+      } catch {}
+      setDialOpen(true);
+    }, 2000);
+
+    const closeTimer = setTimeout(() => setDialOpen(false), 7000);
     function onScroll() {
       setDialOpen(false);
       window.removeEventListener("scroll", onScroll);
@@ -89,7 +120,8 @@ export function FloatingActions() {
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(openTimer);
+      clearTimeout(closeTimer);
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
