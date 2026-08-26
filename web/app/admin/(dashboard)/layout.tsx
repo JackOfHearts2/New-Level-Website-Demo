@@ -7,6 +7,7 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopBar } from "@/components/admin/admin-topbar";
 import { AdminScrollToTop } from "@/components/admin/admin-scroll-to-top";
 import { AdminShellProvider } from "@/components/admin/admin-shell-context";
+import { TroubleshootWidget } from "@/components/admin/troubleshoot-widget";
 
 export default async function AdminDashboardLayout({
   children,
@@ -64,6 +65,7 @@ export default async function AdminDashboardLayout({
           {children}
         </main>
         <AdminScrollToTop />
+        <TroubleshootWidget />
       </div>
     </AdminShellProvider>
   );

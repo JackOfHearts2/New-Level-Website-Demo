@@ -12,6 +12,9 @@ export type ReportItem = {
   pageUrl: string;
   status: "open" | "resolved";
   createdAt: string;
+  source: "public" | "staff";
+  relatedRequestId: string | null;
+  diagnostic: { status?: string; createdAt?: string; reviewedAt?: string | null } | null;
 };
 
 function formatDate(iso: string) {
@@ -26,7 +29,14 @@ function ReportRow({ report }: { report: ReportItem }) {
     <div className="border-border space-y-2 rounded-2xl border p-6">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="font-heading font-semibold">{report.issueType}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-heading font-semibold">{report.issueType}</p>
+            {report.source === "staff" && (
+              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-900">
+                Staff
+              </span>
+            )}
+          </div>
           <p className="text-muted-foreground text-xs">
             {formatDate(report.createdAt)} · {report.pageUrl}
           </p>
@@ -44,6 +54,20 @@ function ReportRow({ report }: { report: ReportItem }) {
       <p className="text-sm">{report.details}</p>
       {report.reporterEmail && (
         <p className="text-muted-foreground text-xs">From: {report.reporterEmail}</p>
+      )}
+      {report.diagnostic && (
+        <div className="border-border bg-muted/40 rounded-lg border p-3 text-xs">
+          <p className="font-heading font-semibold">Diagnostic snapshot (at time of report)</p>
+          <p className="text-muted-foreground mt-1">
+            Submission status: <span className="capitalize">{report.diagnostic.status?.replace("_", " ")}</span>
+            {report.diagnostic.reviewedAt && ` · Reviewed ${formatDate(report.diagnostic.reviewedAt)}`}
+          </p>
+          {report.relatedRequestId && (
+            <a href="/admin/approvals" className="text-primary font-semibold">
+              View in Approvals →
+            </a>
+          )}
+        </div>
       )}
       <button
         type="button"

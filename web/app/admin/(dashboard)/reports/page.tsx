@@ -11,6 +11,9 @@ type ReportRow = {
   page_url: string;
   status: "open" | "resolved";
   created_at: string;
+  source: "public" | "staff";
+  related_request_id: string | null;
+  diagnostic: { status?: string; createdAt?: string; reviewedAt?: string | null } | null;
 };
 
 export default async function ReportsPage() {
@@ -20,7 +23,9 @@ export default async function ReportsPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("problem_reports")
-    .select("id, issue_type, details, reporter_email, page_url, status, created_at")
+    .select(
+      "id, issue_type, details, reporter_email, page_url, status, created_at, source, related_request_id, diagnostic"
+    )
     .order("created_at", { ascending: false })
     .returns<ReportRow[]>();
 
@@ -32,6 +37,9 @@ export default async function ReportsPage() {
     pageUrl: row.page_url,
     status: row.status,
     createdAt: row.created_at,
+    source: row.source,
+    relatedRequestId: row.related_request_id,
+    diagnostic: row.diagnostic,
   }));
 
   return (
@@ -40,7 +48,7 @@ export default async function ReportsPage() {
         <h1 className="font-heading text-2xl font-bold">Reports</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           Problems visitors have flagged from the site&apos;s &quot;Report a problem&quot;
-          button.
+          button, plus anything staff have flagged from the same button in the dashboard.
         </p>
       </div>
       <ReportList reports={reports} />
