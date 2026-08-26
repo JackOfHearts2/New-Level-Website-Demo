@@ -34,6 +34,18 @@ export async function getOpenReportsCount(supabase: SupabaseClient): Promise<num
 // Properties have their own status lifecycle (a per-row column, not a
 // content_change_requests wrapper — see migration 0016), so this is a
 // separate badge rather than folded into getApprovalsBadgeCount above.
+// Every staff member sees the same count here (unlike approvals/properties,
+// inquiries have no "my own" submitter — they all come from the public,
+// and any staff member can pick one up), so this doesn't need an
+// AdminAuth-based role branch the way the others above do.
+export async function getNewInquiriesCount(supabase: SupabaseClient): Promise<number> {
+  const { count } = await supabase
+    .from("inquiries")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "new");
+  return count ?? 0;
+}
+
 export async function getPendingPropertiesCount(
   supabase: SupabaseClient,
   auth: AdminAuth

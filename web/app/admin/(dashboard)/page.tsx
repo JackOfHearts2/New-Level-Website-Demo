@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
+import { getApprovalsBadgeCount, getOpenReportsCount, getNewInquiriesCount } from "@/lib/admin-counts";
 import { DashboardView, type StatItem, type NavTileItem, type ActivityItem } from "@/components/admin/dashboard-view";
 import { TrendChart, type TrendPoint } from "@/components/admin/trend-chart";
 import { trimLeadingZeroDays } from "@/lib/chart-data";
@@ -76,6 +76,7 @@ export default async function AdminHomePage({
   const [
     pendingApprovals,
     openReports,
+    newInquiries,
     staffCount,
     recentActivity,
     { data: profile },
@@ -85,6 +86,7 @@ export default async function AdminHomePage({
   ] = await Promise.all([
     getApprovalsBadgeCount(supabase, auth),
     getOpenReportsCount(supabase),
+    getNewInquiriesCount(supabase),
     isAdmin
       ? supabase.from("profiles").select("id", { count: "exact", head: true }).in("role", ["editor", "admin"])
       : Promise.resolve({ count: null }),
@@ -144,6 +146,7 @@ export default async function AdminHomePage({
       icon: "approvals",
     },
     { href: "/admin/reports", label: "Open reports", value: openReports, icon: "reports" },
+    { href: "/admin/inquiries", label: "New inquiries", value: newInquiries, icon: "inquiries" },
     ...(isAdmin
       ? [
           { href: "/admin/editors", label: "Staff with access", value: staffCount.count ?? 0, icon: "staff" as const },
@@ -164,6 +167,18 @@ export default async function AdminHomePage({
       title: "Properties",
       description: "Add or edit listings.",
       icon: "properties",
+    },
+    {
+      href: "/admin/inquiries",
+      title: "Inquiries",
+      description: "Qualify and respond to leads.",
+      icon: "inquiries",
+    },
+    {
+      href: "/admin/team",
+      title: "Team",
+      description: "Reporting lines and who's assigned what.",
+      icon: "team",
     },
     { href: "/admin/settings", title: "Settings", description: "Account & preferences.", icon: "settings" },
   ];

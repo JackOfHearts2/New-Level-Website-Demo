@@ -21,6 +21,8 @@ import {
   UserCog,
   X,
   Building2,
+  Inbox,
+  Network,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
@@ -56,6 +58,7 @@ export function AdminSidebar({
   pendingApprovals,
   openReports,
   pendingProperties,
+  newInquiries,
   savedOrder,
 }: {
   logoUrl: string;
@@ -67,6 +70,7 @@ export function AdminSidebar({
   pendingApprovals: number;
   openReports: number;
   pendingProperties: number;
+  newInquiries: number;
   savedOrder: string[] | null;
 }) {
   const [open, setOpen] = useState(true);
@@ -86,8 +90,10 @@ export function AdminSidebar({
     ...(isAdmin ? [{ href: "/admin/analytics", label: "Analytics", Icon: BarChart3 }] : []),
     { href: "/admin/content", label: "Content & Media", Icon: MediaIcon },
     { href: "/admin/properties", label: "Properties", Icon: Building2, badge: pendingProperties },
+    { href: "/admin/inquiries", label: "Inquiries", Icon: Inbox, badge: newInquiries },
     { href: "/admin/approvals", label: "Approvals", Icon: ClipboardCheck, badge: pendingApprovals },
     { href: "/admin/reports", label: "Reports", Icon: Flag, badge: openReports },
+    { href: "/admin/team", label: "Team", Icon: Network },
   ];
   // Only the ORDER lives in state, not the item objects themselves — the
   // items are rebuilt fresh every render from current props (badge counts

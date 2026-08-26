@@ -15,9 +15,18 @@ export type ActivityEventType =
   | "content_published"
   | "content_draft_saved"
   | "code_deploy"
-  | "staff_invited";
+  | "staff_invited"
+  | "inquiry_status_changed"
+  | "inquiry_assigned"
+  | "inquiry_note_added"
+  | "staff_hierarchy_updated";
 
-export type ActivityTargetTable = "content_change_requests" | "problem_reports" | "profiles" | "properties";
+export type ActivityTargetTable =
+  | "content_change_requests"
+  | "problem_reports"
+  | "profiles"
+  | "properties"
+  | "inquiries";
 
 /** Fail-soft, same philosophy as lib/email.ts — a logging failure must
  *  never block the real action it's describing. */

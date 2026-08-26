@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
 import { AUDIENCES } from "@/lib/content";
+import { submitInquiry } from "@/app/actions/inquiries";
 import { useBooking } from "./booking-context";
 import { PaymentSimulator } from "./payment-simulator";
 
@@ -27,6 +29,7 @@ export function InquiryForm() {
   const { state, quote } = useBooking();
   const [mode, setMode] = useState<Mode>("form");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, startSubmit] = useTransition();
   // Not GlowCard — it can't render as a <form>, and this needs to stay a
   // real form element for onSubmit — so the same glow-card classes/hook
   // are wired up by hand instead of via the component.
@@ -79,9 +82,35 @@ export function InquiryForm() {
   function handleInquire(e: React.MouseEvent) {
     e.preventDefault();
     if (!validate(true)) return;
-    // INQUIRY_ENDPOINT is empty on the old site too — this stays demo-only,
-    // matching current behavior rather than adding a new backend.
-    setMode("inquired");
+    if (!formRef.current) return;
+    const fd = new FormData(formRef.current);
+    startSubmit(async () => {
+      const result = await submitInquiry({
+        source: "property",
+        name: String(fd.get("name") ?? ""),
+        email: String(fd.get("email") ?? ""),
+        phone: String(fd.get("phone") ?? ""),
+        contactMethod: String(fd.get("contact_method") ?? ""),
+        message: String(fd.get("notes") ?? ""),
+        metadata: {
+          purpose: audience?.cardLabel ?? null,
+          eventType: state.eventTypeOther || state.eventType || null,
+          rateType: quote.status === "ok" ? quote.tierLabel : null,
+          checkIn: quote.status === "ok" ? quote.checkIn.toISOString() : null,
+          checkOut: quote.status === "ok" ? quote.checkOut.toISOString() : null,
+          package: quote.status === "ok" ? (quote.pkg?.label ?? null) : null,
+          estTotal: quote.status === "ok" ? quote.totalNumeric : null,
+          groupSize: fd.get("group_size") ? Number(fd.get("group_size")) : null,
+        },
+      });
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Inquiry sent");
+      setMode("inquired");
+    });
   }
 
   function handleReserve(e: React.MouseEvent) {
@@ -106,9 +135,6 @@ export function InquiryForm() {
           We&apos;ll follow up to confirm availability and next steps. If you&apos;d rather lock in
           these dates right away instead of waiting to hear back, you can still reserve them with a
           deposit.
-        </p>
-        <p className="text-foreground mt-4 text-sm">
-          Demo mode: this inquiry wasn&apos;t actually sent anywhere.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           {quote.status === "ok" && (
@@ -216,9 +242,10 @@ export function InquiryForm() {
           <button
             type="button"
             onClick={handleInquire}
-            className="font-heading border-border hover:bg-muted rounded-xl border px-6 py-2.5 text-sm font-semibold"
+            disabled={submitting}
+            className="font-heading border-border hover:bg-muted rounded-xl border px-6 py-2.5 text-sm font-semibold disabled:opacity-50"
           >
-            Send an Inquiry
+            {submitting ? "Sending…" : "Send an Inquiry"}
           </button>
         </div>
       </form>

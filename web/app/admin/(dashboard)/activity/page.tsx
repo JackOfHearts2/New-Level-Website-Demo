@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 
 const PAGE_SIZE = 30;
 
-type TargetTable = "content_change_requests" | "properties" | "problem_reports" | "profiles";
+type TargetTable = "content_change_requests" | "properties" | "problem_reports" | "profiles" | "inquiries";
 
 type ActivityRow = {
   id: string;
@@ -28,6 +28,7 @@ const TYPE_FILTERS: { value: TargetTable | "all"; label: string }[] = [
   { value: "all", label: "All" },
   { value: "content_change_requests", label: "Content" },
   { value: "properties", label: "Properties" },
+  { value: "inquiries", label: "Inquiries" },
   { value: "profiles", label: "Team & access" },
   { value: "problem_reports", label: "Reports" },
 ];
@@ -38,6 +39,7 @@ function targetHref(row: ActivityRow): string | null {
   if (!row.target_id) return null;
   if (row.target_table === "content_change_requests") return "/admin/approvals";
   if (row.target_table === "properties") return "/admin/properties";
+  if (row.target_table === "inquiries") return "/admin/inquiries";
   if (row.target_table === "problem_reports") return "/admin/reports";
   if (row.target_table === "profiles") return "/admin/editors";
   return null;

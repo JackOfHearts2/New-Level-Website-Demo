@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { getApprovalsBadgeCount, getOpenReportsCount, getPendingPropertiesCount } from "@/lib/admin-counts";
+import {
+  getApprovalsBadgeCount,
+  getOpenReportsCount,
+  getPendingPropertiesCount,
+  getNewInquiriesCount,
+} from "@/lib/admin-counts";
 import { getSiteContent } from "@/lib/site-content";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopBar } from "@/components/admin/admin-topbar";
@@ -18,10 +23,11 @@ export default async function AdminDashboardLayout({
   if (!auth) redirect("/");
 
   const supabase = await createClient();
-  const [pendingApprovals, openReports, pendingProperties, content, { data: profile }] = await Promise.all([
+  const [pendingApprovals, openReports, pendingProperties, newInquiries, content, { data: profile }] = await Promise.all([
     getApprovalsBadgeCount(supabase, auth),
     getOpenReportsCount(supabase),
     getPendingPropertiesCount(supabase, auth),
+    getNewInquiriesCount(supabase),
     getSiteContent(),
     supabase
       .from("profiles")
@@ -53,6 +59,7 @@ export default async function AdminDashboardLayout({
           pendingApprovals={pendingApprovals}
           openReports={openReports}
           pendingProperties={pendingProperties}
+          newInquiries={newInquiries}
           savedOrder={profile?.sidebar_order ?? null}
         />
         {/* pb-24, not the plain py-6 the rest of this padding uses — on
@@ -70,6 +77,7 @@ export default async function AdminDashboardLayout({
             pendingApprovals={pendingApprovals}
             openReports={openReports}
             pendingProperties={pendingProperties}
+            newInquiries={newInquiries}
             role={auth.role}
             email={auth.email}
             displayName={displayName}

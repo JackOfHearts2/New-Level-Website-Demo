@@ -12,6 +12,8 @@ import {
   LayoutGrid,
   List,
   Building2,
+  Inbox,
+  Network,
 } from "lucide-react";
 import { GlowCard } from "@/components/ui/glow-card";
 import { saveDashboardView } from "@/app/admin/(dashboard)/actions";
@@ -24,6 +26,8 @@ const ICONS = {
   content: MediaIcon,
   settings: Settings,
   properties: Building2,
+  inquiries: Inbox,
+  team: Network,
 } as const;
 type IconKey = keyof typeof ICONS;
 

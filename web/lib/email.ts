@@ -83,6 +83,106 @@ export async function notifyPendingProperty(listing: {
   });
 }
 
+/** Same fail-soft Resend send as sendAdminNotification, but to an
+ *  arbitrary staff member's own address rather than the fixed
+ *  ADMIN_NOTIFICATION_EMAIL inbox — used for "you were assigned/escalated
+ *  an inquiry" notices, which need to reach whichever staff member it is,
+ *  not always the same admin inbox.
+ *
+ *  Known limitation (see sendSecurityCode's own note): Resend's shared
+ *  sandbox sender (onboarding@resend.dev, no custom domain verified yet)
+ *  can only deliver to the Resend account's OWN registered address
+ *  (today, jackcoquillon@gmail.com). Assigning an inquiry to any OTHER
+ *  staff member will call this and fail silently (caught below, logged,
+ *  never blocks the assignment itself) until a domain is verified — flag
+ *  this to the client if assignment notifications are reported as not
+ *  arriving. */
+async function sendStaffNotification({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error("sendStaffNotification: RESEND_API_KEY not set — skipping email.");
+    return;
+  }
+  try {
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from: "New Level Notifications <onboarding@resend.dev>",
+      to,
+      subject,
+      html,
+    });
+  } catch (err) {
+    console.error("sendStaffNotification failed:", err);
+  }
+}
+
+export async function notifyInquiryAssigned(assignee: { email: string; inquiryName: string; inquiryId: string }) {
+  await sendStaffNotification({
+    to: assignee.email,
+    subject: `New Level: an inquiry was assigned to you`,
+    html: `
+      <p>You were assigned an inquiry from <strong>${escapeHtml(assignee.inquiryName)}</strong>.</p>
+      <p>Review it in the admin dashboard under "Inquiries."</p>
+    `,
+  });
+}
+
+/** The literal reply an inquirer sees when staff check "also email them" on
+ *  a note — not fail-soft the way notifications are, since the caller
+ *  (addInquiryNote) needs to tell the staff member if it didn't actually
+ *  go out, same reasoning as sendSecurityCode. */
+export async function sendInquiryReply(to: string, body: string): Promise<{ ok: boolean }> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error("sendInquiryReply: RESEND_API_KEY not set — cannot send.");
+    return { ok: false };
+  }
+  try {
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from: "New Level <onboarding@resend.dev>",
+      to,
+      subject: "Re: your inquiry to New Level",
+      html: `<p>${escapeHtml(body).replace(/\n/g, "<br>")}</p>`,
+    });
+    if (error) {
+      console.error("sendInquiryReply failed:", error);
+      return { ok: false };
+    }
+    return { ok: true };
+  } catch (err) {
+    console.error("sendInquiryReply failed:", err);
+    return { ok: false };
+  }
+}
+
+export async function notifyNewInquiry(inquiry: {
+  source: "property" | "contact" | "careers";
+  name: string;
+  email: string;
+}) {
+  const settings = await getSettings().catch(() => null);
+  if (settings && !settings.notifyOnSubmission) return;
+
+  const sourceLabel =
+    inquiry.source === "property" ? "the property page" : inquiry.source === "careers" ? "the careers page" : "the contact page";
+  await sendAdminNotification({
+    subject: `New Level: a new inquiry from ${inquiry.name}`,
+    html: `
+      <p><strong>${escapeHtml(inquiry.name)}</strong> (${escapeHtml(inquiry.email)}) submitted an inquiry via ${sourceLabel}.</p>
+      <p>Review it in the admin dashboard under "Inquiries."</p>
+    `,
+  });
+}
+
 export async function notifyProblemReport(report: {
   issueType: string;
   details: string;

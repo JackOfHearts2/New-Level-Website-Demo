@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ShineCircle } from "@/components/ui/shine-shape";
+import { submitInquiry } from "@/app/actions/inquiries";
 
 // A dedicated surface for "Ask Shelley a Question" (Broker's Corner), kept
 // separate from the general Contact page/form per the client's explicit
@@ -18,13 +20,30 @@ import { ShineCircle } from "@/components/ui/shine-shape";
 // question field — no topic chips, no general point-of-contact info.
 export function AskBrokerModal({ onClose }: { onClose: () => void }) {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, startSubmit] = useTransition();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!e.currentTarget.reportValidity()) return;
-    // Demo-only, same convention as InquiryForm/ContactForm — no live
-    // endpoint behind this yet, so it confirms without actually sending.
-    setSubmitted(true);
+    setError(null);
+    const fd = new FormData(e.currentTarget);
+    startSubmit(async () => {
+      const result = await submitInquiry({
+        source: "contact",
+        name: String(fd.get("name") ?? ""),
+        email: String(fd.get("email") ?? ""),
+        message: String(fd.get("question") ?? ""),
+        metadata: { topics: ["general"], askedBroker: true },
+      });
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Question sent");
+      setSubmitted(true);
+    });
   }
 
   return (
@@ -60,9 +79,6 @@ export function AskBrokerModal({ onClose }: { onClose: () => void }) {
             </h2>
             <p className="text-foreground mt-2 text-sm">
               She personally follows up on these, usually within a couple of days.
-            </p>
-            <p className="text-foreground mt-4 text-sm">
-              Demo mode: this question wasn&apos;t actually sent anywhere.
             </p>
             <Button className="mt-6 w-full" onClick={onClose}>
               Done
@@ -113,8 +129,13 @@ export function AskBrokerModal({ onClose }: { onClose: () => void }) {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Send to Shelley
+              {error && (
+                <p className="text-destructive text-sm" role="alert">
+                  {error}
+                </p>
+              )}
+              <Button type="submit" disabled={submitting} className="w-full">
+                {submitting ? "Sending…" : "Send to Shelley"}
               </Button>
             </form>
           </>

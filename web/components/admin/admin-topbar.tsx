@@ -15,6 +15,8 @@ const LABELS: Record<string, string> = {
   "/admin/content": "Content",
   "/admin/properties": "Properties",
   "/admin/images": "Images",
+  "/admin/inquiries": "Inquiries",
+  "/admin/team": "Team",
   "/admin/approvals": "Approvals",
   "/admin/reports": "Reports",
   "/admin/editors": "Access",
@@ -38,6 +40,7 @@ export function AdminTopBar({
   pendingApprovals,
   openReports,
   pendingProperties,
+  newInquiries,
   role,
   email,
   displayName,
@@ -46,6 +49,7 @@ export function AdminTopBar({
   pendingApprovals: number;
   openReports: number;
   pendingProperties: number;
+  newInquiries: number;
   role: "editor" | "admin";
   email: string;
   displayName: string | null;
@@ -120,6 +124,7 @@ export function AdminTopBar({
               rows={[
                 { href: "/admin/approvals", label: "Pending approvals", count: pendingApprovals },
                 { href: "/admin/properties", label: "Pending listings", count: pendingProperties },
+                { href: "/admin/inquiries", label: "New inquiries", count: newInquiries },
                 { href: "/admin/reports", label: "Open reports", count: openReports },
               ]}
             />

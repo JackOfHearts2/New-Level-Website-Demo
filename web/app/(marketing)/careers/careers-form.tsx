@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { GlowCard } from "@/components/ui/glow-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CAREER_ROLES } from "@/lib/content";
+import { submitInquiry } from "@/app/actions/inquiries";
 
 // Same demo-only convention as ContactForm/InquiryForm — no live endpoint
 // connected yet, so this confirms in place without actually sending
@@ -16,11 +18,33 @@ import { CAREER_ROLES } from "@/lib/content";
 // message doesn't.
 export function CareersForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, startSubmit] = useTransition();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!e.currentTarget.reportValidity()) return;
-    setSubmitted(true);
+    setError(null);
+    const fd = new FormData(e.currentTarget);
+    startSubmit(async () => {
+      const result = await submitInquiry({
+        source: "careers",
+        name: String(fd.get("name") ?? ""),
+        email: String(fd.get("email") ?? ""),
+        message: String(fd.get("message") ?? ""),
+        metadata: {
+          role: fd.get("role") ?? null,
+          license: fd.get("license") ?? null,
+        },
+      });
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Application sent");
+      setSubmitted(true);
+    });
   }
 
   if (submitted) {
@@ -29,9 +53,6 @@ export function CareersForm() {
         <h2 className="font-heading text-xl font-bold">Thanks for reaching out.</h2>
         <p className="text-foreground mt-2 text-sm">
           We&apos;ll follow up as soon as we can.
-        </p>
-        <p className="text-foreground mt-4 text-sm">
-          Demo mode: this message wasn&apos;t actually sent anywhere.
         </p>
         <Button className="mt-6" onClick={() => setSubmitted(false)}>
           Submit another inquiry
@@ -96,8 +117,13 @@ export function CareersForm() {
           />
         </div>
 
-        <Button type="submit" className="w-full sm:w-auto">
-          Submit
+        {error && (
+          <p className="text-destructive text-sm" role="alert">
+            {error}
+          </p>
+        )}
+        <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
+          {submitting ? "Sending…" : "Submit"}
         </Button>
       </form>
     </GlowCard>
