@@ -3,7 +3,75 @@
 import { useActionState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
-import { grantAccess, revokeAccess, type ActionResult } from "./actions";
+import { grantAccess, revokeAccess, inviteStaff, type ActionResult } from "./actions";
+
+function InviteButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="font-heading rounded-lg bg-[#72D35B] px-4 py-2 text-sm font-semibold text-black disabled:opacity-50"
+    >
+      {pending ? "Sending…" : "Send invite"}
+    </button>
+  );
+}
+
+/** Client ask (2026-08-26): "New Level Group has sent you an invitation to
+ *  join them as a 'X'." Separate from GrantEditorForm below, which only
+ *  works for an email that already has an account — this is for someone
+ *  brand new. Same shape/verification-state pattern as that form. */
+export function InviteStaffForm() {
+  const [state, formAction] = useActionState<ActionResult | undefined, FormData>(
+    inviteStaff,
+    undefined
+  );
+
+  return (
+    <form action={formAction} className="border-border space-y-3 rounded-2xl border p-6">
+      <h2 className="font-heading text-sm font-semibold">Invite someone new</h2>
+      <div className="grid gap-3 sm:grid-cols-[2fr_1fr]">
+        <label className="block text-sm">
+          <span className="font-heading font-medium">Email</span>
+          <input
+            name="email"
+            type="email"
+            required
+            placeholder="someone@example.com"
+            className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          />
+        </label>
+        <label className="block text-sm">
+          <span className="font-heading font-medium">Role</span>
+          <select
+            name="role"
+            defaultValue="editor"
+            className="border-border mt-1 w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            <option value="editor">Editor</option>
+            <option value="admin">Admin</option>
+          </select>
+        </label>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        Sends them an email to set a password, confirm it with a code, and get access — nothing
+        is granted until they finish that.
+      </p>
+      {state?.error && (
+        <p className="text-destructive text-sm" role="alert">
+          {state.error}
+        </p>
+      )}
+      {state?.ok && (
+        <p className="text-sm text-[#2f6b1f]" role="status">
+          Invite sent.
+        </p>
+      )}
+      <InviteButton />
+    </form>
+  );
+}
 
 function GrantButton() {
   const { pending } = useFormStatus();

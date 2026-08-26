@@ -14,7 +14,8 @@ export type ActivityEventType =
   | "report_reopened"
   | "content_published"
   | "content_draft_saved"
-  | "code_deploy";
+  | "code_deploy"
+  | "staff_invited";
 
 export type ActivityTargetTable = "content_change_requests" | "problem_reports" | "profiles";
 

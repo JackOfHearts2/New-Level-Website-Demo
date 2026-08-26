@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { GrantEditorForm, RevokeButton } from "./manage-editors-form";
+import { GrantEditorForm, InviteStaffForm, RevokeButton } from "./manage-editors-form";
 import { GlowCard } from "@/components/ui/glow-card";
 
 type StaffRole = "viewer" | "editor" | "manager" | "admin";
@@ -38,6 +38,7 @@ export default async function EditorsPage() {
         </p>
       </div>
 
+      <InviteStaffForm />
       <GrantEditorForm />
 
       <GlowCard className="block">
