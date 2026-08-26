@@ -6,6 +6,8 @@ import { requireAdmin, requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { saveSettings, type AdminSettings } from "@/lib/settings";
 import { sendSecurityCode } from "@/lib/email";
+import { sniffImageType } from "@/lib/image-sniff";
+import { imageBlobStore } from "@/lib/site-content";
 
 export type ActionResult = { error?: string; ok?: boolean };
 export type PasswordChangeState = { error?: string; codeSent?: boolean; done?: boolean } | undefined;
@@ -130,7 +132,64 @@ export async function updateProfile(
     .eq("id", auth.userId);
   if (error) return { error: "Couldn't save your profile. Please try again." };
 
-  revalidatePath("/admin/settings");
+  // "layout" (not just the page) — the sidebar and top bar that show this
+  // name/avatar live in app/admin/(dashboard)/layout.tsx, not the Settings
+  // page itself. This was the actual bug Jack hit: saving a name updated
+  // the database fine, but nothing on screen ever re-fetched it.
+  revalidatePath("/admin", "layout");
+  return { ok: true };
+}
+
+/** Avatar upload — client ask (2026-08-26): "I also wanna see a picture."
+ *  Same Blobs store / re-sniff-don't-trust-declared-type pattern as
+ *  saveImage, scoped to the uploader's own row via a `avatar-<userId>`
+ *  key rather than anything in SiteContent (this isn't site content, it's
+ *  per-person). */
+export async function saveAvatar(formData: FormData): Promise<ActionResult> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not authorized." };
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose an image file." };
+  if (file.size > 4_000_000) return { error: "Image too large (4MB max)." };
+
+  const bytes = await file.arrayBuffer();
+  const detectedType = sniffImageType(bytes);
+  if (!detectedType) {
+    return { error: "That doesn't look like a supported image (JPEG, PNG, or WebP)." };
+  }
+
+  const store = imageBlobStore();
+  if (!store) return { error: "Couldn't save: storage unavailable." };
+
+  try {
+    await store.set(`image:avatar-${auth.userId}`, bytes, { metadata: { type: detectedType } });
+  } catch {
+    return { error: "Couldn't save: storage unavailable." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ avatar_updated_at: new Date().toISOString() })
+    .eq("id", auth.userId);
+  if (error) return { error: "Couldn't save your profile. Please try again." };
+
+  revalidatePath("/admin", "layout");
+  return { ok: true };
+}
+
+/** Proactive addition, not explicitly requested — a natural companion to
+ *  the 2FA password-change work: revoke every other active session
+ *  (Supabase's global sign-out scope) in case an account was left signed
+ *  in somewhere unexpected. */
+export async function signOutEverywhere(): Promise<ActionResult> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut({ scope: "global" });
+  if (error) return { error: "Couldn't sign out other sessions. Please try again." };
   return { ok: true };
 }
 

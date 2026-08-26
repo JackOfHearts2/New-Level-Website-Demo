@@ -2,26 +2,62 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Monitor, LogOut, User as UserIcon } from "lucide-react";
+import Image from "next/image";
+import { Monitor, LogOut, User as UserIcon, UserCog } from "lucide-react";
 import { ShineCircle } from "@/components/ui/shine-shape";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { logout } from "@/app/admin/(dashboard)/actions";
 
-/** The sidebar's bottom profile slot — an avatar button that opens a
- *  dropdown with account-relevant actions, mirroring the public site's
- *  ProfileMenu (components/profile-menu.tsx) pattern but trimmed to what's
- *  relevant inside /admin (no Saved Properties/Tour/FAQ links) and simpler
- *  positioning: this only ever renders in one place (the sidebar's bottom
- *  slot), so it doesn't need ProfileMenu's viewport-clamping/flip-up portal
- *  logic — a plain anchored dropdown is enough. Explicit client ask
- *  (2026-08-26): "the little profile icon... go back to the live site." */
+// Tailwind needs static, literal class strings to scan at build time —
+// `size-${size}` would silently fail to generate the CSS for whichever
+// size wasn't already used elsewhere in the codebase. Explicit variants
+// instead of interpolation.
+function Avatar({
+  displayName,
+  avatarUrl,
+  size = "md",
+}: {
+  displayName: string | null;
+  avatarUrl: string | null;
+  size?: "sm" | "md";
+}) {
+  const initial = displayName?.trim()?.[0]?.toUpperCase();
+  return (
+    <ShineCircle
+      className={`bg-primary/15 text-primary flex shrink-0 items-center justify-center overflow-hidden rounded-full ${size === "sm" ? "size-8" : "size-9"}`}
+    >
+      {avatarUrl ? (
+        <Image src={avatarUrl} alt={displayName ?? "Profile photo"} width={40} height={40} className="size-full object-cover" />
+      ) : initial ? (
+        <span className="font-heading text-sm font-bold">{initial}</span>
+      ) : (
+        <UserIcon className="size-4" />
+      )}
+    </ShineCircle>
+  );
+}
+
+/** Profile menu — used in two spots (client ask, 2026-08-26: "not only a
+ *  profile icon top right, but... the admin icon on the bottom left...
+ *  also needs a profile section"): the sidebar's bottom slot (full,
+ *  name+email visible when the sidebar's open) and AdminTopBar's
+ *  top-right corner (compact, icon-only). Shows the real uploaded avatar
+ *  or a first-letter initial — was hardcoded to just role+email before,
+ *  which is why saving a profile name never visibly changed anything. */
 export function AdminProfileMenu({
   email,
   role,
-  open: sidebarOpen,
+  displayName,
+  avatarUrl,
+  open: sidebarOpen = true,
+  compact = false,
 }: {
   email: string;
   role: "editor" | "admin";
-  open: boolean;
+  displayName: string | null;
+  avatarUrl: string | null;
+  open?: boolean;
+  compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -42,8 +78,10 @@ export function AdminProfileMenu({
     };
   }, [open]);
 
+  const showLabel = sidebarOpen && !compact;
+
   return (
-    <div ref={rootRef} className="relative w-full border-t border-border pt-2">
+    <div ref={rootRef} className={compact ? "relative" : "relative w-full border-t border-border pt-2"}>
       <button
         type="button"
         aria-haspopup="menu"
@@ -53,14 +91,16 @@ export function AdminProfileMenu({
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-muted"
+        className={
+          compact
+            ? "flex items-center rounded-full transition-colors hover:opacity-80"
+            : "flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-muted"
+        }
       >
-        <ShineCircle className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted">
-          <UserIcon className="text-foreground size-4" />
-        </ShineCircle>
-        {sidebarOpen && (
+        <Avatar displayName={displayName} avatarUrl={avatarUrl} />
+        {showLabel && (
           <div className="min-w-0">
-            <div className="font-heading truncate text-sm font-semibold capitalize">{role}</div>
+            <div className="font-heading truncate text-sm font-semibold">{displayName || <span className="capitalize">{role}</span>}</div>
             <div className="text-muted-foreground truncate text-xs">{email}</div>
           </div>
         )}
@@ -69,14 +109,31 @@ export function AdminProfileMenu({
       {open && (
         <div
           role="menu"
-          className="glow-card absolute bottom-full left-0 z-50 mb-2 w-56 rounded-2xl border border-border bg-popover p-2 shadow-lg"
+          className={
+            "glow-card absolute z-50 w-56 rounded-2xl border border-border bg-popover p-2 shadow-lg " +
+            (compact ? "right-0 top-full mt-2" : "bottom-full left-0 mb-2")
+          }
         >
+          <div className="flex items-center gap-2.5 px-3 py-2">
+            <Avatar displayName={displayName} avatarUrl={avatarUrl} size="sm" />
+            <div className="min-w-0">
+              <div className="font-heading truncate text-sm font-semibold">{displayName || <span className="capitalize">{role}</span>}</div>
+              <div className="text-muted-foreground truncate text-xs">{email}</div>
+            </div>
+          </div>
+          <div className="my-2 border-t border-border" />
+          <Link
+            href="/admin/profile"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-foreground hover:bg-muted"
+          >
+            <UserCog className="size-4" />
+            Profile
+          </Link>
           {/* Mirrors the public ProfileMenu's "Dashboard" slot, in reverse:
               from inside /admin, the equivalent way out is back to the
-              live site. Deliberately doesn't repeat Settings/Content/etc.
-              — those already have their own sidebar nav items; the client
-              was explicit the dropdown shouldn't duplicate what's already
-              on the page. */}
+              live site. */}
           <Link
             href="/"
             target="_blank"
@@ -87,6 +144,10 @@ export function AdminProfileMenu({
             <Monitor className="size-4" />
             Live site ↗
           </Link>
+          <div className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-foreground">
+            Theme
+            <ThemeToggle />
+          </div>
           <div className="my-2 border-t border-border" />
           <form action={logout}>
             <button

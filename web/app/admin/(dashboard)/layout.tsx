@@ -20,10 +20,22 @@ export default async function AdminDashboardLayout({
     getApprovalsBadgeCount(supabase, auth),
     getOpenReportsCount(supabase),
     getSiteContent(),
-    supabase.from("profiles").select("sidebar_order").eq("id", auth.userId).maybeSingle<{
-      sidebar_order: string[] | null;
-    }>(),
+    supabase
+      .from("profiles")
+      .select("sidebar_order, first_name, full_name, avatar_updated_at")
+      .eq("id", auth.userId)
+      .maybeSingle<{
+        sidebar_order: string[] | null;
+        first_name: string | null;
+        full_name: string | null;
+        avatar_updated_at: string | null;
+      }>(),
   ]);
+
+  const displayName = profile?.full_name || profile?.first_name || null;
+  const avatarUrl = profile?.avatar_updated_at
+    ? `/api/site-image/avatar-${auth.userId}?v=${new Date(profile.avatar_updated_at).getTime()}`
+    : null;
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -32,12 +44,21 @@ export default async function AdminDashboardLayout({
         logoUrlDark={content.images.logoUrlDark}
         role={auth.role}
         email={auth.email}
+        displayName={displayName}
+        avatarUrl={avatarUrl}
         pendingApprovals={pendingApprovals}
         openReports={openReports}
         savedOrder={profile?.sidebar_order ?? null}
       />
       <main className="min-w-0 flex-1 px-6 py-10">
-        <AdminTopBar pendingApprovals={pendingApprovals} openReports={openReports} />
+        <AdminTopBar
+          pendingApprovals={pendingApprovals}
+          openReports={openReports}
+          role={auth.role}
+          email={auth.email}
+          displayName={displayName}
+          avatarUrl={avatarUrl}
+        />
         {children}
       </main>
       <AdminScrollToTop />

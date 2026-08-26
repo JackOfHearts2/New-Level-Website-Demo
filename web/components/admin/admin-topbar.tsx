@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/admin/notification-bell";
+import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
 
 const LABELS: Record<string, string> = {
   "/admin": "Dashboard",
@@ -15,6 +16,7 @@ const LABELS: Record<string, string> = {
   "/admin/reports": "Reports",
   "/admin/editors": "Access",
   "/admin/activity": "Activity",
+  "/admin/profile": "Profile",
   "/admin/settings": "Settings",
 };
 
@@ -32,9 +34,17 @@ function labelFor(pathname: string) {
 export function AdminTopBar({
   pendingApprovals,
   openReports,
+  role,
+  email,
+  displayName,
+  avatarUrl,
 }: {
   pendingApprovals: number;
   openReports: number;
+  role: "editor" | "admin";
+  email: string;
+  displayName: string | null;
+  avatarUrl: string | null;
 }) {
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
@@ -70,14 +80,24 @@ export function AdminTopBar({
         <span className="font-heading text-sm font-semibold text-muted-foreground">
           Admin / <span className="text-foreground">{labelFor(pathname)}</span>
         </span>
-        <div className="flex items-center gap-1">
-          <NotificationBell
-            rows={[
-              { href: "/admin/approvals", label: "Pending approvals", count: pendingApprovals },
-              { href: "/admin/reports", label: "Open reports", count: openReports },
-            ]}
-          />
-          <ThemeToggle />
+        <div className="flex items-center gap-2">
+          {/* Bordered pill wrappers, not the bare small icon buttons these
+              components render standalone elsewhere — client feedback
+              (2026-08-26): the bell and the theme toggle were "too easily
+              missed... a little too small." Bigger hit target + a visible
+              boundary against the top bar so they read as real chrome. */}
+          <div className="border-border flex size-10 items-center justify-center rounded-full border">
+            <NotificationBell
+              rows={[
+                { href: "/admin/approvals", label: "Pending approvals", count: pendingApprovals },
+                { href: "/admin/reports", label: "Open reports", count: openReports },
+              ]}
+            />
+          </div>
+          <div className="border-border flex size-10 items-center justify-center rounded-full border">
+            <ThemeToggle />
+          </div>
+          <AdminProfileMenu email={email} role={role} displayName={displayName} avatarUrl={avatarUrl} compact />
         </div>
       </div>
     </div>

@@ -18,6 +18,7 @@ import {
   ArrowUpDown,
   ChevronUp,
   ChevronDown,
+  UserCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
@@ -47,6 +48,8 @@ export function AdminSidebar({
   logoUrlDark,
   role,
   email,
+  displayName,
+  avatarUrl,
   pendingApprovals,
   openReports,
   savedOrder,
@@ -55,6 +58,8 @@ export function AdminSidebar({
   logoUrlDark: string;
   role: "editor" | "admin";
   email: string;
+  displayName: string | null;
+  avatarUrl: string | null;
   pendingApprovals: number;
   openReports: number;
   savedOrder: string[] | null;
@@ -83,7 +88,10 @@ export function AdminSidebar({
     { href: "/admin/editors", label: "Access", Icon: Users },
     { href: "/admin/activity", label: "Activity", Icon: ActivityIcon },
   ];
-  const accountItems: NavItem[] = [{ href: "/admin/settings", label: "Settings", Icon: SettingsIcon }];
+  const accountItems: NavItem[] = [
+    { href: "/admin/profile", label: "Profile", Icon: UserCog },
+    { href: "/admin/settings", label: "Settings", Icon: SettingsIcon },
+  ];
 
   function move(index: number, direction: -1 | 1) {
     const target = index + direction;
@@ -181,7 +189,7 @@ export function AdminSidebar({
         <NavGroup items={accountItems} pathname={pathname} open={open} />
       </div>
 
-      <AdminProfileMenu email={email} role={role} open={open} />
+      <AdminProfileMenu email={email} role={role} displayName={displayName} avatarUrl={avatarUrl} open={open} />
 
       <button
         type="button"

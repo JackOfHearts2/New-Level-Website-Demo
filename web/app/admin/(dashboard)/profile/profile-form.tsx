@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { updateProfile, type ActionResult } from "./actions";
+import { updateProfile, type ActionResult } from "../settings/actions";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
