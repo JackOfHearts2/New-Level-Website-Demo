@@ -87,6 +87,48 @@ export async function notifyProblemReport(report: {
   });
 }
 
+/** Sends a password-change verification code directly to the account's
+ *  own email — unlike sendAdminNotification, this is NOT fail-soft: if
+ *  the code doesn't send, the caller can't complete the security step,
+ *  so the action needs to know and tell the user, not silently continue.
+ *
+ *  Known limitation (flag to the user if this ever surfaces as a real
+ *  failure): Resend's shared sandbox sender (onboarding@resend.dev, used
+ *  here since no custom domain is verified yet — see project_domain_
+ *  sequencing) can only deliver to the Resend account's OWN registered
+ *  address. Today that's jackcoquillon@gmail.com, the only real admin
+ *  account, so this works for them — but it will silently fail to reach
+ *  any other staff member's inbox until a domain is verified. */
+export async function sendSecurityCode(to: string, code: string): Promise<{ ok: boolean }> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error("sendSecurityCode: RESEND_API_KEY not set — cannot send.");
+    return { ok: false };
+  }
+  try {
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from: "New Level Security <onboarding@resend.dev>",
+      to,
+      subject: "Your New Level password-change code",
+      html: `
+        <p>Use this code to confirm your password change:</p>
+        <p style="font-size:28px;font-weight:700;letter-spacing:4px;">${code}</p>
+        <p>This code expires in 10 minutes. If you didn't request this, you can ignore it — your
+        password won't change without the code.</p>
+      `,
+    });
+    if (error) {
+      console.error("sendSecurityCode failed:", error);
+      return { ok: false };
+    }
+    return { ok: true };
+  } catch (err) {
+    console.error("sendSecurityCode failed:", err);
+    return { ok: false };
+  }
+}
+
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")
