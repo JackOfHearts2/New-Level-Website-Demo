@@ -15,9 +15,13 @@ import {
   Settings as SettingsIcon,
   ChevronsLeft,
   ChevronsRight,
+  ArrowUpDown,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
+import { saveSidebarOrder } from "@/app/admin/(dashboard)/actions";
 
 type NavItem = {
   href: string;
@@ -26,6 +30,18 @@ type NavItem = {
   badge?: number;
 };
 
+// Puts any href present in `order` first (in that order), then anything
+// else in its original position — so a nav item added later (or hidden
+// for the current role) never disappears just because it's missing from
+// an already-saved order.
+function applyOrder(items: NavItem[], order: string[] | null): NavItem[] {
+  if (!order || order.length === 0) return items;
+  const byHref = new Map(items.map((item) => [item.href, item]));
+  const ordered = order.map((href) => byHref.get(href)).filter((i): i is NavItem => !!i);
+  const remaining = items.filter((item) => !order.includes(item.href));
+  return [...ordered, ...remaining];
+}
+
 export function AdminSidebar({
   logoUrl,
   logoUrlDark,
@@ -33,6 +49,7 @@ export function AdminSidebar({
   email,
   pendingApprovals,
   openReports,
+  savedOrder,
 }: {
   logoUrl: string;
   logoUrlDark: string;
@@ -40,23 +57,42 @@ export function AdminSidebar({
   email: string;
   pendingApprovals: number;
   openReports: number;
+  savedOrder: string[] | null;
 }) {
   const [open, setOpen] = useState(true);
+  const [customizing, setCustomizing] = useState(false);
   const pathname = usePathname();
   const isAdmin = role === "admin";
 
-  const mainItems: NavItem[] = [
+  const defaultMainItems: NavItem[] = [
     { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
     ...(isAdmin ? [{ href: "/admin/analytics", label: "Analytics", Icon: BarChart3 }] : []),
     { href: "/admin/content", label: "Content & Media", Icon: MediaIcon },
     { href: "/admin/approvals", label: "Approvals", Icon: ClipboardCheck, badge: pendingApprovals },
     { href: "/admin/reports", label: "Reports", Icon: Flag, badge: openReports },
   ];
+  // Only the ORDER lives in state, not the item objects themselves — the
+  // items are rebuilt fresh every render from current props (badge counts
+  // in particular), so reordering never freezes a stale approvals/reports
+  // count into place.
+  const [order, setOrder] = useState<string[]>(
+    () => savedOrder ?? defaultMainItems.map((i) => i.href)
+  );
+  const mainItems = applyOrder(defaultMainItems, order);
   const adminItems: NavItem[] = [
     { href: "/admin/editors", label: "Access", Icon: Users },
     { href: "/admin/activity", label: "Activity", Icon: ActivityIcon },
   ];
   const accountItems: NavItem[] = [{ href: "/admin/settings", label: "Settings", Icon: SettingsIcon }];
+
+  function move(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= mainItems.length) return;
+    const nextHrefs = mainItems.map((i) => i.href);
+    [nextHrefs[index], nextHrefs[target]] = [nextHrefs[target], nextHrefs[index]];
+    setOrder(nextHrefs);
+    saveSidebarOrder(nextHrefs);
+  }
 
   return (
     <nav
@@ -117,7 +153,22 @@ export function AdminSidebar({
       </div>
 
       <div className="flex-1 space-y-1 overflow-y-auto">
-        <NavGroup items={mainItems} pathname={pathname} open={open} />
+        {open && (
+          <button
+            type="button"
+            onClick={() => setCustomizing((v) => !v)}
+            className={cn(
+              "mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
+              customizing
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <ArrowUpDown className="size-3.5" />
+            {customizing ? "Done reordering" : "Reorder"}
+          </button>
+        )}
+        <NavGroup items={mainItems} pathname={pathname} open={open} customizing={customizing} onMove={move} />
 
         {isAdmin && (
           <>
@@ -159,15 +210,55 @@ function NavGroup({
   items,
   pathname,
   open,
+  customizing,
+  onMove,
 }: {
   items: NavItem[];
   pathname: string;
   open: boolean;
+  customizing?: boolean;
+  onMove?: (index: number, direction: -1 | 1) => void;
 }) {
   return (
     <div className="space-y-1">
-      {items.map((item) => {
+      {items.map((item, index) => {
         const isActive = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+
+        // Reorder mode swaps the Link for a static row + up/down buttons —
+        // client ask (2026-08-26): "put the stuff they wanna see before
+        // the other stuff they might not necessarily wanna see."
+        if (customizing && onMove) {
+          return (
+            <div
+              key={item.href}
+              className="text-muted-foreground flex h-11 items-center rounded-lg pl-3 pr-1"
+            >
+              <item.Icon className="size-4 shrink-0" />
+              {open && <span className="ml-3 flex-1 truncate text-sm font-medium">{item.label}</span>}
+              <div className="ml-auto flex shrink-0 flex-col">
+                <button
+                  type="button"
+                  onClick={() => onMove(index, -1)}
+                  disabled={index === 0}
+                  aria-label={`Move ${item.label} up`}
+                  className="hover:text-foreground disabled:opacity-30"
+                >
+                  <ChevronUp className="size-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onMove(index, 1)}
+                  disabled={index === items.length - 1}
+                  aria-label={`Move ${item.label} down`}
+                  className="hover:text-foreground disabled:opacity-30"
+                >
+                  <ChevronDown className="size-3.5" />
+                </button>
+              </div>
+            </div>
+          );
+        }
+
         return (
           <Link
             key={item.href}

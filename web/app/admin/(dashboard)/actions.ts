@@ -26,6 +26,38 @@ export async function logout() {
   redirect("/");
 }
 
+/** Sidebar nav reorder — client ask (2026-08-26): "put the stuff they
+ *  wanna see before the other stuff they might not necessarily wanna
+ *  see." Stores the user's preferred href order for the sidebar's main
+ *  nav group; anything not in the array (a new nav item added later)
+ *  just falls back to its default position — see AdminSidebar. */
+export async function saveSidebarOrder(order: string[]) {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("profiles").update({ sidebar_order: order }).eq("id", auth.userId);
+  if (error) return { error: "Couldn't save your sidebar order." };
+
+  revalidatePath("/admin", "layout");
+  return { ok: true };
+}
+
+/** Dashboard home view toggle (Overview stat-tiles vs. a denser Compact
+ *  list) — client landed here after discussing full drag-resize vs. a
+ *  simpler preset toggle. */
+export async function saveDashboardView(view: "overview" | "compact") {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("profiles").update({ dashboard_view: view }).eq("id", auth.userId);
+  if (error) return { error: "Couldn't save your dashboard view." };
+
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
 export async function saveContent(
   _prevState: FormState,
   formData: FormData

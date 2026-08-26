@@ -16,10 +16,13 @@ export default async function AdminDashboardLayout({
   if (!auth) redirect("/");
 
   const supabase = await createClient();
-  const [pendingApprovals, openReports, content] = await Promise.all([
+  const [pendingApprovals, openReports, content, { data: profile }] = await Promise.all([
     getApprovalsBadgeCount(supabase, auth),
     getOpenReportsCount(supabase),
     getSiteContent(),
+    supabase.from("profiles").select("sidebar_order").eq("id", auth.userId).maybeSingle<{
+      sidebar_order: string[] | null;
+    }>(),
   ]);
 
   return (
@@ -31,6 +34,7 @@ export default async function AdminDashboardLayout({
         email={auth.email}
         pendingApprovals={pendingApprovals}
         openReports={openReports}
+        savedOrder={profile?.sidebar_order ?? null}
       />
       <main className="min-w-0 flex-1 px-6 py-10">
         <AdminTopBar pendingApprovals={pendingApprovals} openReports={openReports} />

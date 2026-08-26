@@ -1,10 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ClipboardCheck, Flag, Users, BarChart3, Image as MediaIcon, Settings } from "lucide-react";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
-import { GlowCard } from "@/components/ui/glow-card";
+import { DashboardView, type StatItem, type NavTileItem, type ActivityItem } from "@/components/admin/dashboard-view";
 
 type ActivityRow = {
   id: string;
@@ -13,44 +11,6 @@ type ActivityRow = {
   created_at: string;
 };
 type ProfileRow = { id: string; email: string | null; full_name: string | null };
-
-function StatTile({
-  href,
-  label,
-  value,
-  Icon,
-}: {
-  href: string;
-  label: string;
-  value: string | number;
-  Icon: typeof ClipboardCheck;
-}) {
-  return (
-    <GlowCard href={href} className="p-5">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-lg">
-          <Icon className="size-4" />
-        </span>
-      </div>
-      <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">{label}</p>
-      <p className="font-heading mt-1 text-2xl font-bold">{value}</p>
-    </GlowCard>
-  );
-}
-
-function NavTile({ href, title, description, Icon }: { href: string; title: string; description: string; Icon: typeof MediaIcon }) {
-  return (
-    <GlowCard href={href} className="flex items-start gap-3 p-5">
-      <span className="bg-muted text-foreground flex size-9 shrink-0 items-center justify-center rounded-lg">
-        <Icon className="size-4" />
-      </span>
-      <div>
-        <h2 className="font-heading font-semibold">{title}</h2>
-        <p className="text-muted-foreground mt-0.5 text-sm">{description}</p>
-      </div>
-    </GlowCard>
-  );
-}
 
 function timeAgo(iso: string) {
   const ms = Date.now() - new Date(iso).getTime();
@@ -74,7 +34,7 @@ export default async function AdminHomePage({
   const supabase = await createClient();
   const isAdmin = auth.role === "admin";
 
-  const [pendingApprovals, openReports, staffCount, recentActivity] = await Promise.all([
+  const [pendingApprovals, openReports, staffCount, recentActivity, { data: profile }] = await Promise.all([
     getApprovalsBadgeCount(supabase, auth),
     getOpenReportsCount(supabase),
     isAdmin
@@ -88,6 +48,9 @@ export default async function AdminHomePage({
           .limit(6)
           .returns<ActivityRow[]>()
       : Promise.resolve({ data: null }),
+    supabase.from("profiles").select("dashboard_view").eq("id", auth.userId).maybeSingle<{
+      dashboard_view: "overview" | "compact";
+    }>(),
   ]);
 
   const activityRows = recentActivity.data ?? [];
@@ -96,6 +59,44 @@ export default async function AdminHomePage({
     ? await supabase.from("profiles").select("id, email, full_name").in("id", actorIds).returns<ProfileRow[]>()
     : { data: [] as ProfileRow[] };
   const profileMap = new Map((profileRows ?? []).map((p) => [p.id, p]));
+
+  const stats: StatItem[] = [
+    {
+      href: "/admin/approvals",
+      label: isAdmin ? "Pending approvals" : "My open submissions",
+      value: pendingApprovals,
+      icon: "approvals",
+    },
+    { href: "/admin/reports", label: "Open reports", value: openReports, icon: "reports" },
+    ...(isAdmin
+      ? [
+          { href: "/admin/editors", label: "Staff with access", value: staffCount.count ?? 0, icon: "staff" as const },
+          { href: "/admin/analytics", label: "Analytics", value: "View →", icon: "analytics" as const },
+        ]
+      : []),
+  ];
+
+  const navTiles: NavTileItem[] = [
+    {
+      href: "/admin/content",
+      title: "Content & Media",
+      description: "Edit page text and photos, section by section.",
+      icon: "content",
+    },
+    { href: "/admin/settings", title: "Settings", description: "Account & preferences.", icon: "settings" },
+  ];
+
+  const activity: ActivityItem[] | null = isAdmin
+    ? activityRows.map((row) => {
+        const actor = row.actor_id ? profileMap.get(row.actor_id) : null;
+        return {
+          id: row.id,
+          summary: row.summary,
+          actorLabel: actor?.full_name || actor?.email || "Unknown",
+          timeAgo: timeAgo(row.created_at),
+        };
+      })
+    : null;
 
   return (
     <div className="space-y-8">
@@ -116,61 +117,12 @@ export default async function AdminHomePage({
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile
-          href="/admin/approvals"
-          label={isAdmin ? "Pending approvals" : "My open submissions"}
-          value={pendingApprovals}
-          Icon={ClipboardCheck}
-        />
-        <StatTile href="/admin/reports" label="Open reports" value={openReports} Icon={Flag} />
-        {isAdmin && (
-          <>
-            <StatTile href="/admin/editors" label="Staff with access" value={staffCount.count ?? 0} Icon={Users} />
-            <StatTile href="/admin/analytics" label="Analytics" value="View →" Icon={BarChart3} />
-          </>
-        )}
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-3">
-          <NavTile
-            href="/admin/content"
-            title="Content & Media"
-            description="Edit page text and photos, section by section."
-            Icon={MediaIcon}
-          />
-          <NavTile href="/admin/settings" title="Settings" description="Account & preferences." Icon={Settings} />
-        </div>
-
-        {isAdmin && (
-          <GlowCard className="p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-heading text-sm font-semibold">Recent Activity</h3>
-              <Link href="/admin/activity" className="text-primary text-xs font-semibold">
-                View all
-              </Link>
-            </div>
-            {activityRows.length === 0 ? (
-              <p className="text-muted-foreground text-sm">Nothing recorded yet.</p>
-            ) : (
-              <ul className="space-y-3">
-                {activityRows.map((row) => {
-                  const actor = row.actor_id ? profileMap.get(row.actor_id) : null;
-                  return (
-                    <li key={row.id} className="text-sm">
-                      <p className="truncate">{row.summary}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {actor?.full_name || actor?.email || "Unknown"} · {timeAgo(row.created_at)}
-                      </p>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </GlowCard>
-        )}
-      </div>
+      <DashboardView
+        initialView={profile?.dashboard_view ?? "overview"}
+        stats={stats}
+        navTiles={navTiles}
+        activity={activity}
+      />
     </div>
   );
 }
