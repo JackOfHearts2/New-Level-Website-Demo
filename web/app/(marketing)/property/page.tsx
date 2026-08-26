@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import { Star, MapPin, BedDouble, Bath, Users } from "lucide-react";
+import { Star, MapPin, BedDouble, Bath, Users, Mail, Phone, Clock } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
@@ -17,6 +17,7 @@ import {
   OTHER_PROPERTIES,
   AUDIENCE_ORDER,
   NLG_BRAND,
+  POINT_OF_CONTACT,
 } from "@/lib/content";
 import { PropertyBookingProvider, type AudienceId } from "@/components/property/booking-context";
 import { SaveButton } from "@/components/property/save-button";
@@ -88,6 +89,37 @@ export default async function PropertyPage({
           </div>
         </PhotoTour>
       </div>
+
+      {/* Listing agent + last-updated — client ask (2026-08-26): "listing
+          agent info under featured listing with last updated time and
+          date." This is the site's one real ("featured") listing, so it
+          sits right under the hero, before the purpose selector. */}
+      <section className="mx-auto max-w-5xl px-6 pt-8">
+        <div className="border-border bg-card flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-5">
+          <div>
+            <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+              Listed by
+            </p>
+            <p className="font-heading mt-1 font-semibold">
+              {POINT_OF_CONTACT.name} · {POINT_OF_CONTACT.role}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+              <a href={`mailto:${POINT_OF_CONTACT.email}`} className="text-foreground hover:text-primary flex items-center gap-1.5">
+                <Mail className="size-3.5" />
+                {POINT_OF_CONTACT.email}
+              </a>
+              <a href={`tel:${POINT_OF_CONTACT.phone}`} className="text-foreground hover:text-primary flex items-center gap-1.5">
+                <Phone className="size-3.5" />
+                {POINT_OF_CONTACT.phone}
+              </a>
+            </div>
+          </div>
+          <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+            <Clock className="size-3.5" />
+            Last updated {PROPERTY.lastUpdated}
+          </div>
+        </div>
+      </section>
 
       <PurposeSelector />
       <AudienceContent />

@@ -1098,6 +1098,11 @@ export const PROPERTY = {
   parentName: "New Level Associates",
   parentUrl: "https://newlevelassociates.com",
   categories: ["luxury-short-term", "short-term", "events", "extended-stay"],
+  // Static for now, same convention as LEGAL_LAST_UPDATED — this listing
+  // isn't in a real database yet with its own edit-tracked timestamp
+  // (see the `properties` table migration for where that's headed), so
+  // this is a literal date to update by hand, not computed.
+  lastUpdated: "August 26, 2026",
 };
 
 // Real specs, pulled directly from the property's actual Airbnb listing
