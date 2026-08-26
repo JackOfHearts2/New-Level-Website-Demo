@@ -11,7 +11,10 @@ export type ActivityEventType =
   | "editor_granted"
   | "editor_revoked"
   | "report_resolved"
-  | "report_reopened";
+  | "report_reopened"
+  | "content_published"
+  | "content_draft_saved"
+  | "code_deploy";
 
 export type ActivityTargetTable = "content_change_requests" | "problem_reports" | "profiles";
 

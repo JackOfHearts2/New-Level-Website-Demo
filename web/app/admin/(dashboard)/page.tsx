@@ -4,9 +4,10 @@ import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
 import { DashboardView, type StatItem, type NavTileItem, type ActivityItem } from "@/components/admin/dashboard-view";
-import { DailyViewsChart, type DailyPoint } from "@/components/admin/daily-views-chart";
+import { TrendChart, type TrendPoint } from "@/components/admin/trend-chart";
 import { RankedBarList } from "@/components/admin/ranked-bar-list";
 import { DonutChart, type DonutSlice } from "@/components/admin/donut-chart";
+import { RadialProgress } from "@/components/admin/radial-progress";
 import { GlowCard } from "@/components/ui/glow-card";
 
 type ActivityRow = {
@@ -80,20 +81,19 @@ export default async function AdminHomePage({
     supabase.from("profiles").select("dashboard_view").eq("id", auth.userId).maybeSingle<{
       dashboard_view: "overview" | "compact";
     }>(),
-    // Editors only ever have drafts of their own content (image drafts don't
-    // exist — saveImage's editor path always creates a pending request, see
-    // web/app/admin/(dashboard)/actions.ts).
-    isAdmin
-      ? Promise.resolve({ data: null })
-      : supabase
-          .from("content_change_requests")
-          .select("id, created_at")
-          .eq("submitted_by", auth.userId)
-          .eq("status", "draft")
-          .eq("target_type", "content")
-          .order("created_at", { ascending: false })
-          .limit(20)
-          .returns<DraftRow[]>(),
+    // Both roles can have drafts now (client ask, 2026-08-26: an admin
+    // wants "save as draft" too, to hold a section back from publishing).
+    // Image drafts don't exist — saveImage always creates a pending
+    // request instead, see web/app/admin/(dashboard)/actions.ts.
+    supabase
+      .from("content_change_requests")
+      .select("id, created_at")
+      .eq("submitted_by", auth.userId)
+      .eq("status", "draft")
+      .eq("target_type", "content")
+      .order("created_at", { ascending: false })
+      .limit(20)
+      .returns<DraftRow[]>(),
     isAdmin
       ? supabase
           .from("page_views")
@@ -158,9 +158,11 @@ export default async function AdminHomePage({
   // Analytics/Approvals for the full detail. Client ask (2026-08-26):
   // "I wanted to look cool like an actual dashboard that gives you an
   // overview of the business before you have to click on anything."
-  let overviewDaily: DailyPoint[] | null = null;
+  let overviewDaily: TrendPoint[] | null = null;
   let overviewTopPages: { label: string; value: number }[] | null = null;
   let statusSlices: DonutSlice[] | null = null;
+  let approvalRate: number | null = null;
+  let approvalRateSublabel: string | undefined;
 
   if (isAdmin) {
     const views = overviewViews ?? [];
@@ -188,19 +190,29 @@ export default async function AdminHomePage({
       .map(([label, value]) => ({ label: label === "/" ? "/ (Home)" : label, value }));
 
     const statuses = overviewStatuses ?? [];
-    const bucket = { approved: 0, pendingReview: 0, draft: 0, rejected: 0 };
+    const bucket = { approved: 0, pendingReview: 0, draft: 0, rejected: 0, withdrawn: 0 };
     for (const r of statuses) {
       if (r.status === "approved") bucket.approved++;
       else if (r.status === "pending" || r.status === "changes_requested") bucket.pendingReview++;
       else if (r.status === "draft") bucket.draft++;
-      else bucket.rejected++; // rejected + withdrawn
+      else if (r.status === "withdrawn") bucket.withdrawn++;
+      else bucket.rejected++;
     }
     statusSlices = [
       { label: "Approved", value: bucket.approved, color: "var(--primary)" },
       { label: "Pending review", value: bucket.pendingReview, color: "#f5a524" },
       { label: "Draft", value: bucket.draft, color: "var(--muted-foreground)" },
-      { label: "Rejected / withdrawn", value: bucket.rejected, color: "var(--destructive)" },
+      { label: "Rejected", value: bucket.rejected, color: "var(--destructive)" },
     ];
+
+    // A distinct third chart form (radial, not time-series or categorical) —
+    // client ask (2026-08-26): "a couple different other types of graphs...
+    // to illustrate other aspects of the website." Withdrawn rows are the
+    // editor's own choice to pull back, not an admin verdict, so they're
+    // excluded from the rate rather than counted as a rejection.
+    const reviewed = bucket.approved + bucket.rejected;
+    approvalRate = reviewed > 0 ? (bucket.approved / reviewed) * 100 : null;
+    approvalRateSublabel = reviewed > 0 ? `${bucket.approved} of ${reviewed} reviewed` : "No reviewed submissions yet";
   }
 
   return (
@@ -235,23 +247,28 @@ export default async function AdminHomePage({
           <div className="grid gap-4 lg:grid-cols-3">
             <GlowCard className="p-5 lg:col-span-2">
               <h3 className="mb-3 text-sm font-semibold">Pageviews</h3>
-              <DailyViewsChart data={overviewDaily} />
+              <TrendChart data={overviewDaily} />
             </GlowCard>
+            <GlowCard className="flex items-center justify-center p-5">
+              <RadialProgress value={approvalRate} label="Approval rate" sublabel={approvalRateSublabel} />
+            </GlowCard>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-2">
             <GlowCard className="p-5">
               <h3 className="mb-3 text-sm font-semibold">Submissions by status</h3>
               <DonutChart slices={statusSlices} title="Content submissions by status, all time" />
             </GlowCard>
+            {overviewTopPages && overviewTopPages.length > 0 && (
+              <GlowCard className="p-5">
+                <h3 className="mb-3 text-sm font-semibold">Top pages</h3>
+                <RankedBarList rows={overviewTopPages} />
+              </GlowCard>
+            )}
           </div>
-          {overviewTopPages && overviewTopPages.length > 0 && (
-            <GlowCard className="p-5">
-              <h3 className="mb-3 text-sm font-semibold">Top pages</h3>
-              <RankedBarList rows={overviewTopPages} />
-            </GlowCard>
-          )}
         </section>
       )}
 
-      {!isAdmin && drafts.length > 0 && (
+      {drafts.length > 0 && (
         <section className="space-y-4">
           <h2 className="font-heading text-sm font-semibold">
             Your drafts ({drafts.length})

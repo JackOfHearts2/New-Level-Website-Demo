@@ -93,12 +93,15 @@ function Field({
   );
 }
 
-function SaveButton({ label }: { label: string }) {
+function SaveButton({ label, confirmMessage }: { label: string; confirmMessage?: string }) {
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
       disabled={pending}
+      onClick={(e) => {
+        if (confirmMessage && !confirm(confirmMessage)) e.preventDefault();
+      }}
       className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-xl px-6 py-2.5 text-sm font-semibold disabled:opacity-50"
     >
       {pending ? "Saving…" : label}
@@ -151,6 +154,19 @@ function SectionControls({
     });
   }
 
+  // Client ask (2026-08-26): an admin's "Save" goes live immediately and
+  // visitors see it right away — that's exactly the case that now needs a
+  // confirmation, since the new draft option makes "publish now" the
+  // deliberate, no-longer-only choice. An editor's equivalent button just
+  // submits for review (not final — an admin still has to approve it), so
+  // it doesn't need the same guard.
+  function handlePublishClick() {
+    if (!isEditor && !confirm(`Publish "${legend}" live now? Visitors will see this change immediately.`)) {
+      return;
+    }
+    handleSave();
+  }
+
   function handleSaveDraft() {
     setDraftState(undefined);
     startTransition(async () => {
@@ -197,35 +213,22 @@ function SectionControls({
         </p>
       )}
       <div className="flex flex-wrap gap-2">
-        {isEditor ? (
-          <>
-            <button
-              type="button"
-              onClick={handleSaveDraft}
-              disabled={pending}
-              className="font-heading border-border rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50"
-            >
-              {pending ? "Saving…" : "Save as draft"}
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={pending}
-              className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
-            >
-              {pending ? "Submitting…" : "Submit for review"}
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={pending}
-            className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
-          >
-            {pending ? "Saving…" : "Save section"}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={handleSaveDraft}
+          disabled={pending}
+          className="font-heading border-border rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50"
+        >
+          {pending ? "Saving…" : "Save as draft"}
+        </button>
+        <button
+          type="button"
+          onClick={handlePublishClick}
+          disabled={pending}
+          className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
+        >
+          {pending ? (isEditor ? "Submitting…" : "Publishing…") : isEditor ? "Submit for review" : "Publish live"}
+        </button>
         <button
           type="button"
           onClick={handleCancel}
@@ -313,8 +316,13 @@ export function ContentForm({
   const [savingDraft, startDraftTransition] = useTransition();
 
   const isEditor = role === "editor";
-  const isFreshDraftFlow = isEditor && !reviseRequestId;
-  const isResumingDraft = isEditor && reviseRequestId && status === "draft";
+  // Not editor-gated: an admin can now also save a draft (client ask,
+  // 2026-08-26) and resume it from here. Resuming always goes through the
+  // same draft/submit pair regardless of role — "submit" queues it into
+  // Approvals rather than publishing instantly, which for a solo admin
+  // just means a second click there, but keeps one honest code path
+  // instead of a role-specific "instant from the revise page" shortcut.
+  const isResumingDraft = reviseRequestId && status === "draft";
   // Per-section controls only make sense on the primary editing page, not
   // while resuming one specific already-submitted request.
   const showSectionControls = !reviseRequestId;
@@ -658,7 +666,7 @@ export function ContentForm({
               Submit for review
             </button>
           </>
-        ) : isFreshDraftFlow ? (
+        ) : !reviseRequestId ? (
           <>
             <button
               type="button"
@@ -668,10 +676,17 @@ export function ContentForm({
             >
               {savingDraft ? "Saving…" : "Save as draft"}
             </button>
-            <SaveButton label="Submit for review" />
+            <SaveButton
+              label={isEditor ? "Submit for review" : "Publish live"}
+              confirmMessage={
+                isEditor
+                  ? undefined
+                  : "Publish everything on this page live now? Visitors will see these changes immediately."
+              }
+            />
           </>
         ) : (
-          <SaveButton label={reviseRequestId ? "Resubmit for review" : "Save changes"} />
+          <SaveButton label="Resubmit for review" />
         )}
         <button
           type="button"

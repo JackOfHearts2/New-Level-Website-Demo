@@ -70,6 +70,20 @@ async function persistContent(auth: AdminAuth, current: SiteContent, next: SiteC
     } catch {
       return { error: "Couldn't save: storage unavailable." };
     }
+
+    // Client ask (2026-08-26): "that change needs to reflect under the
+    // activity section. That goes for any admin, any editor" — an admin's
+    // own instant publish used to be silent (only editor submissions were
+    // logged). Fire-and-forget: logActivity is already fail-soft and a
+    // logging hiccup shouldn't block a save that already succeeded.
+    const supabase = await createClient();
+    await logActivity(supabase, {
+      actorId: auth.userId,
+      eventType: "content_published",
+      targetTable: "content_change_requests",
+      summary: `${auth.email} published a content change live`,
+    });
+
     revalidatePath("/");
     revalidatePath("/admin/content");
     return { ok: true };
@@ -164,16 +178,31 @@ async function persistDraft(auth: AdminAuth, current: SiteContent, next: SiteCon
     .single();
   if (error) return { error: "Couldn't save draft. Please try again." };
 
+  // Client ask (2026-08-26): every save — draft or live, editor or admin —
+  // shows up in Activity.
+  await logActivity(supabase, {
+    actorId: auth.userId,
+    eventType: "content_draft_saved",
+    targetTable: "content_change_requests",
+    targetId: inserted?.id,
+    summary: `${auth.email} saved a content draft`,
+  });
+
   return { ok: true, draftId: inserted.id };
 }
 
+/** Drafts are for anyone staff — client clarified (2026-08-26): an admin
+ *  wants "save as draft" too, to update a section but hold off on
+ *  publishing it. The only role-specific behavior left is what a *live*
+ *  save means: an editor's isn't final (an admin still reviews it via
+ *  Approvals), an admin's publishes immediately — see persistContent, and
+ *  the client-side confirm() before that call in content-form.tsx. */
 export async function saveContentDraft(
   _prevState: DraftFormState,
   formData: FormData
 ): Promise<DraftFormState> {
   const auth = await requireAdminRole();
   if (!auth) return { error: "Not logged in." };
-  if (auth.role !== "editor") return { error: "Drafts are for editors — admin saves go live immediately." };
 
   const current = await getRawSiteContent();
   const next: SiteContent = buildContentFromFormData(current, formData);
@@ -186,7 +215,6 @@ export async function saveContentDraft(
 export async function saveContentSectionDraft(fieldValues: Record<string, string>): Promise<DraftFormState> {
   const auth = await requireAdminRole();
   if (!auth) return { error: "Not logged in." };
-  if (auth.role !== "editor") return { error: "Drafts are for editors — admin saves go live immediately." };
 
   const current = await getRawSiteContent();
   const fd = contentToFormData(current);

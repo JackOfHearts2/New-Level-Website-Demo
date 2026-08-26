@@ -13,6 +13,7 @@ type ActivityRow = {
   target_id: string | null;
   summary: string;
   created_at: string;
+  source: "portal" | "cli";
 };
 
 type ProfileRow = { id: string; email: string | null; full_name: string | null };
@@ -54,14 +55,22 @@ export default async function ActivityPage({
   const supabase = await createClient();
   const { data, count } = await supabase
     .from("activity_log")
-    .select("id, actor_id, event_type, target_table, target_id, summary, created_at", {
+    .select("id, actor_id, event_type, target_table, target_id, summary, created_at, source", {
       count: "exact",
     })
     .order("created_at", { ascending: false })
     .range(from, to)
     .returns<ActivityRow[]>();
 
-  const rows = data ?? [];
+  const allRows = data ?? [];
+  // Deploy/CLI-triggered entries (planned, not wired yet — needs a Netlify
+  // deploy webhook, a separate step) get their own section per the client's
+  // explicit ask (2026-08-26): those "need to pop up on the admin's
+  // account... they're gonna have their own section in activity." Until
+  // that webhook exists this list is always empty and the section just
+  // doesn't render, rather than showing a permanently-blank block.
+  const cliRows = allRows.filter((r) => r.source === "cli");
+  const rows = allRows.filter((r) => r.source !== "cli");
   const actorIds = Array.from(new Set(rows.map((r) => r.actor_id).filter((v): v is string => !!v)));
   const { data: profileRows } = actorIds.length
     ? await supabase.from("profiles").select("id, email, full_name").in("id", actorIds).returns<ProfileRow[]>()
@@ -87,9 +96,28 @@ export default async function ActivityPage({
         </p>
       </div>
 
-      {rows.length === 0 ? (
+      {cliRows.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="font-heading text-sm font-semibold">Code changes</h2>
+          <p className="text-muted-foreground text-xs">
+            Deploys and changes made directly through the codebase, not the portal.
+          </p>
+          <div className="border-border divide-border divide-y rounded-2xl border">
+            {cliRows.map((row) => (
+              <div key={row.id} className="p-4">
+                <p className="text-sm">{row.summary}</p>
+                <p className="text-muted-foreground text-xs">
+                  {formatDay(row.created_at)} · {formatTime(row.created_at)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {rows.length === 0 && cliRows.length === 0 ? (
         <p className="text-muted-foreground text-sm">Nothing recorded yet.</p>
-      ) : (
+      ) : rows.length === 0 ? null : (
         <div className="space-y-8">
           {Array.from(groups.entries()).map(([day, dayRows]) => (
             <section key={day} className="space-y-3">

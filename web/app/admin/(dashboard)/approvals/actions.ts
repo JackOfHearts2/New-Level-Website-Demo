@@ -258,10 +258,18 @@ export async function updateOwnContentRequest(
     .eq("id", id);
   if (updateError) return { error: "Couldn't save. Please try again." };
 
-  // Drafts staying drafts don't need an activity-log entry or admin
-  // notification — nothing changed from the admin's point of view, since
-  // they never see drafts in the first place.
+  // A draft staying a draft still gets logged (client ask, 2026-08-26:
+  // every save — draft or live, editor or admin — shows up in Activity) but
+  // skips the admin notification email: nothing needs an admin's attention
+  // yet, since drafts stay invisible to them until submitted.
   if (keepAsDraft) {
+    await logActivity(supabase, {
+      actorId: auth.userId,
+      eventType: "content_draft_saved",
+      targetTable: "content_change_requests",
+      targetId: id,
+      summary: `${auth.email} updated a content draft`,
+    });
     return { ok: true, draft: true };
   }
 
