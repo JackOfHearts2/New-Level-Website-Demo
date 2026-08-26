@@ -2,9 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Demo placeholder portraits for Team/Testimonials (client confirmed
-    // 2026-08-21 stock images are fine for this not-live demo site).
-    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
+    remotePatterns: [
+      // Demo placeholder portraits for Team/Testimonials (client confirmed
+      // 2026-08-21 stock images are fine for this not-live demo site).
+      { protocol: "https", hostname: "images.unsplash.com" },
+      // Property listing photos (public Supabase Storage bucket, migration
+      // 0020_property_photos_bucket.sql).
+      { protocol: "https", hostname: "mccsutbhhbyuexkgdclq.supabase.co" },
+    ],
   },
   // Security headers belong here, not in netlify.toml's [[headers]] -
   // confirmed live (curl against both a dynamic and a statically

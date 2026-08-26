@@ -227,9 +227,11 @@ export function PropertyForm({
         <input name="sourceUrl" type="url" defaultValue={property?.source_url ?? ""} className={fieldClass} />
       </label>
 
-      <p className="text-muted-foreground text-xs">
-        Photos aren&apos;t handled here yet — that&apos;s a separate step coming later.
-      </p>
+      {!property && (
+        <p className="text-muted-foreground text-xs">
+          Save this listing first, then you&apos;ll be able to add photos to it.
+        </p>
+      )}
 
       {state?.error && (
         <p className="text-destructive text-sm" role="alert">

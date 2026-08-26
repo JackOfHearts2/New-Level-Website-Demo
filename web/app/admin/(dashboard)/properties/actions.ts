@@ -5,10 +5,122 @@ import { requireAdmin, requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/activity-log";
 import { notifyPendingProperty } from "@/lib/email";
+import { sniffImageType } from "@/lib/image-sniff";
 import { isValidSubcategory, LISTING_STATUSES, PRICE_PERIODS } from "@/lib/property-categories";
 
 export type PropertyFormState = { error?: string; ok?: boolean; propertyId?: string } | undefined;
 export type ActionResult = { error?: string; ok?: boolean };
+
+type PropertyPhoto = { path: string; uploadedAt: string };
+
+const EXT_FOR_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+async function loadOwnedProperty(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  propertyId: string,
+  userId: string,
+  isAdmin: boolean
+) {
+  const { data } = await supabase
+    .from("properties")
+    .select("id, submitted_by, photos")
+    .eq("id", propertyId)
+    .maybeSingle<{ id: string; submitted_by: string; photos: PropertyPhoto[] }>();
+  if (!data) return null;
+  if (!isAdmin && data.submitted_by !== userId) return null;
+  return data;
+}
+
+/** Photos are their own upload step, separate from the rest of the form —
+ *  client ask (2026-08-26): "they will need to upload the images
+ *  themselves... be able to arrange them in that section based on
+ *  whatever they want to show first." No separate approval step for
+ *  photos: the property row's own draft/pending/approved status already
+ *  gates public visibility (see migration 0020's comment), so a photo
+ *  attached to an unapproved listing is simply never reachable from
+ *  anywhere public — approving the listing is what makes both the data
+ *  and its photos visible at once. */
+export async function uploadPropertyPhoto(propertyId: string, formData: FormData): Promise<ActionResult> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
+
+  const supabase = await createClient();
+  const isAdmin = auth.role === "admin";
+  const property = await loadOwnedProperty(supabase, propertyId, auth.userId, isAdmin);
+  if (!property) return { error: "Listing not found." };
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose an image file." };
+  if (file.size > 6_000_000) return { error: "Image too large (6MB max)." };
+
+  const bytes = await file.arrayBuffer();
+  const detectedType = sniffImageType(bytes);
+  if (!detectedType) return { error: "That doesn't look like a supported image (JPEG, PNG, or WebP)." };
+
+  const ext = EXT_FOR_TYPE[detectedType] ?? "jpg";
+  const path = `${propertyId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("property-photos")
+    .upload(path, bytes, { contentType: detectedType });
+  if (uploadError) return { error: "Couldn't upload. Please try again." };
+
+  const nextPhotos: PropertyPhoto[] = [...(property.photos ?? []), { path, uploadedAt: new Date().toISOString() }];
+  const { error: updateError } = await supabase.from("properties").update({ photos: nextPhotos }).eq("id", propertyId);
+  if (updateError) return { error: "Uploaded, but couldn't save it to the listing." };
+
+  revalidatePath(`/admin/properties/${propertyId}/edit`);
+  return { ok: true };
+}
+
+export async function removePropertyPhoto(propertyId: string, path: string): Promise<ActionResult> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
+
+  const supabase = await createClient();
+  const isAdmin = auth.role === "admin";
+  const property = await loadOwnedProperty(supabase, propertyId, auth.userId, isAdmin);
+  if (!property) return { error: "Listing not found." };
+
+  const nextPhotos = (property.photos ?? []).filter((p) => p.path !== path);
+  const { error: updateError } = await supabase.from("properties").update({ photos: nextPhotos }).eq("id", propertyId);
+  if (updateError) return { error: "Couldn't remove. Please try again." };
+
+  await supabase.storage.from("property-photos").remove([path]);
+
+  revalidatePath(`/admin/properties/${propertyId}/edit`);
+  return { ok: true };
+}
+
+/** Up/down reordering (same pattern as the admin sidebar's own nav
+ *  reorder) rather than drag-and-drop — client ask was "arrange them...
+ *  based on whatever they want to show first," which this covers with
+ *  meaningfully less complexity than a full drag implementation. */
+export async function reorderPropertyPhoto(propertyId: string, path: string, direction: -1 | 1): Promise<ActionResult> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
+
+  const supabase = await createClient();
+  const isAdmin = auth.role === "admin";
+  const property = await loadOwnedProperty(supabase, propertyId, auth.userId, isAdmin);
+  if (!property) return { error: "Listing not found." };
+
+  const photos = [...(property.photos ?? [])];
+  const index = photos.findIndex((p) => p.path === path);
+  const target = index + direction;
+  if (index === -1 || target < 0 || target >= photos.length) return { ok: true };
+  [photos[index], photos[target]] = [photos[target], photos[index]];
+
+  const { error: updateError } = await supabase.from("properties").update({ photos }).eq("id", propertyId);
+  if (updateError) return { error: "Couldn't reorder. Please try again." };
+
+  revalidatePath(`/admin/properties/${propertyId}/edit`);
+  return { ok: true };
+}
 
 function str(formData: FormData, key: string): string | null {
   const v = String(formData.get(key) ?? "").trim();
@@ -45,14 +157,14 @@ function buildRowFromFormData(formData: FormData) {
   };
 }
 
-/** Create or update a listing. `mode` mirrors the same draft/submit split
- *  Content & Media already uses: draft never leaves the author's own view,
- *  submit means "publish live" for an admin or "send for review" for an
- *  editor (enforced by RLS too — properties_update_own's WITH CHECK only
- *  allows a non-admin to land on draft/pending/withdrawn, never approved -
- *  see migration 0016). No photo handling here yet — that's a separate,
- *  not-yet-built increment (a public bucket + an upload action reusing
- *  saveImage's magic-byte-sniff pattern). */
+/** Create or update a listing's own fields. `mode` mirrors the same
+ *  draft/submit split Content & Media already uses: draft never leaves
+ *  the author's own view, submit means "publish live" for an admin or
+ *  "send for review" for an editor (enforced by RLS too —
+ *  properties_update_own's WITH CHECK only allows a non-admin to land on
+ *  draft/pending/withdrawn, never approved - see migration 0016). Photos
+ *  are handled separately below (uploadPropertyPhoto etc.) since a
+ *  brand-new listing has no id to attach them to until this has run once. */
 export async function saveProperty(
   propertyId: string | null,
   _prevState: PropertyFormState,
