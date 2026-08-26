@@ -29,6 +29,8 @@ import { EventCtaSection } from "@/components/sections/event-cta-section";
 import { TeamSection } from "@/components/sections/team-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { SiteFooter } from "@/components/sections/site-footer";
+import { PageHero } from "@/components/page-hero";
+import { PAGE_CONTENT_KEYS, PAGE_CONTENT_LABELS } from "@/lib/page-content-keys";
 
 // Grows to fit whatever's typed rather than clipping/scrolling a fixed
 // 3-row box — client feedback (2026-08-26): editors write multi-sentence
@@ -309,6 +311,10 @@ const SECTION_NAV = [
   { id: "section-testimonials", label: "Testimonials" },
   { id: "section-team", label: "Team" },
   { id: "section-social", label: "Social links" },
+  ...PAGE_CONTENT_KEYS.map((key) => ({
+    id: `section-page-${key}`,
+    label: `${PAGE_CONTENT_LABELS[key]} page`,
+  })),
 ];
 
 type SectionPreviewState = { title: string; node: React.ReactNode } | null;
@@ -671,6 +677,53 @@ export function ContentForm({
           />
         ))}
       </Section>
+
+      {/* One section per landing page's hero copy (client ask, 2026-08-27:
+          "for the rest of the web page... make sure that we can edit
+          every element... it has to be labeled so that when someone is
+          making a change, they know where that change is going to pop
+          up... this is for all the landing pages"). Editors get the exact
+          same fields here that an admin sees inline on the live page
+          itself (see PageHero/InlineEditable) — this is the only surface
+          editors have for them, since inline editing is admin-only.
+          Preview renders the real PageHero component so "where does this
+          show up" is never a guess. Deep-dive body content per page
+          (About's mission/story, FAQ answers, Services detail cards, ...)
+          isn't covered yet — flagged as the next phase, not silently
+          left out. */}
+      {PAGE_CONTENT_KEYS.map((key) => {
+        const page = content.pages[key];
+        const label = PAGE_CONTENT_LABELS[key];
+        return (
+          <Section
+            key={key}
+            id={`section-page-${key}`}
+            legend={`${label} page`}
+            showControls={showSectionControls}
+            isEditor={isEditor}
+            onPreview={() =>
+              handlePreviewSection(`${label} page`, (c) => {
+                const p = c.pages[key];
+                return <PageHero eyebrow={p.eyebrow} heading={p.heading} sub={p.sub || undefined} intro={p.intro || undefined} />;
+              })
+            }
+          >
+            <Field label="Eyebrow (small label above the heading)" name={`pages.${key}.eyebrow`} defaultValue={page.eyebrow} />
+            <Field label="Heading" name={`pages.${key}.heading`} defaultValue={page.heading} />
+            <Field label="Subheading" name={`pages.${key}.sub`} defaultValue={page.sub} textarea />
+            <Field label="Intro paragraph" name={`pages.${key}.intro`} defaultValue={page.intro} textarea />
+            {(!page.sub || !page.intro) && (
+              <p className="text-muted-foreground text-xs">
+                {!page.sub && !page.intro
+                  ? "This page doesn't currently show a subheading or intro paragraph — filling either in below adds it."
+                  : !page.sub
+                    ? "This page doesn't currently show a subheading — filling it in below adds it."
+                    : "This page doesn't currently show an intro paragraph — filling it in below adds it."}
+              </p>
+            )}
+          </Section>
+        );
+      })}
 
       {(state?.error || draftState?.error) && (
         <p className="text-destructive text-sm" role="alert">

@@ -3,7 +3,8 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { FaqList } from "@/components/faq-list";
 import { CtaLink } from "@/components/ui/cta-link";
-import { PAGES, FAQS } from "@/lib/content";
+import { FAQS } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 import { ContactForm } from "./contact-form";
 
@@ -16,8 +17,8 @@ export default async function ContactPage({
 }: {
   searchParams: Promise<{ topic?: string; q?: string }>;
 }) {
-  const page = PAGES.contact;
-  const { topic, q } = await searchParams;
+  const [content, { topic, q }] = await Promise.all([getSiteContent(), searchParams]);
+  const page = content.pages.contact;
 
   return (
     <>
@@ -27,6 +28,7 @@ export default async function ContactPage({
         sub={page.sub}
         intro={page.intro}
         breadcrumbs={getBreadcrumbTrail("/contact")}
+        editKey="contact"
       />
 
       <section className="px-6 pb-24">

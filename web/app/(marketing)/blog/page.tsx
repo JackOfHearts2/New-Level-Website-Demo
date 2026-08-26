@@ -3,7 +3,8 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
-import { PAGES, BLOG_CATEGORIES } from "@/lib/content";
+import { BLOG_CATEGORIES } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
@@ -13,8 +14,9 @@ export const metadata: Metadata = {
 // "All Articles" overview — each category card links into its own
 // dedicated /blog/[category] page (see that route) instead of everything
 // funneling into one shared list.
-export default function BlogPage() {
-  const page = PAGES.blog;
+export default async function BlogPage() {
+  const content = await getSiteContent();
+  const page = content.pages.blog;
 
   return (
     <>
@@ -24,6 +26,7 @@ export default function BlogPage() {
         sub={page.sub}
         intro={page.intro}
         breadcrumbs={getBreadcrumbTrail("/blog")}
+        editKey="blog"
       />
 
       <section className="mx-auto max-w-6xl px-6 pb-24">

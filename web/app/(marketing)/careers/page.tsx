@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
-import { PAGES } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 import { CareersForm } from "./careers-form";
 
@@ -9,8 +9,9 @@ export const metadata: Metadata = {
   title: "Careers · New Level",
 };
 
-export default function CareersPage() {
-  const page = PAGES.careers;
+export default async function CareersPage() {
+  const content = await getSiteContent();
+  const page = content.pages.careers;
 
   return (
     <>
@@ -20,6 +21,7 @@ export default function CareersPage() {
         sub={page.sub}
         intro={page.intro}
         breadcrumbs={getBreadcrumbTrail("/careers")}
+        editKey="careers"
       />
 
       <section className="px-6 pb-24">

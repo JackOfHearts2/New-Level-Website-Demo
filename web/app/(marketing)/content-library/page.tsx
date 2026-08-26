@@ -3,15 +3,17 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { ContentLibraryGrid } from "@/components/content-library-grid";
 import { SOCIAL_ICONS } from "@/components/social-icons";
-import { PAGES, SOCIALS } from "@/lib/content";
+import { SOCIALS } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Content Library · New Level",
 };
 
-export default function ContentLibraryPage() {
-  const page = PAGES.contentLibrary;
+export default async function ContentLibraryPage() {
+  const content = await getSiteContent();
+  const page = content.pages.contentLibrary;
 
   return (
     <>
@@ -21,6 +23,7 @@ export default function ContentLibraryPage() {
         sub={page.sub}
         intro={page.intro}
         breadcrumbs={getBreadcrumbTrail("/content-library")}
+        editKey="contentLibrary"
       />
 
       <section className="mx-auto max-w-3xl px-6 pb-16">

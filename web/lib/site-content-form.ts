@@ -1,4 +1,5 @@
 import type { SiteContent } from "@/lib/site-content";
+import { PAGE_CONTENT_KEYS } from "@/lib/page-content-keys";
 
 // Deliberately no "use server"/"server-only" — this is plain data mapping
 // (FormData -> SiteContent), reused both by the real saveContent Server
@@ -37,11 +38,21 @@ function urlField(formData: FormData, name: string, max: number, fallback: strin
  *  or the images-resolved content shape can both pass their object
  *  straight through — this never reads `.images`. */
 export function contentToFormData(
-  content: Pick<SiteContent, "brand" | "eventCta" | "trustStats" | "services" | "testimonials" | "team" | "socials">
+  content: Pick<
+    SiteContent,
+    "brand" | "eventCta" | "trustStats" | "services" | "testimonials" | "team" | "socials" | "pages"
+  >
 ): FormData {
   const fd = new FormData();
   fd.set("brand.tagline", content.brand.tagline);
   fd.set("brand.aboutShort", content.brand.aboutShort);
+  PAGE_CONTENT_KEYS.forEach((key) => {
+    const page = content.pages[key];
+    fd.set(`pages.${key}.eyebrow`, page.eyebrow);
+    fd.set(`pages.${key}.heading`, page.heading);
+    fd.set(`pages.${key}.sub`, page.sub);
+    fd.set(`pages.${key}.intro`, page.intro);
+  });
   fd.set("eventCta.eyebrow", content.eventCta.eyebrow);
   fd.set("eventCta.heading", content.eventCta.heading);
   fd.set("eventCta.sub", content.eventCta.sub);
@@ -78,6 +89,17 @@ export function buildContentFromFormData(current: SiteContent, formData: FormDat
       tagline: field(formData, "brand.tagline", SHORT),
       aboutShort: field(formData, "brand.aboutShort", LONG),
     },
+    pages: Object.fromEntries(
+      PAGE_CONTENT_KEYS.map((key) => [
+        key,
+        {
+          eyebrow: field(formData, `pages.${key}.eyebrow`, SHORT),
+          heading: field(formData, `pages.${key}.heading`, MEDIUM),
+          sub: field(formData, `pages.${key}.sub`, LONG),
+          intro: field(formData, `pages.${key}.intro`, LONG),
+        },
+      ])
+    ) as SiteContent["pages"],
     eventCta: {
       eyebrow: field(formData, "eventCta.eyebrow", SHORT),
       heading: field(formData, "eventCta.heading", MEDIUM),

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
-import { PAGES, SERVICES } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
@@ -12,8 +12,9 @@ export const metadata: Metadata = {
 // The "All Services" overview — each card links into its own dedicated
 // /services/[slug] landing page (see that route) rather than scrolling to
 // a shared section, so every service reads as its own real page.
-export default function ServicesPage() {
-  const page = PAGES.services;
+export default async function ServicesPage() {
+  const content = await getSiteContent();
+  const page = content.pages.services;
 
   return (
     <>
@@ -23,11 +24,12 @@ export default function ServicesPage() {
         sub={page.sub}
         intro={page.intro}
         breadcrumbs={getBreadcrumbTrail("/services")}
+        editKey="services"
       />
 
       <section className="mx-auto max-w-6xl px-6 pb-24">
         <div className="grid gap-6 sm:grid-cols-2">
-          {SERVICES.map((service) => (
+          {content.services.map((service) => (
             <GlowCard
               key={service.id}
               href={service.id === "events" ? "/events" : `/services/${service.id}`}

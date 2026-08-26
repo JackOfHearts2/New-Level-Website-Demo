@@ -7,6 +7,7 @@ import { ShinePill } from "@/components/ui/shine-shape";
 import { CtaLink } from "@/components/ui/cta-link";
 import { Timeline } from "@/components/ui/timeline";
 import { NLG_BRAND, VALUES, SERVICES, BROKERS_CORNER } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
@@ -49,14 +50,18 @@ const TIMELINE = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const content = await getSiteContent();
+  const page = content.pages.about;
+
   return (
     <>
       <PageHero
-        eyebrow="About New Level"
-        heading="Real Estate, Redefined at every level."
-        intro={NLG_BRAND.aboutLong}
+        eyebrow={page.eyebrow}
+        heading={page.heading}
+        intro={page.intro}
         breadcrumbs={getBreadcrumbTrail("/about")}
+        editKey="about"
       />
 
       <section className="mx-auto grid max-w-5xl gap-12 px-6 py-16 md:grid-cols-2">

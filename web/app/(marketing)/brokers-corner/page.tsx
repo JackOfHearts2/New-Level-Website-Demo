@@ -6,15 +6,17 @@ import { CrossNav } from "@/components/cross-nav";
 import { ShinePill, ShineCircle, ShineBox } from "@/components/ui/shine-shape";
 import { GlowCard } from "@/components/ui/glow-card";
 import { AskBrokerButton } from "@/components/ask-broker-button";
-import { PAGES, BROKERS_CORNER } from "@/lib/content";
+import { BROKERS_CORNER } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "The Broker's Corner · New Level",
 };
 
-export default function BrokersCornerPage() {
-  const page = PAGES.brokersCorner;
+export default async function BrokersCornerPage() {
+  const content = await getSiteContent();
+  const page = content.pages.brokersCorner;
 
   return (
     <>
@@ -23,6 +25,7 @@ export default function BrokersCornerPage() {
         heading={page.heading}
         sub={page.sub}
         breadcrumbs={getBreadcrumbTrail("/brokers-corner")}
+        editKey="brokersCorner"
       />
 
       <section className="mx-auto max-w-3xl px-6 pb-16">

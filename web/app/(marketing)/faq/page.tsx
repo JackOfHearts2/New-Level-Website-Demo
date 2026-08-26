@@ -4,15 +4,17 @@ import { CrossNav } from "@/components/cross-nav";
 import { FaqList } from "@/components/faq-list";
 import { CtaLink } from "@/components/ui/cta-link";
 import { GlowCard } from "@/components/ui/glow-card";
-import { PAGES, FAQS } from "@/lib/content";
+import { FAQS } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "FAQs · New Level",
 };
 
-export default function FaqPage() {
-  const page = PAGES.faq;
+export default async function FaqPage() {
+  const content = await getSiteContent();
+  const page = content.pages.faq;
 
   return (
     <>
@@ -21,6 +23,7 @@ export default function FaqPage() {
         heading={page.heading}
         sub={page.sub}
         breadcrumbs={getBreadcrumbTrail("/faq")}
+        editKey="faq"
       />
 
       <section className="px-6 pb-16">

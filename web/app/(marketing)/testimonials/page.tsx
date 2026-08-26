@@ -4,15 +4,16 @@ import { CrossNav } from "@/components/cross-nav";
 import { TestimonialRoster } from "@/components/ui/testimonial-roster";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
-import { PAGES, TESTIMONIALS } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Testimonials · New Level",
 };
 
-export default function TestimonialsPage() {
-  const page = PAGES.testimonials;
+export default async function TestimonialsPage() {
+  const content = await getSiteContent();
+  const page = content.pages.testimonials;
 
   return (
     <>
@@ -21,10 +22,11 @@ export default function TestimonialsPage() {
         heading={page.heading}
         sub={page.sub}
         breadcrumbs={getBreadcrumbTrail("/testimonials")}
+        editKey="testimonials"
       />
 
       <section className="px-6 pb-16">
-        <TestimonialRoster testimonials={TESTIMONIALS} />
+        <TestimonialRoster testimonials={content.testimonials} />
       </section>
 
       <section className="mx-auto max-w-3xl px-6 pb-24 text-center">

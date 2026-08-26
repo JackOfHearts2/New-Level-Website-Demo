@@ -9,6 +9,7 @@ import { notifyPendingChangeRequest } from "@/lib/email";
 import { buildContentFromFormData, contentToFormData } from "@/lib/site-content-form";
 import { logActivity } from "@/lib/activity-log";
 import { diffSiteContent, describeContentChanges } from "@/lib/activity-diff";
+import { revalidateSiteContentPages } from "@/lib/revalidate-pages";
 import {
   getRawSiteContent,
   saveSiteContent,
@@ -102,6 +103,7 @@ async function persistContent(auth: AdminAuth, current: SiteContent, next: SiteC
     });
 
     revalidatePath("/");
+    revalidateSiteContentPages();
     revalidatePath("/admin/content");
     return { ok: true };
   }
@@ -301,6 +303,7 @@ export async function saveImage(
     }
 
     revalidatePath("/");
+    revalidateSiteContentPages();
     revalidatePath("/admin/content");
     return { ok: true };
   }

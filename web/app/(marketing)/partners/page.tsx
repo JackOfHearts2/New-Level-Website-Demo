@@ -3,15 +3,17 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
-import { PAGES, PARTNERS } from "@/lib/content";
+import { PARTNERS } from "@/lib/content";
+import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Partners · New Level",
 };
 
-export default function PartnersPage() {
-  const page = PAGES.partners;
+export default async function PartnersPage() {
+  const content = await getSiteContent();
+  const page = content.pages.partners;
 
   return (
     <>
@@ -21,6 +23,7 @@ export default function PartnersPage() {
         sub={page.sub}
         intro={page.intro}
         breadcrumbs={getBreadcrumbTrail("/partners")}
+        editKey="partners"
       />
 
       <section className="mx-auto max-w-6xl px-6 pb-16">

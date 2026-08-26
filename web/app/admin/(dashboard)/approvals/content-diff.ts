@@ -1,4 +1,5 @@
 import type { SiteContent } from "@/lib/site-content";
+import { PAGE_CONTENT_KEYS, PAGE_CONTENT_LABELS } from "@/lib/page-content-keys";
 
 export type DiffEntry = { label: string; before: string; after: string };
 
@@ -13,6 +14,16 @@ export function diffSiteContent(base: SiteContent, proposed: SiteContent): DiffE
 
   push("Tagline", base.brand.tagline, proposed.brand.tagline);
   push("About blurb", base.brand.aboutShort, proposed.brand.aboutShort);
+
+  PAGE_CONTENT_KEYS.forEach((key) => {
+    const before = base.pages[key];
+    const after = proposed.pages[key];
+    const label = PAGE_CONTENT_LABELS[key];
+    push(`${label} page — eyebrow`, before.eyebrow, after.eyebrow);
+    push(`${label} page — heading`, before.heading, after.heading);
+    push(`${label} page — subheading`, before.sub, after.sub);
+    push(`${label} page — intro`, before.intro, after.intro);
+  });
 
   push("Event CTA eyebrow", base.eventCta.eyebrow, proposed.eventCta.eyebrow);
   push("Event CTA heading", base.eventCta.heading, proposed.eventCta.heading);

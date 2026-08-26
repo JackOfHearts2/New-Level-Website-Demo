@@ -7,6 +7,7 @@ import { sniffImageType } from "@/lib/image-sniff";
 import { buildContentFromFormData } from "@/lib/site-content-form";
 import { logActivity } from "@/lib/activity-log";
 import { diffSiteContent, describeContentChanges } from "@/lib/activity-diff";
+import { revalidateSiteContentPages } from "@/lib/revalidate-pages";
 import {
   getRawSiteContent,
   saveSiteContent,
@@ -125,6 +126,7 @@ export async function approveRequest(id: string): Promise<ActionResult> {
   });
 
   revalidatePath("/");
+  revalidateSiteContentPages();
   revalidatePath("/admin/approvals");
   revalidatePath("/admin/content");
   return { ok: true };
