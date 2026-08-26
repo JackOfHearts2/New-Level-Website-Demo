@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/page-hero";
+import { Camera } from "lucide-react";
+import { EventsHero } from "@/components/events-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { EventCtaSection } from "@/components/sections/event-cta-section";
 import { EventsCalendar } from "@/components/events-calendar";
@@ -21,9 +22,13 @@ export default function EventsPage() {
   const anchorDate = upcoming?.date ?? EVENTS_CALENDAR[0]?.date;
   const [anchorYear, anchorMonth] = (anchorDate ?? todayKey).split("-").map(Number);
 
+  const pastEvents = EVENTS_CALENDAR.filter((event) => event.date < todayKey).sort((a, b) =>
+    b.date.localeCompare(a.date)
+  );
+
   return (
     <>
-      <PageHero eyebrow={page.eyebrow} heading={page.heading} sub={page.sub} />
+      <EventsHero eyebrow={page.eyebrow} heading={page.heading} sub={page.sub} />
 
       <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <EventsCalendar
@@ -65,6 +70,46 @@ export default function EventsPage() {
           ))}
         </div>
       </section>
+
+      {pastEvents.length > 0 && (
+        <section className="mx-auto max-w-6xl px-6 pb-24">
+          <h2 className="font-heading text-center text-2xl font-bold">Past Events</h2>
+          <p className="text-foreground mx-auto mt-2 max-w-xl text-center text-sm">
+            A look back at what we&apos;ve hosted. Photo albums for past events are added as
+            they come in.
+          </p>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {pastEvents.map((event) => (
+              <GlowCard key={event.date + event.title} className="overflow-hidden p-0">
+                {event.photoAlbumPending ? (
+                  <div className="bg-muted flex aspect-video flex-col items-center justify-center gap-2">
+                    <Camera className="text-muted-foreground size-6" aria-hidden />
+                    <span className="text-muted-foreground text-xs font-medium">
+                      Photos coming soon
+                    </span>
+                  </div>
+                ) : null}
+                <div className="p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="font-heading font-semibold">{event.title}</h3>
+                    <ShinePill className="bg-accent text-accent-foreground font-heading rounded-full px-3 py-1 text-xs font-semibold uppercase">
+                      {event.type}
+                    </ShinePill>
+                  </div>
+                  <p className="text-foreground mt-2 text-sm">
+                    {new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+                  <p className="text-foreground mt-2 text-sm">{event.blurb}</p>
+                </div>
+              </GlowCard>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
         <EventCtaSection eventCta={EVENT_CTA} />

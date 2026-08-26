@@ -369,7 +369,28 @@ export const CONTACT_TOPICS = [
   { id: "general", label: "Something Else" },
 ];
 
+// `photoAlbumPending` marks a past event whose real photo album hasn't
+// been provided yet — client (2026-08-26): "put placeholders, I will
+// provide the albums with the dates at some point." Rendered as a
+// "Photos coming soon" placeholder card on the Past Events section of
+// /events, rather than a broken/missing image.
 export const EVENTS_CALENDAR = [
+  {
+    date: "2026-06-12",
+    title: "Summer Kickoff Mixer",
+    type: "Mixer",
+    time: "6:00 – 8:30 PM",
+    blurb: "An evening of connections to open the summer season.",
+    photoAlbumPending: true,
+  },
+  {
+    date: "2026-07-24",
+    title: "Investor Roundtable",
+    type: "Networking",
+    time: "5:30 – 7:30 PM",
+    blurb: "A smaller, conversation-driven evening for active and prospective investors.",
+    photoAlbumPending: true,
+  },
   {
     date: "2026-08-20",
     title: "New Level Soirée",
@@ -377,6 +398,7 @@ export const EVENTS_CALENDAR = [
     time: "6:00 – 8:00 PM",
     blurb:
       "An exclusive evening of sophistication and opportunity, connecting investors and agents.",
+    photoAlbumPending: true,
   },
   {
     date: "2026-08-28",
