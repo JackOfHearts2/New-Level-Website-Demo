@@ -323,6 +323,102 @@
     0 0 0 1px color-mix(in srgb, var(--color-green) 30%, transparent),
     0 8px 20px -8px color-mix(in srgb, var(--color-green) 45%, transparent);
 }
+/* Org chart (app/admin/(dashboard)/team/org-chart.tsx) — a pure-CSS nested-
+   list tree: connecting lines are drawn with border-top/border-left on
+   ::before/::after pseudo-elements rather than an SVG or canvas layer, so
+   layout needs zero JS and reflows naturally as nodes are added/removed.
+   Well-known technique (search "css only org chart tree" for the same
+   shape), adapted to this project's --border token so lines match the
+   rest of the admin UI in both themes automatically, and to the "circular
+   photo, short stem, name/title pill below it" node look the client
+   pointed to as their real reference (a Company Structure template
+   screenshot, not a code component — an earlier visx dendrogram paste was
+   superseded by this one, per the client's own "this is a better example").
+   Node/avatar/pill styling itself lives as ordinary Tailwind classes in
+   the component, not here — only the connector geometry needs bespoke CSS.
+   The 28px figure appears three times below (li padding-top, the
+   before/after height, and ul::before's height) and all three must stay
+   equal — that's what makes each child's horizontal half-line and its
+   parent's vertical trunk meet at the same point. Change one, change all. */
+.org-tree,
+.org-tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.org-tree {
+  display: inline-flex;
+}
+.org-tree ul {
+  display: flex;
+}
+.org-tree li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 28px 14px 0 14px;
+}
+.org-tree > li {
+  padding-top: 0;
+}
+.org-tree li::before,
+.org-tree li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 50%;
+  width: 50%;
+  height: 28px;
+  border-top: 2px solid var(--border);
+}
+.org-tree li::after {
+  right: auto;
+  left: 50%;
+  border-left: 2px solid var(--border);
+}
+.org-tree > li::before,
+.org-tree > li::after {
+  display: none;
+}
+.org-tree li:only-child::before,
+.org-tree li:only-child::after {
+  display: none;
+}
+.org-tree li:only-child {
+  padding-top: 0;
+}
+.org-tree li:first-child::before {
+  border-color: transparent;
+}
+.org-tree li:last-child::after {
+  border-color: transparent;
+}
+.org-tree li:last-child::before {
+  border-right: 2px solid var(--border);
+  border-radius: 0 8px 0 0;
+}
+.org-tree li:first-child::after {
+  border-radius: 8px 0 0 0;
+}
+.org-tree ul::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 28px;
+  border-left: 2px solid var(--border);
+}
+/* Drop-target highlight while dragging one node onto another to reparent
+   it — toggled via JS on dragenter/dragleave/drop. */
+.org-tree__drop-target {
+  outline: 2px dashed var(--color-green);
+  outline-offset: 4px;
+  border-radius: 1rem;
+}
+
 :root.dark .shine-shape:hover {
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--color-green) 40%, transparent),

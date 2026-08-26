@@ -22,7 +22,11 @@ export type ActivityEventType =
   | "staff_hierarchy_updated"
   | "onboarding_task_assigned"
   | "onboarding_task_completed"
-  | "work_report_submitted";
+  | "work_report_submitted"
+  | "org_member_added"
+  | "org_member_updated"
+  | "org_member_moved"
+  | "org_member_removed";
 
 export type ActivityTargetTable =
   | "content_change_requests"
@@ -31,7 +35,8 @@ export type ActivityTargetTable =
   | "properties"
   | "inquiries"
   | "onboarding_tasks"
-  | "work_reports";
+  | "work_reports"
+  | "org_members";
 
 /** Fail-soft, same philosophy as lib/email.ts — a logging failure must
  *  never block the real action it's describing. */
