@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 export default async function ContactPage({
   searchParams,
 }: {
-  searchParams: Promise<{ topic?: string }>;
+  searchParams: Promise<{ topic?: string; q?: string }>;
 }) {
   const page = PAGES.contact;
-  const { topic } = await searchParams;
+  const { topic, q } = await searchParams;
 
   return (
     <>
@@ -33,7 +33,7 @@ export default async function ContactPage({
         {/* key forces a remount when ?topic= changes via client-side nav
             (e.g. the footer's "Join Our Network" link while already on this
             page) — otherwise the mounted instance keeps its stale selection. */}
-        <ContactForm key={topic ?? "none"} initialTopic={topic} />
+        <ContactForm key={`${topic ?? "none"}-${q ?? "none"}`} initialTopic={topic} initialQuery={q} />
       </section>
 
       <section className="mx-auto max-w-3xl px-6 pb-24">

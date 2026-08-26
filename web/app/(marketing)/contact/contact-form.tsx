@@ -23,7 +23,7 @@ import { submitInquiry } from "@/app/actions/inquiries";
 // for reaching out), name/email/message fields, and a submit that
 // confirms in place. Direct contact info (email/phone/WhatsApp/socials)
 // stays available above the form for anyone who'd rather not fill it out.
-export function ContactForm({ initialTopic }: { initialTopic?: string }) {
+export function ContactForm({ initialTopic, initialQuery }: { initialTopic?: string; initialQuery?: string }) {
   const [topics, setTopics] = useState<string[]>(
     CONTACT_TOPICS.some((t) => t.id === initialTopic) ? [initialTopic as string] : []
   );
@@ -144,6 +144,10 @@ export function ContactForm({ initialTopic }: { initialTopic?: string }) {
                 name="message"
                 placeholder="Tell us a bit about what you're looking for…"
                 className="min-h-28"
+                // Arrives from the site search's "can't find it?" fallback
+                // (site-search.tsx) — pre-filled, not auto-submitted, so the
+                // visitor can add context before sending.
+                defaultValue={initialQuery ? `I searched for "${initialQuery}" and couldn't find it. ` : undefined}
                 required
               />
             </div>

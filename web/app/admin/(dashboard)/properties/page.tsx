@@ -40,9 +40,18 @@ function formatPrice(price: number | null, period: string | null) {
   return period === "sale" ? amount : `${amount}/${period}`;
 }
 
-export default async function PropertiesListPage() {
+const STATUS_ORDER: PropertyStatus[] = ["draft", "pending", "changes_requested", "approved", "rejected", "withdrawn"];
+
+export default async function PropertiesListPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
   const auth = await requireAdminRole();
   if (!auth) redirect("/");
+
+  const { status: statusParam } = await searchParams;
+  const activeStatus = STATUS_ORDER.includes(statusParam as PropertyStatus) ? (statusParam as PropertyStatus) : null;
 
   const supabase = await createClient();
   const isAdmin = auth.role === "admin";
@@ -52,6 +61,7 @@ export default async function PropertiesListPage() {
     .select("id, title, category, subcategory, status, price, price_period, city, state, created_at, submitted_by, review_note")
     .order("created_at", { ascending: false });
   if (!isAdmin) query = query.eq("submitted_by", auth.userId);
+  if (activeStatus) query = query.eq("status", activeStatus);
   const { data } = await query.returns<PropertyRow[]>();
 
   const rows = data ?? [];
@@ -81,9 +91,41 @@ export default async function PropertiesListPage() {
         </Link>
       </div>
 
+      {/* Client ask (2026-08-27): filters on every page with multiple
+          things on it, "readily available... at the top... doesn't have to
+          be super prominent." Same status-chip pattern as Inquiries and
+          Activity. */}
+      <div role="tablist" aria-label="Filter by status" className="flex flex-wrap gap-2">
+        <Link
+          href="/admin/properties"
+          role="tab"
+          aria-selected={!activeStatus}
+          className={`font-heading rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
+            !activeStatus ? "bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-muted border"
+          }`}
+        >
+          All
+        </Link>
+        {STATUS_ORDER.map((s) => (
+          <Link
+            key={s}
+            href={`/admin/properties?status=${s}`}
+            role="tab"
+            aria-selected={activeStatus === s}
+            className={`font-heading rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
+              activeStatus === s ? "bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-muted border"
+            }`}
+          >
+            {PROPERTY_STATUS_LABELS[s]}
+          </Link>
+        ))}
+      </div>
+
       {rows.length === 0 ? (
         <GlowCard className="p-8 text-center">
-          <p className="text-muted-foreground text-sm">No listings yet.</p>
+          <p className="text-muted-foreground text-sm">
+            {activeStatus ? `No ${PROPERTY_STATUS_LABELS[activeStatus].toLowerCase()} listings.` : "No listings yet."}
+          </p>
         </GlowCard>
       ) : (
         <div className="space-y-4">

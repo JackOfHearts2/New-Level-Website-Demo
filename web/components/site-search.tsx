@@ -87,6 +87,22 @@ export function SiteSearch() {
                     ))}
                   </ul>
                 )}
+                {/* Client ask (2026-08-27): "if it's not the right thing,
+                    they should also have option two... it should be clear
+                    how they can let us know they're trying to find
+                    something they can't." Shown whether or not there are
+                    matches — a real result might still not be what they
+                    actually needed. Not the AI-agent-smart version the
+                    client also described (that depends on the AI agent
+                    integration itself, not yet built/scoped) — this is the
+                    concrete, buildable half of that ask on its own. */}
+                <Link
+                  href={`/contact?topic=general&q=${encodeURIComponent(query.trim())}`}
+                  onClick={close}
+                  className="text-primary hover:bg-muted mt-1 block rounded-lg px-2 py-2 text-xs font-semibold"
+                >
+                  Can&apos;t find what you&apos;re looking for? Let us know →
+                </Link>
               </div>
             )}
           </motion.div>

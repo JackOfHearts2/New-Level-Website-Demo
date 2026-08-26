@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import type { SiteContent } from "@/lib/site-content";
 import { imageSlotLabel } from "@/lib/site-content-images";
@@ -165,6 +168,41 @@ function RequestCard({ request, isAdmin }: { request: ChangeRequestItem; isAdmin
   );
 }
 
+type TypeFilter = "all" | "content" | "image";
+
+// Client ask (2026-08-27): "I need that [filter] on every page where we
+// have multiple things on a landing page... doesn't have to be super
+// prominent, but... at the top where we're introducing this section."
+// Content vs. photo changes render quite differently below (a text diff
+// vs. a before/after image pair), so this is the filter that actually
+// matters here — the existing Pending/Reviewed split already covers
+// status.
+function TypeFilterChips({ value, onChange, counts }: { value: TypeFilter; onChange: (v: TypeFilter) => void; counts: Record<TypeFilter, number> }) {
+  const options: { value: TypeFilter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: "content", label: "Content" },
+    { value: "image", label: "Photos" },
+  ];
+  return (
+    <div role="tablist" aria-label="Filter by type" className="flex flex-wrap gap-2">
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          role="tab"
+          aria-selected={value === o.value}
+          onClick={() => onChange(o.value)}
+          className={`font-heading rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
+            value === o.value ? "bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-muted border"
+          }`}
+        >
+          {o.label} {o.value !== "all" && counts[o.value] > 0 ? `(${counts[o.value]})` : ""}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function ApprovalList({
   requests,
   isAdmin,
@@ -172,13 +210,23 @@ export function ApprovalList({
   requests: ChangeRequestItem[];
   isAdmin: boolean;
 }) {
-  const actionable = requests.filter(
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const counts: Record<TypeFilter, number> = {
+    all: requests.length,
+    content: requests.filter((r) => r.targetType === "content").length,
+    image: requests.filter((r) => r.targetType === "image").length,
+  };
+  const filtered = typeFilter === "all" ? requests : requests.filter((r) => r.targetType === typeFilter);
+
+  const actionable = filtered.filter(
     (r) => r.status === "pending" || r.status === "changes_requested"
   );
-  const history = requests.filter((r) => r.status !== "pending" && r.status !== "changes_requested");
+  const history = filtered.filter((r) => r.status !== "pending" && r.status !== "changes_requested");
 
   return (
     <div className="space-y-8">
+      <TypeFilterChips value={typeFilter} onChange={setTypeFilter} counts={counts} />
+
       <section className="space-y-4">
         <h2 className="font-heading font-semibold">
           Pending {actionable.length > 0 && `(${actionable.length})`}
