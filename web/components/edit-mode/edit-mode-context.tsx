@@ -16,14 +16,34 @@ type EditModeValue = {
   on: boolean;
   isAdmin: boolean;
   toggle: () => void;
-  content: EditableContent;
+  content: EditableContent | null;
   /** Called after a field saves successfully so the NEXT inline edit's
    *  contentToFormData() snapshot includes this change too, rather than
    *  building from the stale server-fetched content on every save. */
   updateField: (name: string, value: string) => void;
 };
 
-const EditModeContext = createContext<EditModeValue | null>(null);
+// A real default (not null) — critically, this means any component using
+// InlineEditable/useEditMode() renders SAFELY even with no
+// <EditModeProvider> ancestor, just permanently in the "not editable"
+// state (on: false). This was a real, shipped bug: AboutSection/
+// EventCtaSection (which use InlineEditable) get rendered inside the
+// admin dashboard's own preview modals (SectionPreview, SitePreview, both
+// reachable from /admin/content) — those admin pages were never wrapped
+// in EditModeProvider (only the public marketing layout/homepage are),
+// so useEditMode() throwing on a missing provider crashed the entire
+// preview (and, once the React tree was in that broken state, everything
+// else on the page including Save) the moment anyone previewed the Brand,
+// Trust Stats, or Event CTA section from the admin dashboard.
+const DEFAULT_VALUE: EditModeValue = {
+  on: false,
+  isAdmin: false,
+  toggle: () => {},
+  content: null,
+  updateField: () => {},
+};
+
+const EditModeContext = createContext<EditModeValue>(DEFAULT_VALUE);
 
 const STORAGE_KEY = "nl_admin_edit_mode";
 
@@ -102,7 +122,5 @@ export function EditModeProvider({
 }
 
 export function useEditMode() {
-  const ctx = useContext(EditModeContext);
-  if (!ctx) throw new Error("useEditMode must be used within an EditModeProvider");
-  return ctx;
+  return useContext(EditModeContext);
 }

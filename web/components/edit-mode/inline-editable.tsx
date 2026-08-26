@@ -79,7 +79,11 @@ export function InlineEditable({
   async function handleSave() {
     setSaving(true);
     setError(null);
-    const fd = contentToFormData(content);
+    // Safe: this only runs once we're past the `!on || !isAdmin` early
+    // return above, and `on` can only be true when a real EditModeProvider
+    // set it (the context's no-provider default always has on: false,
+    // content: null) — so `content` is guaranteed non-null here.
+    const fd = contentToFormData(content!);
     fd.set(name, draft);
     const result = await saveContent(undefined, fd);
     setSaving(false);

@@ -26,7 +26,14 @@ export function SectionPreview({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-background max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-2xl shadow-2xl">
+      {/* max-w-7xl (not a narrower modal width) — the live page's own
+          sections are max-w-7xl containers; previewing at a narrower width
+          reflows text at different line-break points than production,
+          which reads as "formatting broke" when it's really just a
+          preview-fidelity mismatch (client report, 2026-08-26: a word
+          wrapping to its own line in preview that doesn't on the live
+          page). */}
+      <div className="bg-background max-h-[85vh] w-full max-w-7xl overflow-hidden rounded-2xl shadow-2xl">
         <div className="bg-foreground text-background flex items-center justify-between gap-4 px-6 py-3">
           <p className="font-heading text-sm font-semibold">Preview — {title}</p>
           <button
