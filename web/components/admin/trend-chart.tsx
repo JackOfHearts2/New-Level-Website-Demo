@@ -29,13 +29,14 @@ function TrendBadge({ direction, deltaPct }: { direction: "up" | "down" | "flat"
   );
 }
 
-function downloadCsv(data: TrendPoint[]) {
-  const rows = ["date,label,pageviews", ...data.map((d) => `${d.date},"${d.label}",${d.count}`)];
+function downloadCsv(data: TrendPoint[], seriesLabel: string) {
+  const column = seriesLabel.toLowerCase().replace(/\s+/g, "_");
+  const rows = [`date,label,${column}`, ...data.map((d) => `${d.date},"${d.label}",${d.count}`)];
   const blob = new Blob([rows.join("\n")], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "pageviews.csv";
+  a.download = `${column}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -55,7 +56,20 @@ function downloadCsv(data: TrendPoint[]) {
  *  both views share one chart type; `height` lets Analytics render it
  *  taller than the Dashboard's compact card without duplicating the
  *  component). */
-export function TrendChart({ data, height = DEFAULT_HEIGHT }: { data: TrendPoint[]; height?: number }) {
+export function TrendChart({
+  data,
+  height = DEFAULT_HEIGHT,
+  seriesLabel = "Pageviews",
+}: {
+  data: TrendPoint[];
+  height?: number;
+  /** Names the series for the export filename/CSV header and the chart's
+   *  aria-label — defaults to "Pageviews" so the two existing callers
+   *  (Dashboard's compact card, Analytics' Traffic section) don't need to
+   *  pass anything. Any other single-series trend (e.g. submissions/week)
+   *  should set this rather than exporting a file mislabeled "pageviews". */
+  seriesLabel?: string;
+}) {
   const [hover, setHover] = useState<number | null>(null);
   const gradientId = useId();
   const router = useRouter();
@@ -103,7 +117,7 @@ export function TrendChart({ data, height = DEFAULT_HEIGHT }: { data: TrendPoint
         <TrendBadge direction={trend.direction} deltaPct={trend.deltaPct} />
         <button
           type="button"
-          onClick={() => downloadCsv(data)}
+          onClick={() => downloadCsv(data, seriesLabel)}
           aria-label="Export as CSV"
           title="Export as CSV"
           className="text-muted-foreground hover:bg-muted hover:text-foreground flex size-7 items-center justify-center rounded-full transition-colors"
@@ -124,7 +138,7 @@ export function TrendChart({ data, height = DEFAULT_HEIGHT }: { data: TrendPoint
         viewBox={`0 0 ${WIDTH} ${height}`}
         className="w-full"
         role="img"
-        aria-label="Pageviews over time"
+        aria-label={`${seriesLabel} over time`}
         onMouseMove={handleMove}
         onMouseLeave={() => setHover(null)}
       >
