@@ -33,6 +33,9 @@ export function SearchBox() {
   const activeCategory = SEARCH_CATEGORIES.find((c) => c.id === activeTop)!;
   const children = "children" in activeCategory ? activeCategory.children : undefined;
   const selectedId = children ? activeChild : activeTop;
+  // Selling/Home Evaluation aren't browsable listing categories — see the
+  // SEARCH_CATEGORIES comment in lib/content.ts.
+  const contactTopic = "contactTopic" in activeCategory ? activeCategory.contactTopic : undefined;
 
   function selectTab(id: string) {
     setActiveTop(id);
@@ -41,6 +44,10 @@ export function SearchBox() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (contactTopic) {
+      router.push(`/contact?topic=${contactTopic}`);
+      return;
+    }
     if (!selectedId) return;
     // The demo's ~8-listing dataset isn't real MLS inventory, so these can't
     // drive a real structured filter — but folding a selected filter into
@@ -79,20 +86,28 @@ export function SearchBox() {
         </div>
 
         <form onSubmit={handleSubmit} className="mt-4 flex flex-wrap items-end gap-3">
-          <label className="min-w-[200px] flex-1 text-sm">
-            <span className="text-foreground font-heading text-sm font-medium">
-              Search
-            </span>
-            <input
-              type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              placeholder="Keyword, address, or neighborhood"
-              className="border-border placeholder:text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-            />
-          </label>
+          {contactTopic ? (
+            <p className="text-foreground min-w-[200px] flex-1 text-sm">
+              {activeCategory.label === "Selling"
+                ? "Tell us about the property you're looking to sell — we'll follow up."
+                : "Request a free home valuation — we'll follow up with an estimate."}
+            </p>
+          ) : (
+            <label className="min-w-[200px] flex-1 text-sm">
+              <span className="text-foreground font-heading text-sm font-medium">
+                Search
+              </span>
+              <input
+                type="text"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="Keyword, address, or neighborhood"
+                className="border-border placeholder:text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+              />
+            </label>
+          )}
 
-          {children && (
+          {!contactTopic && children && (
             <label className="text-sm">
               <span className="sr-only">Rental Type</span>
               <select
@@ -121,23 +136,24 @@ export function SearchBox() {
               to it — that pairing used to read as cramped/clipped,
               especially once several of these sat side by side. Matches the
               "Rental type…" select above, which already worked this way. */}
-          {(Object.keys(SEARCH_FILTERS) as (keyof typeof SEARCH_FILTERS)[]).map((key) => (
-            <FilterSelect
-              key={key}
-              label={FILTER_LABELS[key]}
-              options={SEARCH_FILTERS[key]}
-              value={filters[key]}
-              onChange={(v) => setFilters((f) => ({ ...f, [key]: v }))}
-            />
-          ))}
+          {!contactTopic &&
+            (Object.keys(SEARCH_FILTERS) as (keyof typeof SEARCH_FILTERS)[]).map((key) => (
+              <FilterSelect
+                key={key}
+                label={FILTER_LABELS[key]}
+                options={SEARCH_FILTERS[key]}
+                value={filters[key]}
+                onChange={(v) => setFilters((f) => ({ ...f, [key]: v }))}
+              />
+            ))}
 
           <div className="ml-auto flex gap-2">
             <ResetSearchButton label="Reset" variant="ghost" onClick={handleReset} />
             <ResetSearchButton
-              label="Search"
+              label={contactTopic ? "Get started" : "Search"}
               variant="primary"
               type="submit"
-              disabled={!selectedId}
+              disabled={!contactTopic && !selectedId}
             />
           </div>
         </form>

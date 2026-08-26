@@ -362,6 +362,7 @@ export const NOTIFICATION_PREFERENCES = [
 
 export const CONTACT_TOPICS = [
   { id: "property", label: "Property Inquiry" },
+  { id: "sell", label: "Selling / Home Valuation" },
   { id: "investment", label: "Investment" },
   { id: "management", label: "Property Management" },
   { id: "events", label: "Events" },
@@ -822,6 +823,17 @@ export const BLOG_CATEGORIES = [
 // the 5 filter dropdowns below are populated/interactive but intentionally
 // decorative (this demo has one real listing, not an MLS inventory to
 // filter against).
+// Most tabs browse listings (submit routes to /properties?category=<id>,
+// the pre-existing behavior) — `contactTopic` marks the ones that aren't a
+// browsable category at all, just a lead-capture intent (client ask,
+// 2026-08-26: "buying, selling, home evaluation, also a commercial option
+// next to the ones we have in the lookup tool"). "Buying" isn't its own
+// tab here — it's the same intent "For Sale" already covers, so a second
+// tab for it would just duplicate that one's results rather than showing
+// anything new; Selling and Home Evaluation route to the same contact
+// topic since a valuation is the first step of selling, not a separate
+// flow. Commercial IS a browsable category, tying into the new
+// `properties` table's category taxonomy.
 export const SEARCH_CATEGORIES = [
   { id: "for-sale", label: "For Sale" },
   {
@@ -834,6 +846,9 @@ export const SEARCH_CATEGORIES = [
     ],
   },
   { id: "investment", label: "Investment Properties" },
+  { id: "commercial", label: "Commercial" },
+  { id: "sell", label: "Selling", contactTopic: "sell" },
+  { id: "home-evaluation", label: "Home Evaluation", contactTopic: "sell" },
 ];
 
 export const SEARCH_FILTERS = {
@@ -1072,6 +1087,29 @@ export const PROPERTY_CATEGORIES = [
       {
         q: "Can New Level manage an investment property after purchase?",
         a: "Yes — our Property Management service is built for exactly that handoff, so you don't need a separate manager once you close.",
+      },
+    ],
+  },
+  {
+    id: "commercial",
+    label: "Commercial",
+    blurb: "Office, retail, industrial, and mixed-use.",
+    icon: "Building2",
+    whatToExpect:
+      "Commercial space across the standard property types — office, retail, industrial, multifamily (5+ units), hospitality, and special-purpose — evaluated the way a business decision should be: location, zoning, lease structure, and total cost of occupancy, not just square footage.",
+    idealFor: [
+      "Business owners looking for their own space to lease or buy",
+      "Investors targeting commercial asset classes rather than residential",
+      "Anyone evaluating a mixed-use or multifamily (5+ unit) opportunity",
+    ],
+    faqs: [
+      {
+        q: "Do you handle leasing as well as sales?",
+        a: "Yes — both. We work with tenants and landlords, and with buyers and sellers.",
+      },
+      {
+        q: "What counts as \"multifamily\" here versus a residential multi-unit property?",
+        a: "5 or more units is the standard commercial-financing threshold and is treated as commercial. A 2-4 unit property is generally financed and categorized as residential instead.",
       },
     ],
   },

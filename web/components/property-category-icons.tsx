@@ -1,4 +1,4 @@
-import { Gem, Luggage, KeyRound, CalendarRange, PartyPopper, Tag, TrendingUp } from "lucide-react";
+import { Gem, Luggage, KeyRound, CalendarRange, PartyPopper, Tag, TrendingUp, Building2 } from "lucide-react";
 
 // Shape-differentiated per category (never color-coded) so each Properties
 // landing page reads as visually distinct from the others — the same
@@ -12,4 +12,5 @@ export const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: st
   PartyPopper,
   Tag,
   TrendingUp,
+  Building2,
 };
