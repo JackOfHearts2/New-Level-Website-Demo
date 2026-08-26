@@ -17,7 +17,7 @@ function Tile({ href, title, description }: { href: string; title: string; descr
 
 export default async function AdminHomePage() {
   const auth = await requireAdminRole();
-  if (!auth) redirect("/admin/login");
+  if (!auth) redirect("/");
 
   const supabase = await createClient();
   const pendingFilter = auth.role === "admin" ? {} : { submitted_by: auth.userId };

@@ -15,7 +15,7 @@ type ReportRow = {
 
 export default async function ReportsPage() {
   const auth = await requireAdminRole();
-  if (!auth) redirect("/admin/login");
+  if (!auth) redirect("/");
 
   const supabase = await createClient();
   const { data } = await supabase

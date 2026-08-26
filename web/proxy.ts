@@ -34,12 +34,15 @@ export default async function proxy(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isLogin = req.nextUrl.pathname === "/admin/login";
-  if (!user && !isLogin) {
-    return NextResponse.redirect(new URL("/admin/login", req.url));
-  }
-  if (user && isLogin) {
-    return NextResponse.redirect(new URL("/admin", req.url));
+  // Staff share the same login as everyone else — there's no separate
+  // /admin/login anymore. A signed-out visitor gets bounced to the
+  // homepage with the normal sign-in modal auto-opened (see
+  // AutoSignInModal), then sent back here once they're actually signed in.
+  if (!user) {
+    const redirectUrl = new URL("/", req.url);
+    redirectUrl.searchParams.set("signin", "1");
+    redirectUrl.searchParams.set("redirect", req.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
   }
   return response;
 }

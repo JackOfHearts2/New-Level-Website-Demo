@@ -19,8 +19,8 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: [
-          // Clickjacking protection - matters concretely here since
-          // /admin/login is a real password form.
+          // Clickjacking protection - matters concretely here since the
+          // site has a real sign-in form and an admin dashboard behind it.
           { key: "X-Frame-Options", value: "DENY" },
           // Don't leak full URLs (including query params) to external
           // sites when a visitor clicks an outbound link.

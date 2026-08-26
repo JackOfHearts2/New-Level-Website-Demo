@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { HeroSection } from "@/components/ui/hero-section";
 import { SearchBox } from "@/components/search-box";
 import { AboutSection } from "@/components/sections/about-section";
@@ -12,6 +13,7 @@ import { FloatingActions } from "@/components/floating-actions";
 import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { SiteTour } from "@/components/site-tour";
 import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
+import { AutoSignInModal } from "@/components/auto-signin-modal";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function Home({
@@ -58,6 +60,9 @@ export default async function Home({
       <ReportProblemWidget />
       <ScrollToTopButton />
       <SiteTour startTour={tour === "1"} />
+      <Suspense fallback={null}>
+        <AutoSignInModal />
+      </Suspense>
     </>
   );
 }

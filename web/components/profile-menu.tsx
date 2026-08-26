@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
-import { User, LogIn, UserPlus, LogOut, Heart, Compass, HelpCircle, Mail } from "lucide-react";
+import { User, LogIn, UserPlus, LogOut, Heart, Compass, HelpCircle, Mail, LayoutDashboard } from "lucide-react";
 import { ShineCircle } from "@/components/ui/shine-shape";
 import { LoginModal } from "@/components/login-modal";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "@/lib/supabase/use-session";
+import { useProfileRole } from "@/lib/supabase/use-profile-role";
 
 const PANEL_WIDTH = 224; // w-56
 const PANEL_HEIGHT = 284; // approx rendered height, used for flip-up decisions
@@ -19,6 +20,8 @@ const VIEWPORT_MARGIN = 16;
 // real. Saved Properties/Help Center/Contact Us stay plain links either way.
 export function ProfileMenu() {
   const { user } = useSession();
+  const { role } = useProfileRole();
+  const isStaff = role === "editor" || role === "admin";
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
@@ -120,19 +123,32 @@ export function ProfileMenu() {
           <div className="border-border my-2 border-t" />
 
           {user ? (
-            <button
-              type="button"
-              role="menuitem"
-              onClick={async () => {
-                const supabase = createClient();
-                await supabase.auth.signOut();
-                setOpen(false);
-              }}
-              className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
-            >
-              <LogOut className="text-foreground size-4" />
-              Sign Out
-            </button>
+            <>
+              {isStaff && (
+                <Link
+                  href="/admin"
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                  className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
+                >
+                  <LayoutDashboard className="text-foreground size-4" />
+                  Dashboard
+                </Link>
+              )}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={async () => {
+                  const supabase = createClient();
+                  await supabase.auth.signOut();
+                  setOpen(false);
+                }}
+                className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
+              >
+                <LogOut className="text-foreground size-4" />
+                Sign Out
+              </button>
+            </>
           ) : (
             <>
               <button

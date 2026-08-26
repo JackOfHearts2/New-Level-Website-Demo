@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { MobileDock } from "@/components/mobile-dock";
@@ -5,6 +6,7 @@ import { FloatingActions } from "@/components/floating-actions";
 import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { PageTransition } from "@/components/page-transition";
 import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
+import { AutoSignInModal } from "@/components/auto-signin-modal";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function MarketingLayout({
@@ -33,6 +35,9 @@ export default async function MarketingLayout({
       <FloatingActions />
       <ReportProblemWidget />
       <ScrollToTopButton />
+      <Suspense fallback={null}>
+        <AutoSignInModal />
+      </Suspense>
     </>
   );
 }

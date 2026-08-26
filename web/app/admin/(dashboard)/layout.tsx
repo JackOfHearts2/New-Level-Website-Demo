@@ -28,7 +28,7 @@ export default async function AdminDashboardLayout({
   children: React.ReactNode;
 }) {
   const auth = await requireAdminRole();
-  if (!auth) redirect("/admin/login");
+  if (!auth) redirect("/");
 
   const supabase = await createClient();
   const pendingFilter =

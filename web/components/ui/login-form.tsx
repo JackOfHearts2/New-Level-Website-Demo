@@ -25,9 +25,11 @@ type Status = { kind: "idle" } | { kind: "error"; message: string } | { kind: "c
 // real accounts (see project_supabase_connection memory).
 export function LoginForm({
   onClose,
+  onSuccess,
   initialMode = "signin",
 }: {
   onClose: () => void;
+  onSuccess?: () => void;
   initialMode?: "signin" | "signup";
 }) {
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
@@ -51,7 +53,7 @@ export function LoginForm({
         setStatus({ kind: "error", message: error.message });
         return;
       }
-      onClose();
+      (onSuccess ?? onClose)();
       return;
     }
 
@@ -66,7 +68,7 @@ export function LoginForm({
       setStatus({ kind: "check-email" });
       return;
     }
-    onClose();
+    (onSuccess ?? onClose)();
   }
 
   async function handleGoogle() {

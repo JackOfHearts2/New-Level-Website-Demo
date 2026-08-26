@@ -8,9 +8,11 @@ import { LoginForm } from "@/components/ui/login-form";
 // stays a plain, portable card component.
 export function LoginModal({
   onClose,
+  onSuccess,
   initialMode = "signin",
 }: {
   onClose: () => void;
+  onSuccess?: () => void;
   initialMode?: "signin" | "signup";
 }) {
   return (
@@ -29,7 +31,7 @@ export function LoginModal({
         exit={{ opacity: 0, y: 24, scale: 0.96 }}
         transition={{ type: "spring", stiffness: 300, damping: 28 }}
       >
-        <LoginForm onClose={onClose} initialMode={initialMode} />
+        <LoginForm onClose={onClose} onSuccess={onSuccess} initialMode={initialMode} />
       </motion.div>
     </motion.div>
   );

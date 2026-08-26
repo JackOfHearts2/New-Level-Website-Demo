@@ -37,8 +37,9 @@ export function GrantEditorForm() {
         />
       </label>
       <p className="text-muted-foreground text-xs">
-        They need to have already signed up on the public site. Once granted, they can log in
-        at /admin/login and submit content/photo changes for your review.
+        They need to have already signed up on the public site. Once granted, they can sign in
+        and use the &quot;Dashboard&quot; link in their account menu to submit content/photo
+        changes for your review.
       </p>
       {state?.error && (
         <p className="text-destructive text-sm" role="alert">

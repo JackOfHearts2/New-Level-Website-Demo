@@ -23,7 +23,7 @@ type ProfileRow = { id: string; email: string | null; full_name: string | null }
 
 export default async function ApprovalsPage() {
   const auth = await requireAdminRole();
-  if (!auth) redirect("/admin/login");
+  if (!auth) redirect("/");
 
   const supabase = await createClient();
   const { data } = await supabase

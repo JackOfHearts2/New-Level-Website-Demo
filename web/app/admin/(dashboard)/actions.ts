@@ -20,7 +20,7 @@ export type FormState =
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/admin/login");
+  redirect("/");
 }
 
 /** Text input length caps — keeps a mistaken paste from bloating the blob. */
