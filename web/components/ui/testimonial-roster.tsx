@@ -1,13 +1,36 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Quote } from "lucide-react";
-import { GlowCard } from "@/components/ui/glow-card";
+import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
 import { cn } from "@/lib/utils";
 import { FormattedText } from "@/lib/formatted-text";
 
 type Testimonial = { name: string; role: string; text: string; photo: string };
+
+// Same filter-tab visual as ContentLibraryGrid/TeamRoster — client ask
+// (2026-08-27): "add the filters" everywhere with multiple items.
+function RoleFilterTab({ label, selected, onSelect }: { label: string; selected: boolean; onSelect: () => void }) {
+  const ref = useGlowRing<HTMLButtonElement>();
+  return (
+    <button
+      ref={ref}
+      type="button"
+      role="tab"
+      aria-selected={selected}
+      onClick={onSelect}
+      className={cn(
+        "shine-shape font-heading relative rounded-full px-4 py-2 text-sm font-semibold transition-[color,background-color,transform] duration-300 hover:-translate-y-0.5",
+        selected ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"
+      )}
+    >
+      <span className="glow-card__ring" aria-hidden />
+      {label}
+    </button>
+  );
+}
 
 // The dedicated /testimonials page used to be a plain repeated stack — same
 // image-left/card-right pairing for every entry, no real design intent of
@@ -20,10 +43,21 @@ export function TestimonialRoster({
   testimonials,
 }: Readonly<{ testimonials: Testimonial[] }>) {
   const reduceMotion = useReducedMotion();
+  const [activeRole, setActiveRole] = useState<string | null>(null);
+  const roles = useMemo(() => Array.from(new Set(testimonials.map((t) => t.role))), [testimonials]);
+  const filtered = activeRole ? testimonials.filter((t) => t.role === activeRole) : testimonials;
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-10 sm:gap-14">
-      {testimonials.map((t, i) => {
+      {roles.length > 1 && (
+        <div role="tablist" aria-label="Filter by role" className="flex flex-wrap justify-center gap-2">
+          <RoleFilterTab label="All" selected={activeRole === null} onSelect={() => setActiveRole(null)} />
+          {roles.map((role) => (
+            <RoleFilterTab key={role} label={role} selected={activeRole === role} onSelect={() => setActiveRole(role)} />
+          ))}
+        </div>
+      )}
+      {filtered.map((t, i) => {
         const reversed = i % 2 === 1;
         return (
           <motion.div

@@ -1,12 +1,39 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Quote } from "lucide-react";
-import { GlowCard } from "@/components/ui/glow-card";
+import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
 import { ShinePill } from "@/components/ui/shine-shape";
 import { cn } from "@/lib/utils";
 import type { TEAM } from "@/lib/content";
+
+// Same filter-tab visual as ContentLibraryGrid's platform filter — client
+// ask (2026-08-27): "add the filters" everywhere with multiple items, "as
+// the company grows" (a handful of roles today, more once real hires
+// join). Filters by each person's actual `role` string rather than a
+// separate bucketed category field, so a new hire's role automatically
+// becomes its own filterable chip with zero content-model changes.
+function RoleFilterTab({ label, selected, onSelect }: { label: string; selected: boolean; onSelect: () => void }) {
+  const ref = useGlowRing<HTMLButtonElement>();
+  return (
+    <button
+      ref={ref}
+      type="button"
+      role="tab"
+      aria-selected={selected}
+      onClick={onSelect}
+      className={cn(
+        "shine-shape font-heading relative rounded-full px-4 py-2 text-sm font-semibold transition-[color,background-color,transform] duration-300 hover:-translate-y-0.5",
+        selected ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"
+      )}
+    >
+      <span className="glow-card__ring" aria-hidden />
+      {label}
+    </button>
+  );
+}
 
 // The full /team page needed to read as genuinely different from the
 // homepage's image-accordion strip (client feedback: "it just takes us to
@@ -21,10 +48,21 @@ import type { TEAM } from "@/lib/content";
 // is a plain span, not a second nested anchor.
 export function TeamRoster({ team }: Readonly<{ team: typeof TEAM }>) {
   const reduceMotion = useReducedMotion();
+  const [activeRole, setActiveRole] = useState<string | null>(null);
+  const roles = useMemo(() => Array.from(new Set(team.map((m) => m.role))), [team]);
+  const filtered = activeRole ? team.filter((m) => m.role === activeRole) : team;
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-10 px-6 pb-24 sm:gap-14">
-      {team.map((member, i) => {
+      {roles.length > 1 && (
+        <div role="tablist" aria-label="Filter by role" className="flex flex-wrap justify-center gap-2">
+          <RoleFilterTab label="All" selected={activeRole === null} onSelect={() => setActiveRole(null)} />
+          {roles.map((role) => (
+            <RoleFilterTab key={role} label={role} selected={activeRole === role} onSelect={() => setActiveRole(role)} />
+          ))}
+        </div>
+      )}
+      {filtered.map((member, i) => {
         const reversed = i % 2 === 1;
         return (
           <motion.div
