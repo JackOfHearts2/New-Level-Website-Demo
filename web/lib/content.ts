@@ -511,6 +511,10 @@ export const SERVICES = [
         t: "Monitor & Grow",
         d: "We keep tracking performance and identifying future opportunities as the market evolves.",
       },
+      {
+        t: "Space Partnerships",
+        d: "Structured arrangements that let another business use a property on a recurring basis, with revenue shared back to the owner.",
+      },
     ],
     howItWorks: [
       { t: "Goals & risk conversation", d: "Before any property talk, we figure out what you're actually optimizing for — cash flow, appreciation, diversification." },
