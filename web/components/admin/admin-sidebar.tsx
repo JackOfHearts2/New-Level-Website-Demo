@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import NextImage from "next/image";
 import { usePathname } from "next/navigation";
@@ -19,10 +19,12 @@ import {
   ChevronUp,
   ChevronDown,
   UserCog,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
 import { saveSidebarOrder } from "@/app/admin/(dashboard)/actions";
+import { useAdminShell } from "@/components/admin/admin-shell-context";
 
 type NavItem = {
   href: string;
@@ -68,6 +70,13 @@ export function AdminSidebar({
   const [customizing, setCustomizing] = useState(false);
   const pathname = usePathname();
   const isAdmin = role === "admin";
+  const { mobileNavOpen, setMobileNavOpen } = useAdminShell();
+
+  // Mobile nav closes on any navigation — otherwise the drawer stays open
+  // over the newly-loaded page.
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname, setMobileNavOpen]);
 
   const defaultMainItems: NavItem[] = [
     { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
@@ -103,12 +112,19 @@ export function AdminSidebar({
   }
 
   return (
-    <nav
-      className={cn(
-        "sticky top-0 flex h-screen shrink-0 flex-col border-r border-border bg-card p-2 shadow-sm transition-all duration-300 ease-in-out",
-        open ? "w-64" : "w-16"
-      )}
-    >
+    <>
+      {/* Desktop: unchanged sticky, in-flow, collapsible sidebar. Hidden
+          entirely below lg — the client confirmed (2026-08-26) the admin
+          side "is completely jumbled on mobile... nothing is where it
+          needs to be," and this was the root cause: a fixed-width flex
+          item with zero responsive behavior below desktop widths. See the
+          mobile drawer variant right after this element. */}
+      <nav
+        className={cn(
+          "sticky top-0 hidden h-screen shrink-0 flex-col border-r border-border bg-card p-2 shadow-sm transition-all duration-300 ease-in-out lg:flex",
+          open ? "w-64" : "w-16"
+        )}
+      >
       <div className="mb-4 border-b border-border p-2 pb-4">
         {open ? (
           <>
@@ -201,7 +217,62 @@ export function AdminSidebar({
         </span>
         {open && <span className="text-sm font-medium">Collapse</span>}
       </button>
-    </nav>
+      </nav>
+
+      {/* Mobile: an off-canvas drawer instead of the desktop's collapse-to-
+          icons pattern (a mini icon rail makes no sense as a *default*
+          mobile state — there's no room to also show a topbar/hamburger
+          trigger for it). Always renders the "full" (open=true) content
+          regardless of the desktop collapse preference, since that's a
+          separate, unrelated user choice. */}
+      {mobileNavOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Admin navigation">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileNavOpen(false)} />
+          <nav className="border-border bg-card relative flex h-full w-72 max-w-[80vw] flex-col overflow-y-auto border-r p-3 shadow-xl">
+            <div className="mb-4 flex items-center justify-between gap-2 border-b border-border pb-4">
+              <div className="relative h-10 w-40 shrink-0">
+                <NextImage
+                  src={logoUrl}
+                  alt="New Level"
+                  fill
+                  sizes="160px"
+                  className="object-contain object-left dark:hidden"
+                />
+                <NextImage
+                  src={logoUrlDark}
+                  alt="New Level"
+                  fill
+                  sizes="160px"
+                  className="hidden object-contain object-left dark:block"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen(false)}
+                aria-label="Close menu"
+                className="text-muted-foreground hover:bg-muted hover:text-foreground flex size-9 shrink-0 items-center justify-center rounded-lg"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 space-y-1 overflow-y-auto">
+              <NavGroup items={mainItems} pathname={pathname} open />
+              {isAdmin && (
+                <>
+                  <GroupLabel open>Admin</GroupLabel>
+                  <NavGroup items={adminItems} pathname={pathname} open />
+                </>
+              )}
+              <GroupLabel open>Account</GroupLabel>
+              <NavGroup items={accountItems} pathname={pathname} open />
+            </div>
+
+            <AdminProfileMenu email={email} role={role} displayName={displayName} avatarUrl={avatarUrl} open />
+          </nav>
+        </div>
+      )}
+    </>
   );
 }
 

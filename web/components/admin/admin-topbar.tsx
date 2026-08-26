@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/admin/notification-bell";
 import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
+import { useAdminShell } from "@/components/admin/admin-shell-context";
 
 const LABELS: Record<string, string> = {
   "/admin": "Dashboard",
@@ -49,6 +51,7 @@ export function AdminTopBar({
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
   const lastY = useRef(0);
+  const { setMobileNavOpen } = useAdminShell();
 
   useEffect(() => {
     lastY.current = window.scrollY;
@@ -76,11 +79,24 @@ export function AdminTopBar({
         visible ? "translate-y-0" : "-translate-y-full"
       )}
     >
-      <div className="flex items-center justify-between">
-        <span className="font-heading text-sm font-semibold text-muted-foreground">
-          Admin / <span className="text-foreground">{labelFor(pathname)}</span>
-        </span>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          {/* Hamburger trigger for the mobile drawer (see AdminSidebar) —
+              desktop keeps its own sidebar-bottom collapse toggle, so this
+              only needs to exist below lg. */}
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen(true)}
+            aria-label="Open menu"
+            className="border-border flex size-9 shrink-0 items-center justify-center rounded-full border lg:hidden"
+          >
+            <Menu className="size-4" />
+          </button>
+          <span className="font-heading truncate text-sm font-semibold text-muted-foreground">
+            Admin / <span className="text-foreground">{labelFor(pathname)}</span>
+          </span>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
           {/* Bordered pill wrappers, not the bare small icon buttons these
               components render standalone elsewhere — client feedback
               (2026-08-26): the bell and the theme toggle were "too easily

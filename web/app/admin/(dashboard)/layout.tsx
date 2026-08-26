@@ -6,6 +6,7 @@ import { getSiteContent } from "@/lib/site-content";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopBar } from "@/components/admin/admin-topbar";
 import { AdminScrollToTop } from "@/components/admin/admin-scroll-to-top";
+import { AdminShellProvider } from "@/components/admin/admin-shell-context";
 
 export default async function AdminDashboardLayout({
   children,
@@ -38,30 +39,32 @@ export default async function AdminDashboardLayout({
     : null;
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <AdminSidebar
-        logoUrl={content.images.logoUrl}
-        logoUrlDark={content.images.logoUrlDark}
-        role={auth.role}
-        email={auth.email}
-        displayName={displayName}
-        avatarUrl={avatarUrl}
-        pendingApprovals={pendingApprovals}
-        openReports={openReports}
-        savedOrder={profile?.sidebar_order ?? null}
-      />
-      <main className="min-w-0 flex-1 px-6 py-10">
-        <AdminTopBar
-          pendingApprovals={pendingApprovals}
-          openReports={openReports}
+    <AdminShellProvider>
+      <div className="flex min-h-screen bg-background">
+        <AdminSidebar
+          logoUrl={content.images.logoUrl}
+          logoUrlDark={content.images.logoUrlDark}
           role={auth.role}
           email={auth.email}
           displayName={displayName}
           avatarUrl={avatarUrl}
+          pendingApprovals={pendingApprovals}
+          openReports={openReports}
+          savedOrder={profile?.sidebar_order ?? null}
         />
-        {children}
-      </main>
-      <AdminScrollToTop />
-    </div>
+        <main className="min-w-0 flex-1 px-4 py-6 lg:px-6 lg:py-10">
+          <AdminTopBar
+            pendingApprovals={pendingApprovals}
+            openReports={openReports}
+            role={auth.role}
+            email={auth.email}
+            displayName={displayName}
+            avatarUrl={avatarUrl}
+          />
+          {children}
+        </main>
+        <AdminScrollToTop />
+      </div>
+    </AdminShellProvider>
   );
 }
