@@ -23,6 +23,7 @@ import {
   Building2,
   Inbox,
   Network,
+  CheckSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
@@ -94,6 +95,7 @@ export function AdminSidebar({
     { href: "/admin/approvals", label: "Approvals", Icon: ClipboardCheck, badge: pendingApprovals },
     { href: "/admin/reports", label: "Reports", Icon: Flag, badge: openReports },
     { href: "/admin/team", label: "Team", Icon: Network },
+    { href: "/admin/onboarding", label: "Onboarding", Icon: CheckSquare },
   ];
   // Only the ORDER lives in state, not the item objects themselves — the
   // items are rebuilt fresh every render from current props (badge counts

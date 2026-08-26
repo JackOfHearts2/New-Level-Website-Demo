@@ -41,3 +41,43 @@ export async function updateReportsTo(userId: string, reportsTo: string | null):
   revalidatePath("/admin/team");
   return { ok: true };
 }
+
+/** Job title ("CEO", "Marketing and AI Systems Consultant") and department
+ *  (free text, not an enum — a small growing company's department names
+ *  shouldn't need a migration every time one changes) — admin-only, same
+ *  reasoning as reporting lines above. */
+export async function updateStaffProfile(
+  userId: string,
+  fields: { title: string | null; department: string | null }
+): Promise<ActionResult> {
+  const auth = await requireAdmin();
+  if (!auth) return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { data: target } = await supabase
+    .from("profiles")
+    .select("email, full_name")
+    .eq("id", userId)
+    .maybeSingle<{ email: string | null; full_name: string | null }>();
+  if (!target) return { error: "Person not found." };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      title: fields.title?.trim().slice(0, 100) || null,
+      department: fields.department?.trim().slice(0, 100) || null,
+    })
+    .eq("id", userId);
+  if (error) return { error: "Couldn't update their profile." };
+
+  await logActivity(supabase, {
+    actorId: auth.userId,
+    eventType: "staff_hierarchy_updated",
+    targetTable: "profiles",
+    targetId: userId,
+    summary: `${auth.email} updated ${target.full_name || target.email}'s title/department`,
+  });
+
+  revalidatePath("/admin/team");
+  return { ok: true };
+}
