@@ -688,15 +688,22 @@ export const SOCIALS = [
 // they can't drift apart. Properties/About/Services carry dropdown children;
 // the rest are plain links.
 export const NAV_MENU = [
+  // Restructured 2026-08-27 per the client's dictated taxonomy: Residential/
+  // Commercial/Rental/All Properties, matching PROPERTY_CATEGORIES in
+  // lib/property-categories.ts (the same taxonomy the properties database
+  // table + admin CRUD use). The old tier-specific links (luxury-short-term,
+  // short-term, etc.) still work as URLs — they're what the homepage
+  // search box tabs and the "Hosting an event?" CTA link to — just no
+  // longer surfaced in the top nav directly, which now points at the
+  // database-backed browsing pages instead of the old static grid.
   {
     label: "Properties",
     href: "/properties",
     children: [
-      { label: "All properties", href: "/properties" },
-      { label: "Luxury Short-Term Rentals", href: "/properties?category=luxury-short-term" },
-      { label: "Short-Term Rentals", href: "/properties?category=short-term" },
-      { label: "Extended Stays", href: "/properties?category=extended-stay" },
-      { label: "Private Events", href: "/properties?category=events" },
+      { label: "All Properties", href: "/properties" },
+      { label: "Residential", href: "/properties/residential" },
+      { label: "Commercial", href: "/properties/commercial" },
+      { label: "Rental", href: "/properties/rental" },
     ],
   },
   {

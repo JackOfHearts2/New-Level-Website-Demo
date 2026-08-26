@@ -15,6 +15,9 @@ import {
   AUDIENCES,
   AUDIENCE_ORDER,
 } from "@/lib/content";
+import { ListingRow } from "@/components/properties/listing-card";
+import { getApprovedListings } from "@/lib/properties-public";
+import { PROPERTY_CATEGORIES as DB_PROPERTY_CATEGORIES } from "@/lib/property-categories";
 
 export const metadata: Metadata = {
   title: "Properties · New Level",
@@ -231,32 +234,47 @@ export default async function PropertiesPage({
     );
   }
 
-  // Default — every category with at least one matching listing
+  // Default ("All Properties" in the nav) — client-dictated structure,
+  // 2026-08-27: sectioned by the database taxonomy (Residential/Commercial/
+  // Rental), each section a horizontal row with a "View all" into that
+  // category's own page (/properties/[category]), which in turn sections
+  // by subcategory the same way. Real listings from the properties table,
+  // not the old static PROPERTY_CATEGORIES grid above (still reachable via
+  // ?category=<old-tier-id>, unchanged — see the search box and event CTA).
+  const allListings = await getApprovedListings();
+  const byCategory = new Map<string, typeof allListings>();
+  for (const listing of allListings) {
+    if (!byCategory.has(listing.category)) byCategory.set(listing.category, []);
+    byCategory.get(listing.category)!.push(listing);
+  }
+
   return (
     <>
       <PageHero
         eyebrow="Properties"
         heading="Explore the New Level portfolio."
-        sub="Categorized by how you're planning to use the space."
+        sub="Residential, commercial, and rental — sectioned by how you're planning to use the space."
       />
       <section className="mx-auto max-w-7xl space-y-16 px-6 pb-24">
-        {PROPERTY_CATEGORIES.map((cat) => {
-          const items = listingsForCategory(cat.id);
-          if (items.length === 0) return null;
+        {Object.entries(DB_PROPERTY_CATEGORIES).map(([id, cat]) => {
+          const listings = byCategory.get(id) ?? [];
+          if (listings.length === 0) return null;
           return (
-            <div key={cat.id}>
+            <div key={id}>
               <div className="flex items-baseline justify-between gap-4">
                 <h2 className="font-heading text-2xl font-bold">{cat.label}</h2>
-                <span className="text-foreground text-sm">{cat.blurb}</span>
               </div>
-              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {items.map((item, i) => (
-                  <ListingCard key={i} item={item} />
-                ))}
+              <div className="mt-6">
+                <ListingRow listings={listings} viewAllHref={`/properties/${id}`} />
               </div>
             </div>
           );
         })}
+        {allListings.length === 0 && (
+          <p className="text-muted-foreground text-center">
+            No listings yet — check back soon, or explore by category below.
+          </p>
+        )}
       </section>
       <CrossNav current="properties" />
     </>
