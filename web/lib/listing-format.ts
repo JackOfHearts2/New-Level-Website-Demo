@@ -23,6 +23,7 @@ export type PublicListing = {
   sqft: number | null;
   description: string | null;
   photos: { path: string; uploadedAt: string }[];
+  listing_status: string;
 };
 
 // getPublicUrl doesn't need auth/RLS — it's pure string construction from

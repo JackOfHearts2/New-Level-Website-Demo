@@ -20,6 +20,7 @@ export const NAV_HIERARCHY: Record<string, HierarchyEntry> = {
   "/properties/residential": { label: "Residential", parent: "/properties" },
   "/properties/commercial": { label: "Commercial", parent: "/properties" },
   "/properties/rental": { label: "Rental", parent: "/properties" },
+  "/portfolio": { label: "Full Portfolio", parent: "/properties" },
 
   "/about": { label: "About", parent: null },
   "/team": { label: "Team", parent: "/about" },

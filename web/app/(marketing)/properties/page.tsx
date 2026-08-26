@@ -278,6 +278,18 @@ export default async function PropertiesPage({
           </p>
         )}
       </section>
+      <section className="mx-auto max-w-3xl px-6 pb-16 text-center">
+        <GlowCard className="p-8">
+          <h2 className="font-heading text-xl font-semibold">Looking for our full track record?</h2>
+          <p className="text-foreground mt-2 text-sm">
+            See everything we&apos;ve managed or closed, including properties that aren&apos;t
+            currently on the market.
+          </p>
+          <div className="mt-6 flex justify-center">
+            <CtaLink href="/portfolio">View Full Portfolio</CtaLink>
+          </div>
+        </GlowCard>
+      </section>
       <CrossNav current="properties" />
     </>
   );

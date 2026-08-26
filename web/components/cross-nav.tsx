@@ -3,6 +3,7 @@ import Link from "next/link";
 const SITE_PAGES = [
   { key: "home", label: "Home", href: "/" },
   { key: "properties", label: "Properties", href: "/properties" },
+  { key: "portfolio", label: "Full Portfolio", href: "/portfolio" },
   { key: "property", label: "1331 NW 87th Street", href: "/property" },
   { key: "about", label: "About", href: "/about" },
   { key: "team", label: "Team", href: "/team" },

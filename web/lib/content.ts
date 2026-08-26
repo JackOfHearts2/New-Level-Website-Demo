@@ -708,6 +708,7 @@ export const NAV_MENU = [
       { label: "Residential", href: "/properties/residential" },
       { label: "Commercial", href: "/properties/commercial" },
       { label: "Rental", href: "/properties/rental" },
+      { label: "Full Portfolio", href: "/portfolio" },
     ],
   },
   {

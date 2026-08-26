@@ -40,7 +40,23 @@ export function isValidSubcategory(category: string, subcategory: string): boole
   return subcategory in cat.subcategories;
 }
 
-export const LISTING_STATUSES = ["active", "pending", "sold", "off_market"] as const;
+export const LISTING_STATUSES = ["active", "pending", "sold", "off_market", "seeking_investors"] as const;
+export type ListingStatus = (typeof LISTING_STATUSES)[number];
+// Shown on the main Properties browsing pages/homepage search — a past
+// transaction or an off-market/investor-seeking property only appears in
+// the Full Portfolio (client ask, 2026-08-27: keep current browsing scoped
+// to what's actually available, so the site doesn't get "heavy" with
+// years of history mixed into it).
+export const CURRENT_LISTING_STATUSES: ListingStatus[] = ["active", "pending"];
+
+export const LISTING_STATUS_LABELS: Record<ListingStatus, string> = {
+  active: "Active",
+  pending: "Pending",
+  sold: "Sold",
+  off_market: "Off Market",
+  seeking_investors: "Seeking Investors",
+};
+
 export const PRICE_PERIODS = ["sale", "night", "month", "year"] as const;
 
 export type PropertyStatus = "draft" | "pending" | "changes_requested" | "approved" | "rejected" | "withdrawn";
