@@ -12,6 +12,7 @@ import { SitePreview } from "@/components/site-preview";
 import { GlowFieldset } from "@/components/admin/glow-fieldset";
 import { SectionPreview } from "@/components/admin/section-preview";
 import { ImageForm } from "@/components/admin/image-form";
+import { RichTextToolbar } from "@/components/admin/rich-text-toolbar";
 import { HeroSection } from "@/components/ui/hero-section";
 import { AboutSection } from "@/components/sections/about-section";
 import { ServicesSection } from "@/components/sections/services-section";
@@ -47,18 +48,31 @@ function Field({
 }) {
   const className =
     "border-border bg-background mt-1.5 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   return (
     <label className="block">
       <span className="font-heading text-base font-semibold">{label}</span>
       {textarea ? (
-        <textarea
-          ref={autoResize}
-          name={name}
-          defaultValue={defaultValue}
-          rows={3}
-          onInput={(e) => autoResize(e.currentTarget)}
-          className={cn(className, "resize-none overflow-hidden")}
-        />
+        <>
+          <div className="mt-1.5">
+            <RichTextToolbar targetRef={textareaRef} />
+          </div>
+          <textarea
+            ref={(el) => {
+              textareaRef.current = el;
+              autoResize(el);
+            }}
+            name={name}
+            defaultValue={defaultValue}
+            rows={3}
+            onInput={(e) => autoResize(e.currentTarget)}
+            className={cn(className, "mt-0 resize-none overflow-hidden")}
+          />
+          <p className="text-muted-foreground mt-1 text-xs">
+            Select text and click a formatting button, or type **bold**, *italic*, __underline__.
+          </p>
+        </>
       ) : (
         <input
           name={name}

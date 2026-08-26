@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Quote } from "lucide-react";
 import { GlowCard } from "@/components/ui/glow-card";
 import { cn } from "@/lib/utils";
+import { FormattedText } from "@/lib/formatted-text";
 
 type Testimonial = { name: string; role: string; text: string; photo: string };
 
@@ -63,7 +64,7 @@ export function TestimonialRoster({
 
                 <Quote className="text-primary/30 relative size-8" aria-hidden />
                 <p className="font-heading relative text-xl italic text-balance sm:text-2xl">
-                  &ldquo;{t.text}&rdquo;
+                  &ldquo;<FormattedText text={t.text} />&rdquo;
                 </p>
 
                 <div className="relative mt-2 border-t border-border pt-4">

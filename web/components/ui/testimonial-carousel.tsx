@@ -6,6 +6,7 @@ import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlowCard } from "@/components/ui/glow-card";
+import { FormattedText } from "@/lib/formatted-text";
 
 type Testimonial = { name: string; role: string; text: string; photo: string };
 
@@ -53,7 +54,9 @@ function TestimonialFace({
         <Image src={t.photo} alt="" fill sizes="300px" className="pointer-events-none object-cover" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5 text-white">
-          <blockquote className="text-sm text-balance">&ldquo;{t.text}&rdquo;</blockquote>
+          <blockquote className="text-sm text-balance">
+            &ldquo;<FormattedText text={t.text} />&rdquo;
+          </blockquote>
           <div className="mt-3 border-t border-white/20 pt-3">
             <div className="font-heading text-sm font-semibold">{t.name}</div>
             <div className="text-sm text-white">{t.role}</div>

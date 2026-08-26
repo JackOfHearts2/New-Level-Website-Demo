@@ -1,6 +1,7 @@
 import type { SERVICES } from "@/lib/content";
 import { GlowCard } from "@/components/ui/glow-card";
 import { ShinePill } from "@/components/ui/shine-shape";
+import { FormattedText } from "@/lib/formatted-text";
 
 export function ServicesSection({
   services,
@@ -34,7 +35,7 @@ export function ServicesSection({
                 {service.t}
               </h3>
               <p className="text-foreground mt-3 flex-1 text-sm">
-                {service.d}
+                <FormattedText text={service.d} />
               </p>
               <span className="text-primary font-heading mt-4 text-sm font-semibold">
                 Learn more →

@@ -5,7 +5,9 @@ import { createPortal } from "react-dom";
 import { Pencil, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { contentToFormData } from "@/lib/site-content-form";
+import { FormattedText } from "@/lib/formatted-text";
 import { saveContent } from "@/app/admin/(dashboard)/actions";
+import { RichTextToolbar } from "@/components/admin/rich-text-toolbar";
 import { useEditMode } from "./edit-mode-context";
 
 const PANEL_WIDTH = 320;
@@ -45,6 +47,7 @@ export function InlineEditable({
   const [error, setError] = useState<string | null>(null);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const popoverTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const displayValue = savedValue ?? value;
 
@@ -66,7 +69,11 @@ export function InlineEditable({
   }, [editing]);
 
   if (!on || !isAdmin) {
-    return <Tag className={className}>{displayValue}</Tag>;
+    return (
+      <Tag className={className}>
+        <FormattedText text={displayValue} />
+      </Tag>
+    );
   }
 
   async function handleSave() {
@@ -87,7 +94,7 @@ export function InlineEditable({
 
   return (
     <Tag className={cn("group/inline-edit relative inline-block", className)}>
-      {displayValue}
+      <FormattedText text={displayValue} />
       <button
         ref={buttonRef}
         type="button"
@@ -122,13 +129,17 @@ export function InlineEditable({
               </button>
             </div>
             {textarea ? (
-              <textarea
-                autoFocus
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                rows={4}
-                className="border-border bg-background text-foreground w-full rounded-lg border px-2 py-1.5 text-sm"
-              />
+              <>
+                <RichTextToolbar targetRef={popoverTextareaRef} />
+                <textarea
+                  ref={popoverTextareaRef}
+                  autoFocus
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  rows={4}
+                  className="border-border bg-background text-foreground w-full rounded-lg border px-2 py-1.5 text-sm"
+                />
+              </>
             ) : (
               <input
                 autoFocus
