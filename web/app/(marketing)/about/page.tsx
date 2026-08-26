@@ -7,6 +7,7 @@ import { ShinePill } from "@/components/ui/shine-shape";
 import { CtaLink } from "@/components/ui/cta-link";
 import { Timeline } from "@/components/ui/timeline";
 import { NLG_BRAND, VALUES, SERVICES, BROKERS_CORNER } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "About Us · New Level",
@@ -55,6 +56,7 @@ export default function AboutPage() {
         eyebrow="About New Level"
         heading="Real Estate, Redefined at every level."
         intro={NLG_BRAND.aboutLong}
+        breadcrumbs={getBreadcrumbTrail("/about")}
       />
 
       <section className="mx-auto grid max-w-5xl gap-12 px-6 py-16 md:grid-cols-2">

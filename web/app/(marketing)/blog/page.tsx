@@ -4,6 +4,7 @@ import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
 import { PAGES, BLOG_CATEGORIES } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Blog · New Level",
@@ -22,6 +23,7 @@ export default function BlogPage() {
         heading={page.heading}
         sub={page.sub}
         intro={page.intro}
+        breadcrumbs={getBreadcrumbTrail("/blog")}
       />
 
       <section className="mx-auto max-w-6xl px-6 pb-24">

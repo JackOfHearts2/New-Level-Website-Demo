@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Mail, Phone, Quote } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 import { GlowCard } from "@/components/ui/glow-card";
 import { ShinePill } from "@/components/ui/shine-shape";
 import { buttonVariants } from "@/components/ui/button";
@@ -44,7 +45,7 @@ export default async function TeamMemberPage({
   return (
     <>
       <section className="mx-auto max-w-5xl px-6 pt-32 pb-20 sm:pt-40">
-        <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Team", href: "/team" }, { label: member.name }]} />
+        <Breadcrumbs items={getBreadcrumbTrail(`/team/${slug}`)} />
         <Link
           href="/team"
           className="text-foreground hover:text-primary mb-8 inline-flex items-center gap-2 text-sm font-medium"

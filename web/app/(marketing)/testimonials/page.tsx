@@ -5,6 +5,7 @@ import { TestimonialRoster } from "@/components/ui/testimonial-roster";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
 import { PAGES, TESTIMONIALS } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Testimonials · New Level",
@@ -15,7 +16,12 @@ export default function TestimonialsPage() {
 
   return (
     <>
-      <PageHero eyebrow={page.eyebrow} heading={page.heading} sub={page.sub} />
+      <PageHero
+        eyebrow={page.eyebrow}
+        heading={page.heading}
+        sub={page.sub}
+        breadcrumbs={getBreadcrumbTrail("/testimonials")}
+      />
 
       <section className="px-6 pb-16">
         <TestimonialRoster testimonials={TESTIMONIALS} />

@@ -6,6 +6,7 @@ import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
 import { ShineListItem } from "@/components/ui/shine-shape";
 import { BLOG_CATEGORIES } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 function getCategory(id: string) {
   return BLOG_CATEGORIES.find((c) => c.id === id);
@@ -42,7 +43,7 @@ export default async function BlogCategoryPage({
         eyebrow="Blog"
         heading={cat.label}
         sub={cat.blurb}
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: cat.label }]}
+        breadcrumbs={getBreadcrumbTrail(`/blog/${category}`)}
       />
 
       <section className="mx-auto max-w-3xl px-6 pb-16">

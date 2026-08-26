@@ -4,6 +4,7 @@ import { CrossNav } from "@/components/cross-nav";
 import { ContentLibraryGrid } from "@/components/content-library-grid";
 import { SOCIAL_ICONS } from "@/components/social-icons";
 import { PAGES, SOCIALS } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Content Library · New Level",
@@ -19,6 +20,7 @@ export default function ContentLibraryPage() {
         heading={page.heading}
         sub={page.sub}
         intro={page.intro}
+        breadcrumbs={getBreadcrumbTrail("/content-library")}
       />
 
       <section className="mx-auto max-w-3xl px-6 pb-16">

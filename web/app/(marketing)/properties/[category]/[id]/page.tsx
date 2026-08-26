@@ -4,6 +4,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { CrossNav } from "@/components/cross-nav";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 import { CtaLink } from "@/components/ui/cta-link";
 import { GlowCard } from "@/components/ui/glow-card";
 import { PROPERTY_CATEGORIES } from "@/lib/property-categories";
@@ -43,14 +44,7 @@ export default async function ListingDetailPage({
   return (
     <>
       <div className="mx-auto max-w-5xl px-6 pt-32 pb-8 sm:pt-40">
-        <Breadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Properties", href: "/properties" },
-            { label: catLabel, href: `/properties/${data.category}` },
-            { label: data.title },
-          ]}
-        />
+        <Breadcrumbs items={getBreadcrumbTrail(`/properties/${data.category}`, data.title)} />
         <p className="text-primary font-heading text-sm font-semibold tracking-wide uppercase">
           {catLabel} · {subLabel}
         </p>

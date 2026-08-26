@@ -5,6 +5,7 @@ import { FaqList } from "@/components/faq-list";
 import { CtaLink } from "@/components/ui/cta-link";
 import { GlowCard } from "@/components/ui/glow-card";
 import { PAGES, FAQS } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "FAQs · New Level",
@@ -15,7 +16,12 @@ export default function FaqPage() {
 
   return (
     <>
-      <PageHero eyebrow={page.eyebrow} heading={page.heading} sub={page.sub} />
+      <PageHero
+        eyebrow={page.eyebrow}
+        heading={page.heading}
+        sub={page.sub}
+        breadcrumbs={getBreadcrumbTrail("/faq")}
+      />
 
       <section className="px-6 pb-16">
         <FaqList faqs={FAQS} />

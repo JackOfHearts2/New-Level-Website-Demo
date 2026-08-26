@@ -7,6 +7,7 @@ import { ShinePill, ShineCircle, ShineBox } from "@/components/ui/shine-shape";
 import { GlowCard } from "@/components/ui/glow-card";
 import { AskBrokerButton } from "@/components/ask-broker-button";
 import { PAGES, BROKERS_CORNER } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "The Broker's Corner · New Level",
@@ -17,7 +18,12 @@ export default function BrokersCornerPage() {
 
   return (
     <>
-      <PageHero eyebrow={page.eyebrow} heading={page.heading} sub={page.sub} />
+      <PageHero
+        eyebrow={page.eyebrow}
+        heading={page.heading}
+        sub={page.sub}
+        breadcrumbs={getBreadcrumbTrail("/brokers-corner")}
+      />
 
       <section className="mx-auto max-w-3xl px-6 pb-16">
         <GlowCard className="flex flex-col items-center gap-4 p-8 text-center sm:flex-row sm:text-left">

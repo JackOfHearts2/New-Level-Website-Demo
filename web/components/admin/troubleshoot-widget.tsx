@@ -118,7 +118,21 @@ export function TroubleshootWidget() {
         type="button"
         onClick={openMenu}
         aria-label="Report a problem"
-        className="border-background bg-foreground text-background fixed bottom-4 left-4 z-40 flex size-11 items-center justify-center rounded-full border-2 shadow-xl transition-transform hover:scale-110 lg:bottom-6 lg:left-6 lg:size-14 lg:border-4"
+        // lg:bottom-32, not lg:bottom-6: on desktop AdminSidebar is a
+        // sticky h-screen column whose own bottom-anchored controls
+        // (AdminProfileMenu, then the collapse toggle below it) end up
+        // sitting in that exact bottom-left corner regardless of scroll
+        // position — same corner AdminScrollToTop had to move away from
+        // for the same reason (see its own comment). The pb-24 fix on
+        // `main` (see the admin layout) only cleared the *mobile* case,
+        // where the sidebar collapses to a drawer and stops occupying
+        // that corner — client report (2026-08-27): "the flag report
+        // button still sits over the profile icon on the bottom left in
+        // admin mode," i.e. specifically desktop, which that fix never
+        // touched. 128px clears the profile-menu + collapse-button zone
+        // regardless of whether the sidebar is expanded or collapsed,
+        // since that only changes the column's width, not its height.
+        className="border-background bg-foreground text-background fixed bottom-4 left-4 z-40 flex size-11 items-center justify-center rounded-full border-2 shadow-xl transition-transform hover:scale-110 lg:bottom-32 lg:left-6 lg:size-14 lg:border-4"
       >
         <Flag className="size-4 lg:size-5" />
       </button>

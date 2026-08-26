@@ -8,6 +8,7 @@ import { CardActions } from "@/components/property/card-actions";
 import { SignInPromptButton } from "@/components/sign-in-prompt-button";
 import { createClient } from "@/lib/supabase/server";
 import { PROPERTY } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Saved Properties · New Level",
@@ -33,6 +34,7 @@ export default async function SavedPropertiesPage() {
           eyebrow="Your Account"
           heading="Saved Properties"
           sub="Sign in to see properties you've saved."
+          breadcrumbs={getBreadcrumbTrail("/saved-properties")}
         />
         <section className="mx-auto max-w-md px-6 pb-24 text-center">
           <GlowCard className="p-8">
@@ -67,6 +69,7 @@ export default async function SavedPropertiesPage() {
             ? "Properties you've saved while browsing."
             : "You haven't saved any properties yet."
         }
+        breadcrumbs={getBreadcrumbTrail("/saved-properties")}
       />
       <section className="mx-auto max-w-6xl px-6 pb-24">
         {slugs.length === 0 ? (

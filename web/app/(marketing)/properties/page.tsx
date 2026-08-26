@@ -18,6 +18,7 @@ import {
 import { ListingRow } from "@/components/properties/listing-card";
 import { getApprovedListings } from "@/lib/properties-public";
 import { PROPERTY_CATEGORIES as DB_PROPERTY_CATEGORIES } from "@/lib/property-categories";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Properties · New Level",
@@ -254,6 +255,7 @@ export default async function PropertiesPage({
         eyebrow="Properties"
         heading="Explore the New Level portfolio."
         sub="Residential, commercial, and rental — sectioned by how you're planning to use the space."
+        breadcrumbs={getBreadcrumbTrail("/properties")}
       />
       <section className="mx-auto max-w-7xl space-y-16 px-6 pb-24">
         {Object.entries(DB_PROPERTY_CATEGORIES).map(([id, cat]) => {

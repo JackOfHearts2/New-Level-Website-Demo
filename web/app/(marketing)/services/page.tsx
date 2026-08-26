@@ -3,6 +3,7 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { PAGES, SERVICES } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
   title: "Services · New Level",
@@ -21,6 +22,7 @@ export default function ServicesPage() {
         heading={page.heading}
         sub={page.sub}
         intro={page.intro}
+        breadcrumbs={getBreadcrumbTrail("/services")}
       />
 
       <section className="mx-auto max-w-6xl px-6 pb-24">

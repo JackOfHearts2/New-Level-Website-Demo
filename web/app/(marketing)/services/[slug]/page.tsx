@@ -7,6 +7,7 @@ import { ShinePill } from "@/components/ui/shine-shape";
 import { CtaLink } from "@/components/ui/cta-link";
 import { FaqList } from "@/components/faq-list";
 import { SERVICES } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 // Only brokerage/management/investment get their own dedicated page —
 // "events" deliberately isn't in the Services nav dropdown (it lives under
@@ -50,11 +51,7 @@ export default async function ServiceDetailPage({
         eyebrow="Services"
         heading={service.t}
         sub={service.d}
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "Services", href: "/services" },
-          { label: service.t },
-        ]}
+        breadcrumbs={getBreadcrumbTrail(`/services/${slug}`)}
       />
 
       <section className="mx-auto max-w-4xl px-6 pb-16">

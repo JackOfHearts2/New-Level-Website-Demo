@@ -4,6 +4,7 @@ import { CrossNav } from "@/components/cross-nav";
 import { FaqList } from "@/components/faq-list";
 import { CtaLink } from "@/components/ui/cta-link";
 import { PAGES, FAQS } from "@/lib/content";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default async function ContactPage({
         heading={page.heading}
         sub={page.sub}
         intro={page.intro}
+        breadcrumbs={getBreadcrumbTrail("/contact")}
       />
 
       <section className="px-6 pb-24">
