@@ -127,7 +127,17 @@ export function ImageForm({
   const previewSlotUrl = pickedUrl ?? livePreviewUrl;
 
   return (
-    <div className="border-border space-y-3 rounded-2xl border p-6">
+    // min-w-0: this is a direct grid item wherever it's used two-up (Brand's
+    // logo/hero-bg pair) — without it, the native <input type="file"> below
+    // (which has a notoriously wide, non-shrinking intrinsic minimum width
+    // for its "Choose File" button + placeholder text) forces this whole
+    // card, and the grid it sits in, wider than the container. Client
+    // report (2026-08-27): Testimonials/Team photo fields "extend past the
+    // frame." Where ImageForm is nested one level deeper (Testimonials/
+    // Team's per-member photo slot), the same min-w-0 is applied to that
+    // wrapping sm:col-span-2 div in content-form.tsx instead, since that's
+    // the actual grid item there — this one covers the direct-child case.
+    <div className="border-border min-w-0 space-y-3 rounded-2xl border p-6">
       <h2 className="font-heading font-semibold">{label}</h2>
       {livePreviewUrl && (
         <div>

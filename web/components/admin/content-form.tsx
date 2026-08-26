@@ -524,7 +524,7 @@ export function ContentForm({
         }
       >
         {content.trustStats.map((stat, i) => (
-          <div key={i} className="grid gap-3 sm:grid-cols-2">
+          <div key={i} className="grid min-w-0 gap-3 sm:grid-cols-2">
             <Field
               label={`Value ${i + 1}`}
               name={`trustStats.${i}.value`}
@@ -573,7 +573,7 @@ export function ContentForm({
         }
       >
         {content.testimonials.map((testimonial, i) => (
-          <div key={i} className="grid gap-3 sm:grid-cols-2">
+          <div key={i} className="grid min-w-0 gap-3 sm:grid-cols-2">
             <Field
               label={`Name ${i + 1}`}
               name={`testimonials.${i}.name`}
@@ -584,7 +584,7 @@ export function ContentForm({
               name={`testimonials.${i}.role`}
               defaultValue={testimonial.role}
             />
-            <div className="sm:col-span-2">
+            <div className="min-w-0 sm:col-span-2">
               <Field
                 label={`Quote ${i + 1}`}
                 name={`testimonials.${i}.text`}
@@ -593,7 +593,7 @@ export function ContentForm({
               />
             </div>
             {resolved && (
-              <div className="sm:col-span-2">
+              <div className="min-w-0 sm:col-span-2">
                 <ImageForm
                   imageKey={`testimonial-${i}`}
                   label={`${testimonial.name}'s photo`}
@@ -614,7 +614,7 @@ export function ContentForm({
         onPreview={() => handlePreviewSection("Team", (c) => <TeamSection team={c.team} />)}
       >
         {content.team.map((member, i) => (
-          <div key={i} className="grid gap-3 sm:grid-cols-2">
+          <div key={i} className="grid min-w-0 gap-3 sm:grid-cols-2">
             <Field
               label={`Name ${i + 1}`}
               name={`team.${i}.name`}
@@ -625,7 +625,7 @@ export function ContentForm({
               name={`team.${i}.role`}
               defaultValue={member.role}
             />
-            <div className="sm:col-span-2">
+            <div className="min-w-0 sm:col-span-2">
               <Field
                 label={`Motto ${i + 1}`}
                 name={`team.${i}.motto`}
@@ -633,7 +633,7 @@ export function ContentForm({
               />
             </div>
             {resolved && (
-              <div className="sm:col-span-2">
+              <div className="min-w-0 sm:col-span-2">
                 <ImageForm
                   imageKey={`team-${i}`}
                   label={`${member.name}'s photo`}

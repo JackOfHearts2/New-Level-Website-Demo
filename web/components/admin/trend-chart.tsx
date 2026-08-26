@@ -1,28 +1,52 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { computeTrend } from "@/lib/chart-data";
 
 export type TrendPoint = { date: string; label: string; count: number };
 
 const WIDTH = 720;
-const HEIGHT = 160;
+const DEFAULT_HEIGHT = 160;
 const PAD_LEFT = 28;
 const PAD_BOTTOM = 20;
 const PAD_TOP = 10;
 
-/** Single-series magnitude-over-time chart — a smoothed line + filled area,
- *  distinct from DailyViewsChart's bars (client ask, 2026-08-26: "we use a
- *  couple different other types of graphs," not just the bar chart
- *  everywhere). Same one-hue-no-legend-needed rule (a single series names
- *  itself via the card heading) and the same hover-crosshair+tooltip
- *  pattern the dataviz interaction guidance calls for on line/area charts. */
-export function TrendChart({ data }: { data: TrendPoint[] }) {
+function TrendBadge({ direction, deltaPct }: { direction: "up" | "down" | "flat"; deltaPct: number | null }) {
+  const Icon = direction === "up" ? TrendingUp : direction === "down" ? TrendingDown : Minus;
+  const colorClass =
+    direction === "up"
+      ? "bg-primary/10 text-primary"
+      : direction === "down"
+        ? "bg-destructive/10 text-destructive"
+        : "bg-muted text-muted-foreground";
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${colorClass}`}>
+      <Icon className="size-3.5" />
+      {deltaPct === null ? (direction === "up" ? "Trending up" : direction === "down" ? "Trending down" : "Flat") : `${deltaPct > 0 ? "+" : ""}${deltaPct.toFixed(0)}%`}
+    </span>
+  );
+}
+
+/** Single-series magnitude-over-time chart — a smoothed line + filled area.
+ *  Same one-hue-no-legend-needed rule (a single series names itself via
+ *  the card heading) and the same hover-crosshair+tooltip pattern the
+ *  dataviz interaction guidance calls for on line/area charts. Used for
+ *  both the Dashboard's compact Pageviews card and the full Analytics
+ *  page's Traffic section (client ask, 2026-08-27: "you're still using a
+ *  bar graph in the full analytics while using the chart with an arrow on
+ *  the dashboard" — this replaced the separate bar-chart component
+ *  (DailyViewsChart, since deleted) so both views share one chart type;
+ *  `height` lets Analytics render it taller than the Dashboard's compact
+ *  card without duplicating the component). */
+export function TrendChart({ data, height = DEFAULT_HEIGHT }: { data: TrendPoint[]; height?: number }) {
   const [hover, setHover] = useState<number | null>(null);
   const max = Math.max(1, ...data.map((d) => d.count));
   const plotW = WIDTH - PAD_LEFT;
-  const plotH = HEIGHT - PAD_TOP - PAD_BOTTOM;
+  const plotH = height - PAD_TOP - PAD_BOTTOM;
   const mid = Math.round(max / 2);
   const stepX = data.length > 1 ? plotW / (data.length - 1) : 0;
+  const trend = useMemo(() => computeTrend(data.map((d) => d.count)), [data]);
 
   const points = useMemo(
     () =>
@@ -57,8 +81,11 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
 
   return (
     <div className="relative">
+      <div className="mb-2 flex justify-end">
+        <TrendBadge direction={trend.direction} deltaPct={trend.deltaPct} />
+      </div>
       <svg
-        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        viewBox={`0 0 ${WIDTH} ${height}`}
         className="w-full"
         role="img"
         aria-label="Pageviews over time"
@@ -96,7 +123,7 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
         )}
         {data.map((d, i) =>
           i % Math.ceil(data.length / 6) === 0 ? (
-            <text key={d.date} x={PAD_LEFT + i * stepX} y={HEIGHT - 4} fontSize={9} fill="var(--muted-foreground)">
+            <text key={d.date} x={PAD_LEFT + i * stepX} y={height - 4} fontSize={9} fill="var(--muted-foreground)">
               {d.label}
             </text>
           ) : null
@@ -107,7 +134,7 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
           className="border-border bg-background pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-lg border px-2 py-1 text-xs whitespace-nowrap shadow-md"
           style={{
             left: `${(points[hover].x / WIDTH) * 100}%`,
-            top: `${(points[hover].y / HEIGHT) * 100}%`,
+            top: `${(points[hover].y / height) * 100}%`,
           }}
         >
           <span className="font-heading font-semibold">{data[hover].count}</span> views · {data[hover].label}

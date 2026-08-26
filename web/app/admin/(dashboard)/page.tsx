@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
 import { DashboardView, type StatItem, type NavTileItem, type ActivityItem } from "@/components/admin/dashboard-view";
 import { TrendChart, type TrendPoint } from "@/components/admin/trend-chart";
+import { trimLeadingZeroDays } from "@/lib/chart-data";
 import { RankedBarList } from "@/components/admin/ranked-bar-list";
 import { DonutChart, type DonutSlice } from "@/components/admin/donut-chart";
 import { RadialProgress } from "@/components/admin/radial-progress";
@@ -202,11 +203,13 @@ export default async function AdminHomePage({
       const key = dayKey(new Date(v.created_at));
       if (dailyMap.has(key)) dailyMap.set(key, (dailyMap.get(key) ?? 0) + 1);
     }
-    overviewDaily = Array.from(dailyMap.entries()).map(([date, count]) => ({
-      date,
-      label: dayLabel(new Date(date)),
-      count,
-    }));
+    overviewDaily = trimLeadingZeroDays(
+      Array.from(dailyMap.entries()).map(([date, count]) => ({
+        date,
+        label: dayLabel(new Date(date)),
+        count,
+      }))
+    );
 
     const pathCounts = new Map<string, number>();
     for (const v of views) pathCounts.set(v.path, (pathCounts.get(v.path) ?? 0) + 1);

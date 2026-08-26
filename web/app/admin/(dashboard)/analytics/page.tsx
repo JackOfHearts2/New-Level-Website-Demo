@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { DailyViewsChart, type DailyPoint } from "@/components/admin/daily-views-chart";
+import { TrendChart, type TrendPoint } from "@/components/admin/trend-chart";
 import { RankedBarList } from "@/components/admin/ranked-bar-list";
 import { GlowCard } from "@/components/ui/glow-card";
+import { trimLeadingZeroDays } from "@/lib/chart-data";
 
 const DAYS = 30;
 
@@ -68,11 +69,13 @@ export default async function AnalyticsPage() {
     const key = dayKey(new Date(v.created_at));
     if (dailyMap.has(key)) dailyMap.set(key, (dailyMap.get(key) ?? 0) + 1);
   }
-  const daily: DailyPoint[] = Array.from(dailyMap.entries()).map(([date, count]) => ({
-    date,
-    label: dayLabel(new Date(date)),
-    count,
-  }));
+  const daily: TrendPoint[] = trimLeadingZeroDays(
+    Array.from(dailyMap.entries()).map(([date, count]) => ({
+      date,
+      label: dayLabel(new Date(date)),
+      count,
+    }))
+  );
 
   const uniqueSessions = new Set(views.map((v) => v.session_id)).size;
   const pathCounts = new Map<string, number>();
@@ -135,7 +138,10 @@ export default async function AnalyticsPage() {
           />
         </div>
         <GlowCard className="p-5">
-          <DailyViewsChart data={daily} />
+          {/* Taller than the Dashboard's compact version of this same chart
+              (its default height) — client ask (2026-08-27): "the height
+              has to extend" for the full Analytics page. */}
+          <TrendChart data={daily} height={280} />
         </GlowCard>
         <GlowCard className="p-5">
           <h3 className="font-heading mb-3 text-base font-semibold">Top pages</h3>
