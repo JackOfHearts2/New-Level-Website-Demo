@@ -108,7 +108,11 @@ export function InlineEditable({
           setError(null);
         }}
         aria-label={`Edit ${name}`}
-        className="bg-primary text-primary-foreground ml-1.5 inline-flex size-5 items-center justify-center rounded-full align-middle opacity-0 transition-opacity group-hover/inline-edit:opacity-100"
+        // Always visible, not hover-revealed — client ask (2026-08-26):
+        // "the pencil icon needs to be persistent. It shouldn't pop-up
+        // when you hover or swipe next to it." Kept a small hover scale as
+        // interactive feedback without hiding the icon itself.
+        className="bg-primary text-primary-foreground ml-1.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full align-middle transition-transform hover:scale-110"
       >
         <Pencil className="size-3" />
       </button>
