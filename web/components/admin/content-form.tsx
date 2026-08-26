@@ -162,8 +162,8 @@ function SectionControls({
     });
   }
 
-  function handleRevert() {
-    if (!confirm(`Revert "${legend}" back to how it was when the page loaded?`)) return;
+  function handleCancel() {
+    if (!confirm(`Discard your unsaved changes to "${legend}"?`)) return;
     sectionRef.current
       ?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input[name], textarea[name]")
       .forEach((input) => {
@@ -228,10 +228,10 @@ function SectionControls({
         )}
         <button
           type="button"
-          onClick={handleRevert}
+          onClick={handleCancel}
           className="font-heading text-muted-foreground hover:text-foreground rounded-lg px-4 py-2 text-sm font-semibold"
         >
-          Revert
+          Cancel
         </button>
       </div>
     </div>

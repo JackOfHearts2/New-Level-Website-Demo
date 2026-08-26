@@ -1,8 +1,13 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
 import { DashboardView, type StatItem, type NavTileItem, type ActivityItem } from "@/components/admin/dashboard-view";
+import { DailyViewsChart, type DailyPoint } from "@/components/admin/daily-views-chart";
+import { RankedBarList } from "@/components/admin/ranked-bar-list";
+import { DonutChart, type DonutSlice } from "@/components/admin/donut-chart";
+import { GlowCard } from "@/components/ui/glow-card";
 
 type ActivityRow = {
   id: string;
@@ -11,6 +16,11 @@ type ActivityRow = {
   created_at: string;
 };
 type ProfileRow = { id: string; email: string | null; full_name: string | null };
+type DraftRow = { id: string; created_at: string };
+type ViewRow = { path: string; created_at: string };
+type RequestStatusRow = { status: string };
+
+const OVERVIEW_DAYS = 14;
 
 function timeAgo(iso: string) {
   const ms = Date.now() - new Date(iso).getTime();
@@ -20,6 +30,14 @@ function timeAgo(iso: string) {
   const hours = Math.round(mins / 60);
   if (hours < 24) return `${hours}h ago`;
   return `${Math.round(hours / 24)}d ago`;
+}
+
+function dayKey(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+function dayLabel(d: Date) {
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 export default async function AdminHomePage({
@@ -33,8 +51,19 @@ export default async function AdminHomePage({
 
   const supabase = await createClient();
   const isAdmin = auth.role === "admin";
+  const since = new Date();
+  since.setDate(since.getDate() - OVERVIEW_DAYS);
 
-  const [pendingApprovals, openReports, staffCount, recentActivity, { data: profile }] = await Promise.all([
+  const [
+    pendingApprovals,
+    openReports,
+    staffCount,
+    recentActivity,
+    { data: profile },
+    { data: draftData },
+    { data: overviewViews },
+    { data: overviewStatuses },
+  ] = await Promise.all([
     getApprovalsBadgeCount(supabase, auth),
     getOpenReportsCount(supabase),
     isAdmin
@@ -51,7 +80,33 @@ export default async function AdminHomePage({
     supabase.from("profiles").select("dashboard_view").eq("id", auth.userId).maybeSingle<{
       dashboard_view: "overview" | "compact";
     }>(),
+    // Editors only ever have drafts of their own content (image drafts don't
+    // exist — saveImage's editor path always creates a pending request, see
+    // web/app/admin/(dashboard)/actions.ts).
+    isAdmin
+      ? Promise.resolve({ data: null })
+      : supabase
+          .from("content_change_requests")
+          .select("id, created_at")
+          .eq("submitted_by", auth.userId)
+          .eq("status", "draft")
+          .eq("target_type", "content")
+          .order("created_at", { ascending: false })
+          .limit(20)
+          .returns<DraftRow[]>(),
+    isAdmin
+      ? supabase
+          .from("page_views")
+          .select("path, created_at")
+          .gte("created_at", since.toISOString())
+          .returns<ViewRow[]>()
+      : Promise.resolve({ data: null }),
+    isAdmin
+      ? supabase.from("content_change_requests").select("status").returns<RequestStatusRow[]>()
+      : Promise.resolve({ data: null }),
   ]);
+
+  const drafts = draftData ?? [];
 
   const activityRows = recentActivity.data ?? [];
   const actorIds = Array.from(new Set(activityRows.map((r) => r.actor_id).filter((v): v is string => !!v)));
@@ -98,6 +153,56 @@ export default async function AdminHomePage({
       })
     : null;
 
+  // --- Business overview (admin only): a chart-driven at-a-glance summary,
+  // so the dashboard reads as a real overview before clicking into
+  // Analytics/Approvals for the full detail. Client ask (2026-08-26):
+  // "I wanted to look cool like an actual dashboard that gives you an
+  // overview of the business before you have to click on anything."
+  let overviewDaily: DailyPoint[] | null = null;
+  let overviewTopPages: { label: string; value: number }[] | null = null;
+  let statusSlices: DonutSlice[] | null = null;
+
+  if (isAdmin) {
+    const views = overviewViews ?? [];
+    const dailyMap = new Map<string, number>();
+    for (let i = OVERVIEW_DAYS - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      dailyMap.set(dayKey(d), 0);
+    }
+    for (const v of views) {
+      const key = dayKey(new Date(v.created_at));
+      if (dailyMap.has(key)) dailyMap.set(key, (dailyMap.get(key) ?? 0) + 1);
+    }
+    overviewDaily = Array.from(dailyMap.entries()).map(([date, count]) => ({
+      date,
+      label: dayLabel(new Date(date)),
+      count,
+    }));
+
+    const pathCounts = new Map<string, number>();
+    for (const v of views) pathCounts.set(v.path, (pathCounts.get(v.path) ?? 0) + 1);
+    overviewTopPages = Array.from(pathCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([label, value]) => ({ label: label === "/" ? "/ (Home)" : label, value }));
+
+    const statuses = overviewStatuses ?? [];
+    const bucket = { approved: 0, pendingReview: 0, draft: 0, rejected: 0 };
+    for (const r of statuses) {
+      if (r.status === "approved") bucket.approved++;
+      else if (r.status === "pending" || r.status === "changes_requested") bucket.pendingReview++;
+      else if (r.status === "draft") bucket.draft++;
+      else bucket.rejected++; // rejected + withdrawn
+    }
+    statusSlices = [
+      { label: "Approved", value: bucket.approved, color: "var(--primary)" },
+      { label: "Pending review", value: bucket.pendingReview, color: "#f5a524" },
+      { label: "Draft", value: bucket.draft, color: "var(--muted-foreground)" },
+      { label: "Rejected / withdrawn", value: bucket.rejected, color: "var(--destructive)" },
+    ];
+  }
+
   return (
     <div className="space-y-8">
       {denied && (
@@ -116,6 +221,66 @@ export default async function AdminHomePage({
             : "Propose content and photo changes — an admin reviews them before they go live."}
         </p>
       </div>
+
+      {isAdmin && overviewDaily && statusSlices && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading text-sm font-semibold">
+              Business overview — last {OVERVIEW_DAYS} days
+            </h2>
+            <Link href="/admin/analytics" className="text-primary text-xs font-semibold">
+              Full analytics →
+            </Link>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-3">
+            <GlowCard className="p-5 lg:col-span-2">
+              <h3 className="mb-3 text-sm font-semibold">Pageviews</h3>
+              <DailyViewsChart data={overviewDaily} />
+            </GlowCard>
+            <GlowCard className="p-5">
+              <h3 className="mb-3 text-sm font-semibold">Submissions by status</h3>
+              <DonutChart slices={statusSlices} title="Content submissions by status, all time" />
+            </GlowCard>
+          </div>
+          {overviewTopPages && overviewTopPages.length > 0 && (
+            <GlowCard className="p-5">
+              <h3 className="mb-3 text-sm font-semibold">Top pages</h3>
+              <RankedBarList rows={overviewTopPages} />
+            </GlowCard>
+          )}
+        </section>
+      )}
+
+      {!isAdmin && drafts.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="font-heading text-sm font-semibold">
+            Your drafts ({drafts.length})
+          </h2>
+          <GlowCard className="block divide-y divide-border p-0">
+            {drafts.slice(0, 5).map((d) => (
+              <Link
+                key={d.id}
+                href={`/admin/approvals/${d.id}/revise`}
+                className="hover:bg-muted flex items-center gap-3 p-4 transition-colors"
+              >
+                <span className="flex-1 text-sm font-medium">
+                  Draft saved {timeAgo(d.created_at)}
+                </span>
+                <span className="text-primary text-xs font-semibold">Resume →</span>
+              </Link>
+            ))}
+          </GlowCard>
+          {drafts.length > 5 && (
+            <p className="text-muted-foreground text-xs">
+              +{drafts.length - 5} more —{" "}
+              <Link href="/admin/approvals" className="text-primary font-semibold">
+                see all in Approvals
+              </Link>
+              .
+            </p>
+          )}
+        </section>
+      )}
 
       <DashboardView
         initialView={profile?.dashboard_view ?? "overview"}
