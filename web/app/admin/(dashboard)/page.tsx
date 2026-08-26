@@ -62,9 +62,14 @@ function timeAgo(iso: string) {
   return `${Math.round(hours / 24)}d ago`;
 }
 
-export default async function AdminHomePage() {
+export default async function AdminHomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ denied?: string }>;
+}) {
   const auth = await requireAdminRole();
   if (!auth) redirect("/");
+  const { denied } = await searchParams;
 
   const supabase = await createClient();
   const isAdmin = auth.role === "admin";
@@ -94,6 +99,14 @@ export default async function AdminHomePage() {
 
   return (
     <div className="space-y-8">
+      {denied && (
+        <div
+          role="alert"
+          className="border-destructive/30 bg-destructive/10 text-destructive rounded-2xl border p-4 text-sm font-medium"
+        >
+          You don&apos;t have permission to view that page — it&apos;s restricted to admins.
+        </div>
+      )}
       <div>
         <h1 className="font-heading text-2xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground mt-1 text-sm">

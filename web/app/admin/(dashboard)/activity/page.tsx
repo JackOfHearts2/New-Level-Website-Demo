@@ -44,7 +44,7 @@ export default async function ActivityPage({
   searchParams: Promise<{ page?: string }>;
 }) {
   const auth = await requireAdmin();
-  if (!auth) redirect("/admin");
+  if (!auth) redirect("/admin?denied=1");
 
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);

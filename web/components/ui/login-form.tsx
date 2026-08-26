@@ -17,7 +17,26 @@ function BrandGradientBackdrop() {
   );
 }
 
-type Status = { kind: "idle" } | { kind: "error"; message: string } | { kind: "check-email" };
+type Status =
+  | { kind: "idle" }
+  | { kind: "error"; message: string }
+  | { kind: "check-email" }
+  | { kind: "reset-sent" };
+
+// Supabase deliberately returns the same generic error for "wrong password"
+// and "no account with that email" (prevents an attacker from using this
+// form to enumerate which emails have accounts) — this maps that one
+// message to clearer copy without breaking that protection. Don't add a
+// branch that reveals account-exists/doesn't-exist as separate messages.
+function friendlyAuthError(message: string): string {
+  const known: Record<string, string> = {
+    "Invalid login credentials":
+      "Incorrect email or password. Double-check and try again, or reset your password below.",
+    "User already registered": "An account with that email already exists — try signing in instead.",
+    "Email not confirmed": "Check your inbox to confirm your email before signing in.",
+  };
+  return known[message] ?? message;
+}
 
 // Real Supabase auth (email/password + Google OAuth) — see
 // lib/supabase/client.ts and app/auth/callback/route.ts. Replaces the
@@ -35,6 +54,7 @@ export function LoginForm({
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [loading, setLoading] = useState(false);
+  const [emailValue, setEmailValue] = useState("");
   const isSignIn = mode === "signin";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -50,7 +70,7 @@ export function LoginForm({
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
       if (error) {
-        setStatus({ kind: "error", message: error.message });
+        setStatus({ kind: "error", message: friendlyAuthError(error.message) });
         return;
       }
       (onSuccess ?? onClose)();
@@ -60,7 +80,7 @@ export function LoginForm({
     const { data, error } = await supabase.auth.signUp({ email, password });
     setLoading(false);
     if (error) {
-      setStatus({ kind: "error", message: error.message });
+      setStatus({ kind: "error", message: friendlyAuthError(error.message) });
       return;
     }
     if (!data.session) {
@@ -69,6 +89,27 @@ export function LoginForm({
       return;
     }
     (onSuccess ?? onClose)();
+  }
+
+  async function handleForgotPassword() {
+    if (!emailValue) {
+      setStatus({ kind: "error", message: "Enter your email above first, then tap \"Forgot password?\"." });
+      return;
+    }
+    const supabase = createClient();
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(emailValue, {
+      redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
+    });
+    setLoading(false);
+    // Same anti-enumeration reasoning as friendlyAuthError — Supabase
+    // reports success here regardless of whether the email has an
+    // account, so the UI shouldn't say anything different either way.
+    if (error) {
+      setStatus({ kind: "error", message: friendlyAuthError(error.message) });
+      return;
+    }
+    setStatus({ kind: "reset-sent" });
   }
 
   async function handleGoogle() {
@@ -115,6 +156,19 @@ export function LoginForm({
             Close
           </button>
         </div>
+      ) : status.kind === "reset-sent" ? (
+        <div className="mt-8 text-center">
+          <p className="text-sm text-white">
+            If an account exists for that email, a reset link is on its way — check your inbox.
+          </p>
+          <button
+            type="button"
+            onClick={onClose}
+            className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 mt-6 w-full rounded-lg py-2.5 text-sm font-semibold"
+          >
+            Close
+          </button>
+        </div>
       ) : (
         <form onSubmit={handleSubmit} className="mt-8 space-y-8">
           <div className="relative z-0">
@@ -122,6 +176,8 @@ export function LoginForm({
               type="email"
               name="email"
               id="floating_email"
+              value={emailValue}
+              onChange={(e) => setEmailValue(e.target.value)}
               className="peer block w-full appearance-none border-0 border-b-2 border-white/40 bg-transparent px-0 py-2.5 text-sm text-white focus:border-primary focus:ring-0 focus:outline-none"
               placeholder=" "
               required
@@ -153,6 +209,17 @@ export function LoginForm({
               Password
             </label>
           </div>
+
+          {isSignIn && (
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              disabled={loading}
+              className="-mt-4 text-xs font-semibold text-white/70 hover:text-white disabled:opacity-50"
+            >
+              Forgot password?
+            </button>
+          )}
 
           {status.kind === "error" && (
             <p className="text-sm text-red-200" role="alert">
@@ -204,7 +271,7 @@ export function LoginForm({
         </form>
       )}
 
-      {status.kind !== "check-email" && (
+      {status.kind !== "check-email" && status.kind !== "reset-sent" && (
         <p className="mt-6 text-center text-xs text-white">
           {isSignIn ? "Don't have an account? " : "Already have an account? "}
           <button

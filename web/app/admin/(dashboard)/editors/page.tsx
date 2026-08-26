@@ -17,7 +17,7 @@ const ROLE_ORDER: StaffRole[] = ["admin", "manager", "editor", "viewer"];
 
 export default async function EditorsPage() {
   const auth = await requireAdmin();
-  if (!auth) redirect("/admin");
+  if (!auth) redirect("/admin?denied=1");
 
   const supabase = await createClient();
   const { data } = await supabase

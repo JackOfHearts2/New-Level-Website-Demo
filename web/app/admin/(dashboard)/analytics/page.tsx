@@ -36,7 +36,7 @@ function dayLabel(d: Date) {
 
 export default async function AnalyticsPage() {
   const auth = await requireAdmin();
-  if (!auth) redirect("/admin");
+  if (!auth) redirect("/admin?denied=1");
 
   const supabase = await createClient();
   const since = new Date();
