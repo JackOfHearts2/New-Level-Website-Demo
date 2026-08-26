@@ -157,20 +157,27 @@ export function AdminSidebar({
             </div>
           </>
         ) : (
-          <div className="relative h-8 w-full">
+          // Icon-only mark, not the full lockup shrunk down — client ask
+          // (2026-08-26): collapsed should keep just the symbol, dropping
+          // "New Level / Real Estate, Redefined" entirely. Cropped from the
+          // existing full-lockup asset (public/logo.png, public/logo-dark.png)
+          // via sharp, not admin-uploadable — this is fixed sidebar chrome,
+          // not editable site content, so it doesn't need to go through the
+          // same CMS path as logoUrl/logoUrlDark.
+          <div className="relative mx-auto h-8 w-8">
             <NextImage
-              src={logoUrl}
+              src="/logo-icon.png"
               alt="New Level"
               fill
-              sizes="48px"
-              className="object-contain object-left dark:hidden"
+              sizes="32px"
+              className="object-contain dark:hidden"
             />
             <NextImage
-              src={logoUrlDark}
+              src="/logo-icon-dark.png"
               alt="New Level"
               fill
-              sizes="48px"
-              className="hidden object-contain object-left dark:block"
+              sizes="32px"
+              className="hidden object-contain dark:block"
             />
           </div>
         )}
