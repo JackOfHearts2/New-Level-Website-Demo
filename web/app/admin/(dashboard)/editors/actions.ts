@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import { logActivity } from "@/lib/activity-log";
 
 export type ActionResult = { error?: string; ok?: boolean };
 
@@ -41,6 +42,14 @@ export async function grantEditorAccess(
     .eq("id", profile.id);
   if (updateError) return { error: "Couldn't grant access. Please try again." };
 
+  await logActivity(supabase, {
+    actorId: auth.userId,
+    eventType: "editor_granted",
+    targetTable: "profiles",
+    targetId: profile.id,
+    summary: `${auth.email} granted editor access to ${email}`,
+  });
+
   revalidatePath("/admin/editors");
   return { ok: true };
 }
@@ -54,11 +63,25 @@ export async function revokeAccess(userId: string): Promise<ActionResult> {
   }
 
   const supabase = await createClient();
+  const { data: target } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", userId)
+    .maybeSingle();
+
   const { error } = await supabase
     .from("profiles")
     .update({ role: "client" })
     .eq("id", userId);
   if (error) return { error: "Couldn't revoke access. Please try again." };
+
+  await logActivity(supabase, {
+    actorId: auth.userId,
+    eventType: "editor_revoked",
+    targetTable: "profiles",
+    targetId: userId,
+    summary: `${auth.email} revoked editor access from ${target?.email ?? userId}`,
+  });
 
   revalidatePath("/admin/editors");
   return { ok: true };

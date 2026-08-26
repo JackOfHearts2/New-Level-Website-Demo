@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { sniffImageType } from "@/lib/image-sniff";
 import { notifyPendingChangeRequest } from "@/lib/email";
 import { buildContentFromFormData } from "@/lib/site-content-form";
+import { logActivity } from "@/lib/activity-log";
 import {
   getRawSiteContent,
   saveSiteContent,
@@ -47,15 +48,27 @@ export async function saveContent(
   // Editor: nothing goes live yet — save as a pending request for an
   // admin to review.
   const supabase = await createClient();
-  const { error } = await supabase.from("content_change_requests").insert({
-    submitted_by: auth.userId,
-    target_type: "content",
-    proposed_content: next,
-    base_content: current,
-  });
+  const { data: inserted, error } = await supabase
+    .from("content_change_requests")
+    .insert({
+      submitted_by: auth.userId,
+      target_type: "content",
+      proposed_content: next,
+      base_content: current,
+    })
+    .select("id")
+    .single();
   if (error) {
     return { error: "Couldn't submit for review. Please try again." };
   }
+
+  await logActivity(supabase, {
+    actorId: auth.userId,
+    eventType: "submission_created",
+    targetTable: "content_change_requests",
+    targetId: inserted?.id,
+    summary: `${auth.email} submitted a content change for review`,
+  });
 
   await notifyPendingChangeRequest({
     targetType: "content",
@@ -136,7 +149,7 @@ export async function saveImage(
   }
 
   const current = await getRawSiteContent();
-  const { error: insertError } = await supabase
+  const { data: inserted, error: insertError } = await supabase
     .from("content_change_requests")
     .insert({
       submitted_by: auth.userId,
@@ -144,11 +157,21 @@ export async function saveImage(
       image_slot: key,
       storage_path: storagePath,
       base_content: current,
-    });
+    })
+    .select("id")
+    .single();
   if (insertError) {
     await supabase.storage.from("pending-uploads").remove([storagePath]);
     return { error: "Couldn't submit for review. Please try again." };
   }
+
+  await logActivity(supabase, {
+    actorId: auth.userId,
+    eventType: "submission_created",
+    targetTable: "content_change_requests",
+    targetId: inserted?.id,
+    summary: `${auth.email} submitted a photo change (${key}) for review`,
+  });
 
   await notifyPendingChangeRequest({
     targetType: "image",
