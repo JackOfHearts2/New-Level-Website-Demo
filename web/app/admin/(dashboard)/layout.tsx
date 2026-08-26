@@ -33,7 +33,7 @@ export default async function AdminDashboardLayout({
         openReports={openReports}
       />
       <main className="min-w-0 flex-1 px-6 py-10">
-        <AdminTopBar />
+        <AdminTopBar pendingApprovals={pendingApprovals} openReports={openReports} />
         {children}
       </main>
       <AdminScrollToTop />

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/admin/notification-bell";
 
 const LABELS: Record<string, string> = {
   "/admin": "Dashboard",
@@ -28,7 +29,13 @@ function labelFor(pathname: string) {
  *  on styles.css's era, now components/site-header.tsx here) — client asked
  *  explicitly for admin to match. No hero to solidify over here, so this
  *  skips that half (nav--overlay/nav--solid); just the hide/reveal. */
-export function AdminTopBar() {
+export function AdminTopBar({
+  pendingApprovals,
+  openReports,
+}: {
+  pendingApprovals: number;
+  openReports: number;
+}) {
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
   const lastY = useRef(0);
@@ -63,7 +70,15 @@ export function AdminTopBar() {
         <span className="font-heading text-sm font-semibold text-muted-foreground">
           Admin / <span className="text-foreground">{labelFor(pathname)}</span>
         </span>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <NotificationBell
+            rows={[
+              { href: "/admin/approvals", label: "Pending approvals", count: pendingApprovals },
+              { href: "/admin/reports", label: "Open reports", count: openReports },
+            ]}
+          />
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );
