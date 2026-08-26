@@ -1,5 +1,5 @@
-import { getRawSiteContent } from "@/lib/site-content";
-import { ImageForm } from "./image-form";
+import { getRawSiteContent, getSiteContent } from "@/lib/site-content";
+import { ImageForm } from "@/components/admin/image-form";
 
 export default async function AdminImagesPage() {
   // Deliberately the raw (unresolved) content here, not getSiteContent()'s
@@ -15,6 +15,11 @@ export default async function AdminImagesPage() {
     ? `/api/site-image/hero-bg?v=${raw.images.heroBg.updatedAt}`
     : null;
 
+  // The fully-resolved live content (real defaults filled in) — needed so
+  // the "Preview on page" button can render the whole page correctly with
+  // just the one changed slot swapped in.
+  const siteContent = await getSiteContent();
+
   return (
     <div className="space-y-6">
       <div>
@@ -25,11 +30,12 @@ export default async function AdminImagesPage() {
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <ImageForm imageKey="logo" label="Logo" currentUrl={logoUrl} />
+        <ImageForm imageKey="logo" label="Logo" currentUrl={logoUrl} siteContent={siteContent} />
         <ImageForm
           imageKey="hero-bg"
           label="Homepage background photo"
           currentUrl={heroBgUrl}
+          siteContent={siteContent}
         />
       </div>
     </div>

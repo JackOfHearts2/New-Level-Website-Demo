@@ -1,5 +1,5 @@
 import { getRawSiteContent } from "@/lib/site-content";
-import { ContentForm } from "./content-form";
+import { ContentForm } from "@/components/admin/content-form";
 
 export default async function AdminContentPage() {
   const content = await getRawSiteContent();

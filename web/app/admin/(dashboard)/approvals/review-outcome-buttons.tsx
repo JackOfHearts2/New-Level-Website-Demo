@@ -2,11 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { approveRequest, rejectRequest } from "./actions";
+import { approveRequest, rejectRequest, requestChanges } from "./actions";
 
-export function ApproveRejectButtons({ id }: { id: string }) {
+type NoteFlow = "reject" | "changes" | null;
+
+export function ReviewOutcomeButtons({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition();
-  const [showNote, setShowNote] = useState(false);
+  const [noteFlow, setNoteFlow] = useState<NoteFlow>(null);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -20,10 +22,11 @@ export function ApproveRejectButtons({ id }: { id: string }) {
     });
   }
 
-  function handleReject() {
+  function handleConfirmNote() {
     setError(null);
     startTransition(async () => {
-      const result = await rejectRequest(id, note);
+      const result =
+        noteFlow === "reject" ? await rejectRequest(id, note) : await requestChanges(id, note);
       if (result.error) setError(result.error);
       else router.refresh();
     });
@@ -43,28 +46,44 @@ export function ApproveRejectButtons({ id }: { id: string }) {
         <button
           type="button"
           disabled={isPending}
-          onClick={() => setShowNote((v) => !v)}
+          onClick={() => setNoteFlow(noteFlow === "changes" ? null : "changes")}
+          className="font-heading border-border rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50"
+        >
+          Request changes
+        </button>
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => setNoteFlow(noteFlow === "reject" ? null : "reject")}
           className="font-heading border-border rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50"
         >
           Reject
         </button>
       </div>
-      {showNote && (
+      {noteFlow && (
         <div className="space-y-2">
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="Optional note for the person who submitted this"
+            placeholder={
+              noteFlow === "changes"
+                ? "What needs to change before you'd approve this?"
+                : "Optional note for the person who submitted this"
+            }
             rows={2}
             className="border-border w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
           />
           <button
             type="button"
             disabled={isPending}
-            onClick={handleReject}
+            onClick={handleConfirmNote}
             className="text-destructive font-heading text-sm font-semibold disabled:opacity-50"
           >
-            {isPending ? "Rejecting…" : "Confirm reject"}
+            {isPending
+              ? "Saving…"
+              : noteFlow === "changes"
+                ? "Confirm request changes"
+                : "Confirm reject"}
           </button>
         </div>
       )}

@@ -1,9 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { SiteContent } from "@/lib/site-content";
-import { saveContent, type FormState } from "../actions";
+import { buildContentFromFormData } from "@/lib/site-content-form";
+import { resolveSiteImages } from "@/lib/site-content-images";
+import { saveContent, type FormState } from "@/app/admin/(dashboard)/actions";
+import { updateOwnContentRequest } from "@/app/admin/(dashboard)/approvals/actions";
+import { SitePreview } from "@/components/site-preview";
 
 function Field({
   label,
@@ -57,7 +61,7 @@ function Fieldset({
   );
 }
 
-function SaveButton() {
+function SaveButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -65,19 +69,31 @@ function SaveButton() {
       disabled={pending}
       className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-xl px-6 py-2.5 text-sm font-semibold disabled:opacity-50"
     >
-      {pending ? "Saving…" : "Save changes"}
+      {pending ? "Saving…" : label}
     </button>
   );
 }
 
-export function ContentForm({ content }: { content: SiteContent }) {
-  const [state, formAction] = useActionState<FormState, FormData>(
-    saveContent,
-    undefined
-  );
+export function ContentForm({
+  content,
+  reviseRequestId,
+}: {
+  content: SiteContent;
+  reviseRequestId?: string;
+}) {
+  const action = reviseRequestId ? updateOwnContentRequest.bind(null, reviseRequestId) : saveContent;
+  const [state, formAction] = useActionState<FormState, FormData>(action, undefined);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [previewContent, setPreviewContent] = useState<SiteContent | null>(null);
+
+  function handlePreview() {
+    if (!formRef.current) return;
+    const formData = new FormData(formRef.current);
+    setPreviewContent(buildContentFromFormData(content, formData));
+  }
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form ref={formRef} action={formAction} className="space-y-6">
       <Fieldset legend="Brand">
         <Field
           label="Tagline"
@@ -218,8 +234,9 @@ export function ContentForm({ content }: { content: SiteContent }) {
       )}
       {state?.ok && state?.pending && (
         <p className="text-sm text-[#72D35B]" role="status">
-          Submitted for admin approval — it won&apos;t go live until it&apos;s
-          reviewed. Check &quot;Approvals&quot; for the status.
+          {reviseRequestId ? "Resubmitted" : "Submitted"} for admin approval — it
+          won&apos;t go live until it&apos;s reviewed. Check &quot;Approvals&quot; for
+          the status.
         </p>
       )}
       {state?.ok && !state?.pending && (
@@ -227,7 +244,23 @@ export function ContentForm({ content }: { content: SiteContent }) {
           Saved: the live homepage now reflects these changes.
         </p>
       )}
-      <SaveButton />
+      <div className="flex flex-wrap gap-3">
+        <SaveButton label={reviseRequestId ? "Resubmit for review" : "Save changes"} />
+        <button
+          type="button"
+          onClick={handlePreview}
+          className="font-heading border-border rounded-xl border px-6 py-2.5 text-sm font-semibold"
+        >
+          Preview
+        </button>
+      </div>
+
+      {previewContent && (
+        <SitePreview
+          content={{ ...previewContent, images: resolveSiteImages(previewContent.images) }}
+          onClose={() => setPreviewContent(null)}
+        />
+      )}
     </form>
   );
 }

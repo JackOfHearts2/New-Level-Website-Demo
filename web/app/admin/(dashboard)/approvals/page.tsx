@@ -11,7 +11,7 @@ type ChangeRequestRow = {
   proposed_content: SiteContent | null;
   base_content: SiteContent;
   storage_path: string | null;
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "changes_requested" | "approved" | "rejected" | "withdrawn";
   review_note: string | null;
   created_at: string;
   reviewed_at: string | null;

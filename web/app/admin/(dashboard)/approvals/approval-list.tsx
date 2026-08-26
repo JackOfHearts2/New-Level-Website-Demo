@@ -1,6 +1,15 @@
+import Link from "next/link";
 import type { SiteContent } from "@/lib/site-content";
 import { diffSiteContent } from "./content-diff";
-import { ApproveRejectButtons } from "./approve-reject-buttons";
+import { ReviewOutcomeButtons } from "./review-outcome-buttons";
+import { EditWithdrawButtons } from "./edit-withdraw-buttons";
+
+export type ChangeRequestStatus =
+  | "pending"
+  | "changes_requested"
+  | "approved"
+  | "rejected"
+  | "withdrawn";
 
 export type ChangeRequestItem = {
   id: string;
@@ -9,7 +18,7 @@ export type ChangeRequestItem = {
   baseContent: SiteContent;
   proposedContent: SiteContent | null;
   pendingImageUrl: string | null;
-  status: "pending" | "approved" | "rejected";
+  status: ChangeRequestStatus;
   reviewNote: string | null;
   createdAt: string;
   reviewedAt: string | null;
@@ -31,17 +40,25 @@ function formatDate(iso: string) {
   });
 }
 
-function StatusBadge({ status }: { status: ChangeRequestItem["status"] }) {
-  const styles: Record<string, string> = {
+const STATUS_LABELS: Record<ChangeRequestStatus, string> = {
+  pending: "pending",
+  changes_requested: "changes requested",
+  approved: "approved",
+  rejected: "rejected",
+  withdrawn: "withdrawn",
+};
+
+function StatusBadge({ status }: { status: ChangeRequestStatus }) {
+  const styles: Record<ChangeRequestStatus, string> = {
     pending: "bg-amber-100 text-amber-900",
+    changes_requested: "bg-amber-100 text-amber-900",
     approved: "bg-[#72D35B]/20 text-[#2f6b1f]",
     rejected: "bg-destructive/15 text-destructive",
+    withdrawn: "bg-muted text-muted-foreground",
   };
   return (
-    <span
-      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${styles[status]}`}
-    >
-      {status}
+    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${styles[status]}`}>
+      {STATUS_LABELS[status]}
     </span>
   );
 }
@@ -51,6 +68,7 @@ function RequestCard({ request, isAdmin }: { request: ChangeRequestItem; isAdmin
     request.targetType === "content" && request.proposedContent
       ? diffSiteContent(request.baseContent, request.proposedContent)
       : [];
+  const isActionable = request.status === "pending" || request.status === "changes_requested";
 
   return (
     <div className="border-border space-y-4 rounded-2xl border p-6">
@@ -113,16 +131,26 @@ function RequestCard({ request, isAdmin }: { request: ChangeRequestItem; isAdmin
         </div>
       ) : null}
 
-      {request.status === "pending" && isAdmin && (
-        <ApproveRejectButtons id={request.id} />
+      {isActionable && (
+        <Link
+          href={`/admin/preview/${request.id}`}
+          className="font-heading text-primary text-sm font-semibold"
+        >
+          Preview →
+        </Link>
       )}
-      {request.status === "rejected" && request.reviewNote && (
-        <p className="text-sm">
-          <span className="font-heading font-medium">Reviewer note: </span>
-          {request.reviewNote}
-        </p>
-      )}
-      {request.status !== "pending" && request.reviewedAt && (
+
+      {request.status === "pending" && isAdmin && <ReviewOutcomeButtons id={request.id} />}
+      {isActionable && request.isOwn && !isAdmin && <EditWithdrawButtons id={request.id} />}
+
+      {(request.status === "rejected" || request.status === "changes_requested") &&
+        request.reviewNote && (
+          <p className="text-sm">
+            <span className="font-heading font-medium">Reviewer note: </span>
+            {request.reviewNote}
+          </p>
+        )}
+      {!isActionable && request.reviewedAt && (
         <p className="text-muted-foreground text-xs">
           Reviewed by {request.reviewerLabel ?? "An admin"} · {formatDate(request.reviewedAt)}
         </p>
@@ -138,31 +166,33 @@ export function ApprovalList({
   requests: ChangeRequestItem[];
   isAdmin: boolean;
 }) {
-  const pending = requests.filter((r) => r.status === "pending");
-  const reviewed = requests.filter((r) => r.status !== "pending");
+  const actionable = requests.filter(
+    (r) => r.status === "pending" || r.status === "changes_requested"
+  );
+  const history = requests.filter((r) => r.status !== "pending" && r.status !== "changes_requested");
 
   return (
     <div className="space-y-8">
       <section className="space-y-4">
         <h2 className="font-heading font-semibold">
-          Pending {pending.length > 0 && `(${pending.length})`}
+          Pending {actionable.length > 0 && `(${actionable.length})`}
         </h2>
-        {pending.length === 0 ? (
+        {actionable.length === 0 ? (
           <p className="text-muted-foreground text-sm">Nothing waiting on review.</p>
         ) : (
           <div className="space-y-4">
-            {pending.map((request) => (
+            {actionable.map((request) => (
               <RequestCard key={request.id} request={request} isAdmin={isAdmin} />
             ))}
           </div>
         )}
       </section>
 
-      {reviewed.length > 0 && (
+      {history.length > 0 && (
         <section className="space-y-4">
           <h2 className="font-heading font-semibold">Reviewed</h2>
           <div className="space-y-4">
-            {reviewed.map((request) => (
+            {history.map((request) => (
               <RequestCard key={request.id} request={request} isAdmin={isAdmin} />
             ))}
           </div>
