@@ -67,6 +67,32 @@ export function FloatingActions() {
   // bottom-4 spot (replacing the MobileDock there) — bump up to clear it
   // instead of sitting on top of it.
   const onPropertyPage = usePathname() === "/property";
+  const autoOpenedRef = useRef(false);
+
+  // One-time on-load reveal (client ask, 2026-08-26): open automatically so
+  // a first-time visitor sees where "Contact us"/"Chat with us" live, then
+  // retract on its own after ~5s or as soon as they start scrolling —
+  // whichever happens first — so the animation itself teaches them where
+  // it collapses to. Only fires once per mount (this component stays
+  // mounted across client-side navigation, so in practice that's once per
+  // real page load, not once per page visited).
+  useEffect(() => {
+    if (autoOpenedRef.current) return;
+    autoOpenedRef.current = true;
+    setDialOpen(true);
+
+    const timer = setTimeout(() => setDialOpen(false), 5000);
+    function onScroll() {
+      setDialOpen(false);
+      window.removeEventListener("scroll", onScroll);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
 
   useEffect(() => {
     if (!dialOpen) return;
