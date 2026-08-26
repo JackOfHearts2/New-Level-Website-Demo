@@ -24,12 +24,30 @@ function scheduleTick() {
   if (rafId == null) rafId = requestAnimationFrame(runTicks);
 }
 
+// Found from client-drawn screenshots (2026-08-27) showing a persistent
+// green glow smeared down the right edge of every card on Dashboard and
+// Content & Media on a real phone — not a layout/width bug, a stuck glow.
+// Root cause: this listener updated pointerX/pointerY from ANY pointermove,
+// including touch. On mobile Chrome a scroll/drag gesture fires pointermove
+// events at the touch point (pointerType "touch"), so scrolling with a
+// thumb near the right edge leaves every visible card's --glow-opacity
+// baked in near-full-bright at that position — there was no pointerup/
+// touchend handler to ever reset it, so it just sat there until the next
+// touch happened to land somewhere else. Real cursor hover never has this
+// problem (the mouse leaving naturally keeps generating pointermove events
+// that decay opacity back toward 0), which is why this never showed up
+// testing on desktop. AmbientBackground already special-cases touch this
+// same way for its own pointermove handler — this brings GlowCard's ring
+// in line with that precedent: it's a hover affordance, and touch has no
+// hover, so touch-originated moves simply never update the tracked
+// position instead of trying to clean up after the fact.
 function ensurePointerListener() {
   if (attached || typeof window === "undefined") return;
   attached = true;
   window.addEventListener(
     "pointermove",
     (e) => {
+      if (e.pointerType !== "mouse") return;
       pointerX = e.clientX;
       pointerY = e.clientY;
       scheduleTick();
