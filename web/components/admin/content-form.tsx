@@ -148,7 +148,6 @@ function SectionControls({
   const [state, setState] = useState<FormState>(undefined);
   const [draftState, setDraftState] = useState<DraftFormState>(undefined);
   const [pending, startTransition] = useTransition();
-  const router = useRouter();
 
   function collectFieldValues(): Record<string, string> {
     const values: Record<string, string> = {};
@@ -180,14 +179,21 @@ function SectionControls({
     handleSave();
   }
 
+  // Deliberately does NOT navigate to the draft's own revise page (unlike
+  // the whole-page draft save below, where that makes sense — the whole
+  // page's draft covers everything you were editing anyway). Client
+  // report (2026-08-27): saving one section as a draft was redirecting
+  // away from Content & Media entirely, landing on that draft's revise
+  // page — which has no per-section controls (reviseRequestId is set
+  // there) — so every OTHER section's controls appeared to just vanish,
+  // and there was no way back except leaving the page. Now it just shows
+  // an inline confirmation and leaves you exactly where you were, free to
+  // keep editing other sections. The draft row still exists — it shows up
+  // in the dashboard's "Your drafts" panel to resume later.
   function handleSaveDraft() {
     setDraftState(undefined);
     startTransition(async () => {
-      const result = await saveContentSectionDraft(collectFieldValues());
-      setDraftState(result);
-      if (result?.ok && result.draftId) {
-        router.push(`/admin/approvals/${result.draftId}/revise`);
-      }
+      setDraftState(await saveContentSectionDraft(collectFieldValues()));
     });
   }
 
@@ -393,7 +399,7 @@ export function ContentForm({
           scrollable row instead of sticky+wrapping — stays compact, and
           dropping `sticky` removes the AdminTopBar interaction entirely
           rather than trying to keep the two in sync. */}
-      <div className="border-border bg-card -mx-1 flex flex-nowrap gap-1 overflow-x-auto rounded-xl border p-2 shadow-sm">
+      <div className="border-border bg-card flex flex-nowrap gap-1 overflow-x-auto rounded-xl border p-2 shadow-sm">
         {SECTION_NAV.map((s) => (
           <a
             key={s.id}

@@ -75,7 +75,17 @@ export function AdminTopBar({
   return (
     <div
       className={cn(
-        "sticky top-0 z-20 -mx-6 mb-6 border-b border-border bg-card/90 px-6 py-3 backdrop-blur transition-transform duration-300",
+        // -mx-6/px-6 bleeds this edge-to-edge across `main`'s own horizontal
+        // padding — has to track that padding exactly at every breakpoint
+        // (main is px-4 lg:px-6, see the admin layout) or this overshoots
+        // the viewport on the narrower side. Client report (2026-08-27):
+        // "the content and media page... still slightly shifts to the
+        // side... not fully tailored for portrait mode" - this fixed -mx-6
+        // paired with the layout's now-responsive px-4 on mobile (from the
+        // earlier admin mobile-drawer fix) was the actual cause: an 8px
+        // overshoot past the edge on phones, not present on desktop where
+        // both sides happened to agree at px-6.
+        "sticky top-0 z-20 -mx-4 mb-6 border-b border-border bg-card/90 px-4 py-3 backdrop-blur transition-transform duration-300 lg:-mx-6 lg:px-6",
         visible ? "translate-y-0" : "-translate-y-full"
       )}
     >
