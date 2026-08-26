@@ -11,6 +11,7 @@ import {
   Settings,
   LayoutGrid,
   List,
+  Building2,
 } from "lucide-react";
 import { GlowCard } from "@/components/ui/glow-card";
 import { saveDashboardView } from "@/app/admin/(dashboard)/actions";
@@ -22,6 +23,7 @@ const ICONS = {
   analytics: BarChart3,
   content: MediaIcon,
   settings: Settings,
+  properties: Building2,
 } as const;
 type IconKey = keyof typeof ICONS;
 

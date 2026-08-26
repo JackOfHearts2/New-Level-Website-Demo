@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
-import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
+import { getApprovalsBadgeCount, getOpenReportsCount, getPendingPropertiesCount } from "@/lib/admin-counts";
 import { getSiteContent } from "@/lib/site-content";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopBar } from "@/components/admin/admin-topbar";
@@ -18,9 +18,10 @@ export default async function AdminDashboardLayout({
   if (!auth) redirect("/");
 
   const supabase = await createClient();
-  const [pendingApprovals, openReports, content, { data: profile }] = await Promise.all([
+  const [pendingApprovals, openReports, pendingProperties, content, { data: profile }] = await Promise.all([
     getApprovalsBadgeCount(supabase, auth),
     getOpenReportsCount(supabase),
+    getPendingPropertiesCount(supabase, auth),
     getSiteContent(),
     supabase
       .from("profiles")
@@ -51,12 +52,14 @@ export default async function AdminDashboardLayout({
           avatarUrl={avatarUrl}
           pendingApprovals={pendingApprovals}
           openReports={openReports}
+          pendingProperties={pendingProperties}
           savedOrder={profile?.sidebar_order ?? null}
         />
         <main className="min-w-0 flex-1 px-4 py-6 lg:px-6 lg:py-10">
           <AdminTopBar
             pendingApprovals={pendingApprovals}
             openReports={openReports}
+            pendingProperties={pendingProperties}
             role={auth.role}
             email={auth.email}
             displayName={displayName}

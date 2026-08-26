@@ -13,6 +13,7 @@ const LABELS: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/analytics": "Analytics",
   "/admin/content": "Content",
+  "/admin/properties": "Properties",
   "/admin/images": "Images",
   "/admin/approvals": "Approvals",
   "/admin/reports": "Reports",
@@ -36,6 +37,7 @@ function labelFor(pathname: string) {
 export function AdminTopBar({
   pendingApprovals,
   openReports,
+  pendingProperties,
   role,
   email,
   displayName,
@@ -43,6 +45,7 @@ export function AdminTopBar({
 }: {
   pendingApprovals: number;
   openReports: number;
+  pendingProperties: number;
   role: "editor" | "admin";
   email: string;
   displayName: string | null;
@@ -116,6 +119,7 @@ export function AdminTopBar({
             <NotificationBell
               rows={[
                 { href: "/admin/approvals", label: "Pending approvals", count: pendingApprovals },
+                { href: "/admin/properties", label: "Pending listings", count: pendingProperties },
                 { href: "/admin/reports", label: "Open reports", count: openReports },
               ]}
             />

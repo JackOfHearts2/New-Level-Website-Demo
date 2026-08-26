@@ -20,6 +20,7 @@ import {
   ChevronDown,
   UserCog,
   X,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
@@ -54,6 +55,7 @@ export function AdminSidebar({
   avatarUrl,
   pendingApprovals,
   openReports,
+  pendingProperties,
   savedOrder,
 }: {
   logoUrl: string;
@@ -64,6 +66,7 @@ export function AdminSidebar({
   avatarUrl: string | null;
   pendingApprovals: number;
   openReports: number;
+  pendingProperties: number;
   savedOrder: string[] | null;
 }) {
   const [open, setOpen] = useState(true);
@@ -82,6 +85,7 @@ export function AdminSidebar({
     { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
     ...(isAdmin ? [{ href: "/admin/analytics", label: "Analytics", Icon: BarChart3 }] : []),
     { href: "/admin/content", label: "Content & Media", Icon: MediaIcon },
+    { href: "/admin/properties", label: "Properties", Icon: Building2, badge: pendingProperties },
     { href: "/admin/approvals", label: "Approvals", Icon: ClipboardCheck, badge: pendingApprovals },
     { href: "/admin/reports", label: "Reports", Icon: Flag, badge: openReports },
   ];

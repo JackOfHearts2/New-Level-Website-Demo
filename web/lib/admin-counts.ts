@@ -30,3 +30,16 @@ export async function getOpenReportsCount(supabase: SupabaseClient): Promise<num
     .eq("status", "open");
   return count ?? 0;
 }
+
+// Properties have their own status lifecycle (a per-row column, not a
+// content_change_requests wrapper — see migration 0016), so this is a
+// separate badge rather than folded into getApprovalsBadgeCount above.
+export async function getPendingPropertiesCount(
+  supabase: SupabaseClient,
+  auth: AdminAuth
+): Promise<number> {
+  const statuses = auth.role === "admin" ? ["pending"] : ["pending", "changes_requested"];
+  const query = supabase.from("properties").select("id", { count: "exact", head: true }).in("status", statuses);
+  const { count } = auth.role === "admin" ? await query : await query.eq("submitted_by", auth.userId);
+  return count ?? 0;
+}

@@ -138,6 +138,12 @@ export default async function AdminHomePage({
       description: "Edit page text and photos, section by section.",
       icon: "content",
     },
+    {
+      href: "/admin/properties",
+      title: "Properties",
+      description: "Add or edit listings.",
+      icon: "properties",
+    },
     { href: "/admin/settings", title: "Settings", description: "Account & preferences.", icon: "settings" },
   ];
 

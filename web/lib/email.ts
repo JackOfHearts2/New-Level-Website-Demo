@@ -67,6 +67,22 @@ export async function notifyPendingChangeRequest(request: {
   });
 }
 
+export async function notifyPendingProperty(listing: {
+  title: string;
+  submitterEmail: string;
+}) {
+  const settings = await getSettings().catch(() => null);
+  if (settings && !settings.notifyOnSubmission) return;
+
+  await sendAdminNotification({
+    subject: "New Level: a new listing is waiting for your review",
+    html: `
+      <p><strong>${escapeHtml(listing.submitterEmail)}</strong> submitted a new listing, "${escapeHtml(listing.title)}," for approval.</p>
+      <p>Review it in the admin dashboard under "Properties."</p>
+    `,
+  });
+}
+
 export async function notifyProblemReport(report: {
   issueType: string;
   details: string;
