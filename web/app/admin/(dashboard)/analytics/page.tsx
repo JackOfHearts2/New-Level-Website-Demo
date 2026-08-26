@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { DailyViewsChart, type DailyPoint } from "@/components/admin/daily-views-chart";
 import { RankedBarList } from "@/components/admin/ranked-bar-list";
+import { GlowCard } from "@/components/ui/glow-card";
 
 const DAYS = 30;
 
@@ -17,11 +18,11 @@ type ProfileRow = { id: string; email: string | null; full_name: string | null }
 
 function StatTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="border-border hover:border-primary/40 hover:bg-muted/40 rounded-2xl border p-5 transition-colors">
+    <GlowCard className="p-5">
       <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">{label}</p>
       <p className="font-heading mt-1 text-3xl font-bold">{value}</p>
       {hint && <p className="text-muted-foreground mt-1 text-xs">{hint}</p>}
-    </div>
+    </GlowCard>
   );
 }
 
@@ -128,13 +129,13 @@ export default async function AnalyticsPage() {
             value={(views.length / DAYS).toFixed(1)}
           />
         </div>
-        <div className="border-border hover:border-primary/40 rounded-2xl border p-5 transition-colors">
+        <GlowCard className="p-5">
           <DailyViewsChart data={daily} />
-        </div>
-        <div className="border-border hover:border-primary/40 rounded-2xl border p-5 transition-colors">
+        </GlowCard>
+        <GlowCard className="p-5">
           <h3 className="mb-3 text-sm font-semibold">Top pages</h3>
           <RankedBarList rows={topPages} />
-        </div>
+        </GlowCard>
       </section>
 
       <section className="space-y-4">
@@ -147,10 +148,10 @@ export default async function AnalyticsPage() {
             hint={reviewed.length ? `across ${reviewed.length} reviewed submissions` : undefined}
           />
         </div>
-        <div className="border-border hover:border-primary/40 rounded-2xl border p-5 transition-colors">
+        <GlowCard className="p-5">
           <h3 className="mb-3 text-sm font-semibold">Submissions by editor</h3>
           <RankedBarList rows={editorRows} />
-        </div>
+        </GlowCard>
       </section>
     </div>
   );

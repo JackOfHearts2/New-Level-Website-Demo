@@ -27,7 +27,7 @@ export default async function EditorsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-bold">Editors</h1>
+        <h1 className="font-heading text-2xl font-bold">Access</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           Grant someone editor access so they can propose content/photo changes for your
           review, without giving them full admin control.

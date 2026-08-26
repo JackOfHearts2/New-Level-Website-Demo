@@ -1,18 +1,15 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
+import { GlowCard } from "@/components/ui/glow-card";
 
 function Tile({ href, title, description }: { href: string; title: string; description: string }) {
   return (
-    <Link
-      href={href}
-      className="border-border block rounded-2xl border p-6 shadow-sm transition-colors hover:bg-muted"
-    >
+    <GlowCard href={href} className="block p-6">
       <h2 className="font-heading font-semibold">{title}</h2>
       <p className="text-muted-foreground mt-1 text-sm">{description}</p>
-    </Link>
+    </GlowCard>
   );
 }
 
@@ -65,7 +62,7 @@ export default async function AdminHomePage() {
           <>
             <Tile
               href="/admin/editors"
-              title="Editors"
+              title="Access"
               description="Grant or revoke editor access."
             />
             <Tile
