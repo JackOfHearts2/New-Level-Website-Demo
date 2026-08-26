@@ -380,6 +380,48 @@ to purely informational, non-clickable blocks (`.fact`, `.amenity`, `.step`, `.o
 adding hover feedback there would imply an interaction that doesn't exist. Keep that distinction
 if you add more hover states later: hover means "this does something," not decoration.
 
+**Role-based permissions, approval workflow & public bug reports** (`web/` only, 2026-08-25/26)
+Admin access in `web/` moved from a single shared password to real per-person Supabase-
+authenticated logins with a `profiles.role` of `client` (default, no access) / `editor` / `admin`
+— see `web/lib/admin-auth.ts` (`requireAdminRole()` = editor or admin, `requireAdmin()` = admin
+only) and `web/app/admin/login/actions.ts`. `web/proxy.ts` only checks "is there a Supabase
+session" (cheap, edge-safe); every Server Action/page does the real role check, matching the
+defense-in-depth pattern the old shared-password system already used. The old `web/lib/auth.ts`
+(JWT-cookie, `ADMIN_PASSWORD`/`SESSION_SECRET`) is deleted — those two env vars can be removed
+from Netlify once the new login is confirmed working in production, but aren't required to be.
+- **Approval workflow**: an `editor`'s `saveContent`/`saveImage` submission (`web/app/admin/
+  (dashboard)/actions.ts`) no longer writes to Netlify Blobs directly — it inserts a row into
+  Supabase's `content_change_requests` table (full proposed `SiteContent` snapshot + a snapshot of
+  what was live at submission time, so the review screen can diff them) and, for images, uploads
+  to a private `pending-uploads` Storage bucket instead of Blobs. Nothing goes live until an
+  `admin` approves it at `/admin/approvals` (`web/app/admin/(dashboard)/approvals/actions.ts`),
+  which is the only code path that actually calls `saveSiteContent()`/writes to Blobs for an
+  editor's change — approving re-runs the same magic-byte image sniff as a fresh upload, never
+  trusting stored bytes twice. An `admin`'s own edits still save immediately, unchanged. `/admin/
+  editors` lets an admin grant/revoke `editor` role by email (the account must already exist —
+  no invite-a-new-email flow). RLS-wise, two small `SECURITY DEFINER` helpers,
+  `private.is_staff(uid)`/`private.is_admin(uid)`, live in a `private` schema (not `public`) so
+  they're usable inside RLS policies without being directly callable as a public PostgREST RPC
+  endpoint (an early version put them in `public` and Supabase's own security advisor immediately
+  flagged them as anon/authenticated-callable — see the gotcha below).
+- **Public bug reports**: a persistent floating "Report a problem" icon (bottom-left, mirroring
+  `FloatingActions`' bottom-right dial on the opposite corner) is reachable from every public page
+  — `web/components/report-problem/report-problem-widget.tsx`, added to both `web/app/
+  (marketing)/layout.tsx` **and** `web/app/page.tsx` (see the gotcha below on why it needs both).
+  Submissions insert into a `problem_reports` table (anon-insert-allowed RLS, same shape as
+  `newsletter_subscribers`'s policy) and show up at `/admin/reports` for any staff member
+  (editor or admin) to resolve/reopen.
+- **Notifications**: both flows call `web/lib/email.ts`'s `notifyPendingChangeRequest()`/
+  `notifyProblemReport()` after a successful DB write — fail-soft (logs and returns, never throws)
+  if `RESEND_API_KEY`/`ADMIN_NOTIFICATION_EMAIL` aren't set on Netlify yet. Sends *from* Resend's
+  own default address, not a custom domain — the client is creating a dedicated inbox as the
+  Resend account owner/recipient specifically so no domain verification is needed for this.
+- **Schema history**: this feature introduced `web/supabase/migrations/*.sql` as a real, in-repo,
+  numbered migration convention — nothing was versioned in-repo before this (all prior schema
+  changes went straight to the live project via ad hoc Supabase MCP calls). Keep using this
+  convention (`000N_description.sql`, applied via the Supabase MCP `apply_migration` tool) for any
+  future schema change so there's an actual reviewable history.
+
 ## Gotchas discovered the hard way
 
 - **(`web/` rebuild) `netlify.toml`'s `[[headers]]` block is a no-op for this site — set headers
@@ -475,6 +517,61 @@ if you add more hover states later: hover means "this does something," not decor
   from a `hashchange` listener registered in the same function (covers the same-document case).
   If you add more JS-injected anchor targets elsewhere, this is the pattern to reuse rather than
   relying on native anchor scrolling.
+- **(`web/` rebuild) `web/app/page.tsx` (the homepage) is NOT nested under `web/app/(marketing)/
+  layout.tsx`** — it's its own top-level route that renders `SiteFooter`/`MobileDock`/
+  `FloatingActions`/`ScrollToTopButton` itself rather than inheriting them from the marketing
+  layout the other ten pages share. Confirmed the hard way: adding the new `ReportProblemWidget`
+  only to `(marketing)/layout.tsx` made it appear on every page except the homepage. **Any future
+  sitewide fixed/floating component needs to be added to both places** — `(marketing)/layout.tsx`
+  for everything else, `app/page.tsx` directly for the homepage — until/unless someone folds the
+  homepage into the `(marketing)` group for real.
+- **(`web/` rebuild) Netlify Blobs has no ambient context under plain `next dev`.** `getStore()` in
+  `web/lib/site-content.ts` only resolves a real connection when running inside Netlify's own
+  runtime (a deployed site, or `netlify dev`) — under bare `npm run dev`, `saveSiteContent()`
+  throws `"Storage unavailable"` every time, by design (it deliberately doesn't pretend to save).
+  This means the "editor submits → admin approves → live site actually changes" path can only be
+  fully verified against a real Netlify deploy, not local dev — confirmed this by seeing an
+  approval silently fail to change the local homepage, then confirming the exact same code path
+  worked correctly once pushed to the Netlify preview branch. If a future session needs to verify
+  anything touching `saveSiteContent()`/`imageBlobStore()`, push to the preview branch and test
+  there rather than trusting a local `next dev` result.
+- **(`web/` rebuild) A Server Action called directly from a client component (not via `<form
+  action={...}>`) doesn't trigger the calling page to re-render, even after `revalidatePath()`.**
+  `revalidatePath()` only marks the route's cache stale server-side — the already-mounted client
+  page needs its own `router.refresh()` call to actually pull the fresh data. Missed this on the
+  first pass of `ApproveRejectButtons` (approve/reject genuinely worked server-side — confirmed via
+  logs and a direct DB check — but the Approvals page never visually updated after clicking).
+  Fixed by adding `router.refresh()` after a successful result, matching the pattern already used
+  correctly elsewhere (`RevokeButton` in the Editors page, `ReportRow` in the Reports page). Any
+  new button that calls a Server Action directly (rather than through a form) needs this too.
+- **(`web/` rebuild, local testing only) Seeding a Supabase Auth user by inserting directly into
+  `auth.users`/`auth.identities` fails with a cryptic 500 (`"Database error querying schema"`,
+  underlying error `Scan error on column ... "confirmation_token": converting NULL to string is
+  unsupported`) unless several token columns (`confirmation_token`, `recovery_token`,
+  `email_change_token_new`, `email_change`, `email_change_token_current`,
+  `reauthentication_token`) are set to `''` rather than left `NULL`.** GoTrue's Go structs scan
+  these as non-nullable strings regardless of the column's actual nullability in Postgres. Only
+  relevant for directly seeding test accounts via SQL (bypassing the real signup/email-confirm
+  flow for throwaway QA users) — real signups via `supabase.auth.signUp()` are unaffected. Also
+  worth knowing: Supabase's built-in signup email sending has a real, easy-to-hit rate limit
+  (`over_email_send_rate_limit`, 429) if you trigger several signups in quick succession while
+  testing — seeding via direct SQL insert (with the token-column fix above) sidesteps this
+  entirely for disposable test accounts.
+- **This repo lives in a OneDrive-synced folder, and Next.js/Turbopack's file watcher can silently
+  miss newly *created* files** (edits to already-tracked files seem to hot-reload fine) — a batch
+  of new files (new admin pages, a new sitewide widget component) were added while `next dev` was
+  already running, and it kept serving as if they didn't exist, with no error anywhere, until the
+  dev server was killed and restarted fresh. If a new file/component doesn't show up in the running
+  dev server and there's no compile error explaining why, restart `next dev` before assuming the
+  code itself is wrong.
+- **(`web/` rebuild, testing only) Next's dev-mode error-overlay portal (`<nextjs-portal>`,
+  `data-nextjs-dev-overlay="true"`) can sit on top of ordinary page content and intercept clicks at
+  that screen position even when no error is showing** — this is dev-build-only, not present in a
+  production build, so it's not a real bug, but it broke a Playwright `.click()` (and even
+  `.click({force: true})`, since real browser hit-testing still resolves to whatever's topmost at
+  those coordinates regardless of Playwright's own actionability flag) on the floating report
+  button. Worked around in that one-off test script with `.dispatchEvent("click")`, which fires the
+  DOM event directly without hit-testing — not something to change in the app itself.
 
 ## Testing on this machine
 
