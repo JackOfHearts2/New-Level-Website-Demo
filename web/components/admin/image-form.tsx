@@ -37,6 +37,28 @@ async function resizeImage(file: File, maxEdge = 1600, quality = 0.8): Promise<F
   });
 }
 
+// logo/hero-bg preview into images.*; team-<i>/testimonial-<i> preview
+// directly onto that member's `photo` field, mirroring how
+// getSiteContent() resolves real (saved) overrides the same way.
+function withPreviewOverride(content: ResolvedContent, key: string, url: string): ResolvedContent {
+  if (key === "logo") return { ...content, images: { ...content.images, logoUrl: url, logoUrlDark: url } };
+  if (key === "hero-bg") return { ...content, images: { ...content.images, heroBgUrl: url } };
+  const teamMatch = key.match(/^team-(\d+)$/);
+  if (teamMatch) {
+    const i = Number(teamMatch[1]);
+    return { ...content, team: content.team.map((m, idx) => (idx === i ? { ...m, photo: url } : m)) };
+  }
+  const testimonialMatch = key.match(/^testimonial-(\d+)$/);
+  if (testimonialMatch) {
+    const i = Number(testimonialMatch[1]);
+    return {
+      ...content,
+      testimonials: content.testimonials.map((t, idx) => (idx === i ? { ...t, photo: url } : t)),
+    };
+  }
+  return content;
+}
+
 export function ImageForm({
   imageKey,
   label,
@@ -44,7 +66,7 @@ export function ImageForm({
   siteContent,
   reviseRequestId,
 }: {
-  imageKey: "logo" | "hero-bg";
+  imageKey: string;
   label: string;
   currentUrl: string | null;
   siteContent: ResolvedContent;
@@ -163,15 +185,7 @@ export function ImageForm({
 
       {showPreview && previewSlotUrl && (
         <SitePreview
-          content={{
-            ...siteContent,
-            images: {
-              ...siteContent.images,
-              ...(imageKey === "logo"
-                ? { logoUrl: previewSlotUrl, logoUrlDark: previewSlotUrl }
-                : { heroBgUrl: previewSlotUrl }),
-            },
-          }}
+          content={withPreviewOverride(siteContent, imageKey, previewSlotUrl)}
           onClose={() => setShowPreview(false)}
         />
       )}

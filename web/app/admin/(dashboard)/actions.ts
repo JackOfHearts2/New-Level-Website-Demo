@@ -12,6 +12,7 @@ import {
   getRawSiteContent,
   saveSiteContent,
   imageBlobStore,
+  withImageSlotUpdated,
   type SiteContent,
 } from "@/lib/site-content";
 
@@ -42,6 +43,7 @@ export async function saveContent(
       return { error: "Couldn't save: storage unavailable." };
     }
     revalidatePath("/");
+    revalidatePath("/admin/content");
     return { ok: true };
   }
 
@@ -78,8 +80,10 @@ export async function saveContent(
   return { ok: true, pending: true };
 }
 
-const IMAGE_KEYS = ["logo", "hero-bg"] as const;
-type ImageKey = (typeof IMAGE_KEYS)[number];
+// Matches content_change_requests_image_slot_check (migration 0008) — logo
+// and hero-bg are the two original fixed slots, team-<i>/testimonial-<i>
+// are the Content/Media unification's per-member/per-avatar overrides.
+const IMAGE_KEY_PATTERN = /^(logo|hero-bg|team-\d+|testimonial-\d+)$/;
 
 export async function saveImage(
   _prevState: FormState,
@@ -89,7 +93,7 @@ export async function saveImage(
   if (!auth) return { error: "Not logged in." };
 
   const key = String(formData.get("key") ?? "");
-  if (!IMAGE_KEYS.includes(key as ImageKey)) {
+  if (!IMAGE_KEY_PATTERN.test(key)) {
     return { error: "Bad image slot." };
   }
 
@@ -121,18 +125,14 @@ export async function saveImage(
       await store.set(`image:${key}`, bytes, { metadata: { type: detectedType } });
 
       const current = await getRawSiteContent();
-      const updatedAt = Date.now();
-      const slot = key === "logo" ? "logo" : "heroBg";
-      const next: SiteContent = {
-        ...current,
-        images: { ...current.images, [slot]: { updatedAt } },
-      };
+      const next: SiteContent = withImageSlotUpdated(current, key, Date.now());
       await saveSiteContent(next);
     } catch {
       return { error: "Couldn't save: storage unavailable." };
     }
 
     revalidatePath("/");
+    revalidatePath("/admin/content");
     return { ok: true };
   }
 

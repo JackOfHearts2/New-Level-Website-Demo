@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   BarChart3,
-  FileEdit,
   Image as MediaIcon,
   ClipboardCheck,
   Flag,
@@ -49,8 +48,7 @@ export function AdminSidebar({
   const mainItems: NavItem[] = [
     { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
     ...(isAdmin ? [{ href: "/admin/analytics", label: "Analytics", Icon: BarChart3 }] : []),
-    { href: "/admin/content", label: "Content", Icon: FileEdit },
-    { href: "/admin/images", label: "Media", Icon: MediaIcon },
+    { href: "/admin/content", label: "Content & Media", Icon: MediaIcon },
     { href: "/admin/approvals", label: "Approvals", Icon: ClipboardCheck, badge: pendingApprovals },
     { href: "/admin/reports", label: "Reports", Icon: Flag, badge: openReports },
   ];

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteContent, type SiteContent } from "@/lib/site-content";
+import { imageSlotLabel } from "@/lib/site-content-images";
 import { ContentForm } from "@/components/admin/content-form";
 import { ImageForm } from "@/components/admin/image-form";
 
@@ -9,7 +10,7 @@ type ChangeRequestRow = {
   id: string;
   submitted_by: string;
   target_type: "content" | "image";
-  image_slot: "logo" | "hero-bg" | null;
+  image_slot: string | null;
   proposed_content: SiteContent | null;
   storage_path: string | null;
   status: string;
@@ -51,7 +52,7 @@ export default async function RevisePage({ params }: { params: Promise<{ id: str
       ) : row.target_type === "image" && row.image_slot ? (
         <ImageForm
           imageKey={row.image_slot}
-          label={row.image_slot === "logo" ? "Logo" : "Homepage background photo"}
+          label={imageSlotLabel(row.image_slot, siteContent)}
           currentUrl={null}
           siteContent={siteContent}
           reviseRequestId={row.id}

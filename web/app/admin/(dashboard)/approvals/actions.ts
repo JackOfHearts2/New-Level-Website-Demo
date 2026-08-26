@@ -10,6 +10,7 @@ import {
   getRawSiteContent,
   saveSiteContent,
   imageBlobStore,
+  withImageSlotUpdated,
   type SiteContent,
 } from "@/lib/site-content";
 import type { FormState } from "../actions";
@@ -20,7 +21,7 @@ type ChangeRequestRow = {
   id: string;
   submitted_by: string;
   target_type: "content" | "image";
-  image_slot: "logo" | "hero-bg" | null;
+  image_slot: string | null;
   proposed_content: SiteContent | null;
   storage_path: string | null;
   status: "pending" | "changes_requested" | "approved" | "rejected" | "withdrawn";
@@ -79,12 +80,7 @@ export async function approveRequest(id: string): Promise<ActionResult> {
         metadata: { type: detectedType },
       });
       const current = await getRawSiteContent();
-      const updatedAt = Date.now();
-      const slot = row.image_slot === "logo" ? "logo" : "heroBg";
-      const next: SiteContent = {
-        ...current,
-        images: { ...current.images, [slot]: { updatedAt } },
-      };
+      const next: SiteContent = withImageSlotUpdated(current, row.image_slot, Date.now());
       await saveSiteContent(next);
     } catch {
       return { error: "Couldn't save: storage unavailable." };
@@ -113,6 +109,7 @@ export async function approveRequest(id: string): Promise<ActionResult> {
 
   revalidatePath("/");
   revalidatePath("/admin/approvals");
+  revalidatePath("/admin/content");
   return { ok: true };
 }
 

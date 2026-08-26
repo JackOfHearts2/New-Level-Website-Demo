@@ -1,6 +1,6 @@
 import { imageBlobStore } from "@/lib/site-content";
 
-const KEY_OK = /^(logo|hero-bg)$/;
+const KEY_OK = /^(logo|hero-bg|team-\d+|testimonial-\d+)$/;
 
 export async function GET(
   _req: Request,

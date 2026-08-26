@@ -7,7 +7,7 @@ import { ApprovalList, type ChangeRequestItem } from "./approval-list";
 type ChangeRequestRow = {
   id: string;
   target_type: "content" | "image";
-  image_slot: "logo" | "hero-bg" | null;
+  image_slot: string | null;
   proposed_content: SiteContent | null;
   base_content: SiteContent;
   storage_path: string | null;

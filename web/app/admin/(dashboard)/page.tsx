@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ClipboardCheck, Flag, Users, BarChart3, FileEdit, Image as MediaIcon, Settings } from "lucide-react";
+import { ClipboardCheck, Flag, Users, BarChart3, Image as MediaIcon, Settings } from "lucide-react";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
@@ -38,7 +38,7 @@ function StatTile({
   );
 }
 
-function NavTile({ href, title, description, Icon }: { href: string; title: string; description: string; Icon: typeof FileEdit }) {
+function NavTile({ href, title, description, Icon }: { href: string; title: string; description: string; Icon: typeof MediaIcon }) {
   return (
     <GlowCard href={href} className="flex items-start gap-3 p-5">
       <span className="bg-muted text-foreground flex size-9 shrink-0 items-center justify-center rounded-lg">
@@ -134,8 +134,12 @@ export default async function AdminHomePage({
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-3">
-          <NavTile href="/admin/content" title="Content" description="Edit page text." Icon={FileEdit} />
-          <NavTile href="/admin/images" title="Media" description="Swap photos and the logo." Icon={MediaIcon} />
+          <NavTile
+            href="/admin/content"
+            title="Content & Media"
+            description="Edit page text and photos, section by section."
+            Icon={MediaIcon}
+          />
           <NavTile href="/admin/settings" title="Settings" description="Account & preferences." Icon={Settings} />
         </div>
 

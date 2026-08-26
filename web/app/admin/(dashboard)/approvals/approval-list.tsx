@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { SiteContent } from "@/lib/site-content";
+import { imageSlotLabel } from "@/lib/site-content-images";
 import { diffSiteContent } from "./content-diff";
 import { ReviewOutcomeButtons } from "./review-outcome-buttons";
 import { EditWithdrawButtons } from "./edit-withdraw-buttons";
@@ -14,7 +15,7 @@ export type ChangeRequestStatus =
 export type ChangeRequestItem = {
   id: string;
   targetType: "content" | "image";
-  imageSlot: "logo" | "hero-bg" | null;
+  imageSlot: string | null;
   baseContent: SiteContent;
   proposedContent: SiteContent | null;
   pendingImageUrl: string | null;
@@ -27,8 +28,9 @@ export type ChangeRequestItem = {
   isOwn: boolean;
 };
 
-function currentImageUrl(base: SiteContent, slot: "logo" | "hero-bg") {
-  const meta = slot === "logo" ? base.images.logo : base.images.heroBg;
+function currentImageUrl(base: SiteContent, slot: string) {
+  const meta =
+    slot === "logo" ? base.images.logo : slot === "hero-bg" ? base.images.heroBg : base.images.slots?.[slot];
   if (!meta) return null;
   return `/api/site-image/${slot}?v=${meta.updatedAt}`;
 }
@@ -77,7 +79,7 @@ function RequestCard({ request, isAdmin }: { request: ChangeRequestItem; isAdmin
           <p className="font-heading font-semibold">
             {request.targetType === "content"
               ? "Content change"
-              : `Photo change — ${request.imageSlot === "logo" ? "Logo" : "Homepage background"}`}
+              : `Photo change — ${request.imageSlot ? imageSlotLabel(request.imageSlot, request.baseContent) : "unknown"}`}
           </p>
           <p className="text-muted-foreground text-xs">
             Submitted by {request.submitterLabel} · {formatDate(request.createdAt)}
