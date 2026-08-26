@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { resolveReport, reopenReport } from "./actions";
@@ -88,12 +88,58 @@ function ReportRow({ report }: { report: ReportItem }) {
   );
 }
 
+type SourceFilter = "all" | "public" | "staff";
+
+function SourceFilterChips({
+  value,
+  onChange,
+  counts,
+}: {
+  value: SourceFilter;
+  onChange: (v: SourceFilter) => void;
+  counts: Record<SourceFilter, number>;
+}) {
+  const options: { value: SourceFilter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: "public", label: "From visitors" },
+    { value: "staff", label: "From staff" },
+  ];
+  return (
+    <div role="tablist" aria-label="Filter by source" className="flex flex-wrap gap-2">
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          role="tab"
+          aria-selected={value === o.value}
+          onClick={() => onChange(o.value)}
+          className={`font-heading rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
+            value === o.value ? "bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-muted border"
+          }`}
+        >
+          {o.label} {o.value !== "all" && counts[o.value] > 0 ? `(${counts[o.value]})` : ""}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function ReportList({ reports }: { reports: ReportItem[] }) {
-  const open = reports.filter((r) => r.status === "open");
-  const resolved = reports.filter((r) => r.status === "resolved");
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
+  const counts: Record<SourceFilter, number> = {
+    all: reports.length,
+    public: reports.filter((r) => r.source === "public").length,
+    staff: reports.filter((r) => r.source === "staff").length,
+  };
+  const filtered = sourceFilter === "all" ? reports : reports.filter((r) => r.source === sourceFilter);
+
+  const open = filtered.filter((r) => r.status === "open");
+  const resolved = filtered.filter((r) => r.status === "resolved");
 
   return (
     <div className="space-y-8">
+      <SourceFilterChips value={sourceFilter} onChange={setSourceFilter} counts={counts} />
+
       <section className="space-y-4">
         <h2 className="font-heading font-semibold">Open {open.length > 0 && `(${open.length})`}</h2>
         {open.length === 0 ? (

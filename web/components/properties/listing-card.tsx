@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { GlowCard } from "@/components/ui/glow-card";
-import { formatListingPrice, listingCoverUrl, type PublicListing } from "@/lib/properties-public";
+import { formatListingPrice, listingCoverUrl, type PublicListing } from "@/lib/listing-format";
 
 // The flagship demo property keeps its own rich detail page (photo tour,
 // booking widget, reviews, neighborhood map) — none of that is captured
