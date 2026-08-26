@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Flag, X, ChevronLeft } from "lucide-react";
 import {
   getMyRecentSubmissions,
   fileStaffReport,
   type SubmissionSummary,
 } from "@/app/admin/(dashboard)/troubleshoot-actions";
+import { useAdminShell } from "@/components/admin/admin-shell-context";
 
 type Step =
   | { kind: "closed" }
@@ -71,6 +72,22 @@ export function TroubleshootWidget() {
   const [details, setDetails] = useState("");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const { troubleshootRequestId } = useAdminShell();
+  const mounted = useRef(false);
+
+  // AdminSidebar's desktop "Report a problem" row lives in a different
+  // component (it needs to render in-flow in the sidebar's footer, not
+  // float — see that row's own comment for why), so it opens this modal
+  // by bumping troubleshootRequestId rather than calling a prop directly.
+  // Skip the mount-time run (ref starts false) so this doesn't fire before
+  // any real request.
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    openMenu();
+  }, [troubleshootRequestId]);
 
   function close() {
     setStep({ kind: "closed" });
@@ -118,21 +135,23 @@ export function TroubleshootWidget() {
         type="button"
         onClick={openMenu}
         aria-label="Report a problem"
-        // lg:bottom-32, not lg:bottom-6: on desktop AdminSidebar is a
-        // sticky h-screen column whose own bottom-anchored controls
-        // (AdminProfileMenu, then the collapse toggle below it) end up
-        // sitting in that exact bottom-left corner regardless of scroll
-        // position — same corner AdminScrollToTop had to move away from
-        // for the same reason (see its own comment). The pb-24 fix on
-        // `main` (see the admin layout) only cleared the *mobile* case,
-        // where the sidebar collapses to a drawer and stops occupying
-        // that corner — client report (2026-08-27): "the flag report
-        // button still sits over the profile icon on the bottom left in
-        // admin mode," i.e. specifically desktop, which that fix never
-        // touched. 128px clears the profile-menu + collapse-button zone
-        // regardless of whether the sidebar is expanded or collapsed,
-        // since that only changes the column's width, not its height.
-        className="border-background bg-foreground text-background fixed bottom-4 left-4 z-40 flex size-11 items-center justify-center rounded-full border-2 shadow-xl transition-transform hover:scale-110 lg:bottom-32 lg:left-6 lg:size-14 lg:border-4"
+        // lg:hidden: two rounds of chasing a magic bottom-offset (lg:bottom-6,
+        // then lg:bottom-32) to clear AdminSidebar's own bottom-anchored
+        // controls (AdminProfileMenu, the collapse toggle) both got
+        // reported as still overlapping — client report (2026-08-27), a
+        // screenshot of the flag sitting directly on the profile avatar.
+        // A `fixed` button positioned independently of the sidebar can
+        // never robustly clear content whose height isn't fixed (it grows
+        // with a longer name/email, an extra menu row, etc.). Fixed for
+        // real by not floating on desktop at all — AdminSidebar renders an
+        // actual in-flow "Report a problem" row in its footer stack above
+        // AdminProfileMenu (see that row's comment) and calls
+        // requestTroubleshoot() to open this same modal. This button stays
+        // as the mobile trigger only, where the sidebar collapses to an
+        // off-canvas drawer and doesn't occupy the bottom-left corner —
+        // the pb-24 clearance on `main` (see the admin layout) still
+        // applies there.
+        className="border-background bg-foreground text-background fixed bottom-4 left-4 z-40 flex size-11 items-center justify-center rounded-full border-2 shadow-xl transition-transform hover:scale-110 lg:hidden"
       >
         <Flag className="size-4 lg:size-5" />
       </button>

@@ -78,7 +78,7 @@ export function AdminSidebar({
   const [customizing, setCustomizing] = useState(false);
   const pathname = usePathname();
   const isAdmin = role === "admin";
-  const { mobileNavOpen, setMobileNavOpen } = useAdminShell();
+  const { mobileNavOpen, setMobileNavOpen, requestTroubleshoot } = useAdminShell();
 
   // Mobile nav closes on any navigation — otherwise the drawer stays open
   // over the newly-loaded page.
@@ -223,6 +223,25 @@ export function AdminSidebar({
         <GroupLabel open={open}>Account</GroupLabel>
         <NavGroup items={accountItems} pathname={pathname} open={open} />
       </div>
+
+      {/* In-flow, not a floating `fixed` button — see TroubleshootWidget's
+          own comment for why: a fixed bottom-left button positioned
+          independently of this footer's real (variable) height kept
+          getting reported as overlapping AdminProfileMenu/Collapse below
+          it, across two separate "fix the offset" attempts. Being a real
+          sibling in this flex column instead means it can never overlap
+          anything here, by construction. */}
+      <button
+        type="button"
+        onClick={requestTroubleshoot}
+        title={open ? undefined : "Report a problem"}
+        className="text-muted-foreground hover:bg-muted hover:text-foreground flex h-11 items-center gap-3 rounded-lg px-2 transition-colors"
+      >
+        <span className="grid size-6 shrink-0 place-content-center">
+          <Flag className="size-4" />
+        </span>
+        {open && <span className="text-sm font-medium">Report a problem</span>}
+      </button>
 
       <AdminProfileMenu email={email} role={role} displayName={displayName} avatarUrl={avatarUrl} open={open} />
 
