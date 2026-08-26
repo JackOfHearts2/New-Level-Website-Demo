@@ -2,7 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { deleteSession, verifySession } from "@/lib/auth";
+import { requireAdminRole } from "@/lib/admin-auth";
+import { createClient } from "@/lib/supabase/server";
+import { sniffImageType } from "@/lib/image-sniff";
+import { notifyPendingChangeRequest } from "@/lib/email";
 import {
   getRawSiteContent,
   saveSiteContent,
@@ -10,10 +13,13 @@ import {
   type SiteContent,
 } from "@/lib/site-content";
 
-export type FormState = { error?: string; ok?: boolean } | undefined;
+export type FormState =
+  | { error?: string; ok?: boolean; pending?: boolean }
+  | undefined;
 
 export async function logout() {
-  await deleteSession();
+  const supabase = await createClient();
+  await supabase.auth.signOut();
   redirect("/admin/login");
 }
 
@@ -34,28 +40,12 @@ function urlField(formData: FormData, name: string, max: number, fallback: strin
   return /^https?:\/\//i.test(value) ? value : fallback;
 }
 
-/** Confirms actual file bytes match a supported image format (JPEG/PNG/WebP)
- *  rather than trusting the client-declared File.type. Returns the correct
- *  content-type for the detected format, or null if unrecognized. */
-function sniffImageType(bytes: ArrayBuffer): string | null {
-  const b = new Uint8Array(bytes.slice(0, 12));
-  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "image/jpeg";
-  if (
-    b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 &&
-    b[4] === 0x0d && b[5] === 0x0a && b[6] === 0x1a && b[7] === 0x0a
-  ) {
-    return "image/png";
-  }
-  const ascii = String.fromCharCode(...b);
-  if (ascii.startsWith("RIFF") && ascii.slice(8, 12) === "WEBP") return "image/webp";
-  return null;
-}
-
 export async function saveContent(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  if (!(await verifySession())) return { error: "Not logged in." };
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
 
   const current = await getRawSiteContent();
 
@@ -100,14 +90,35 @@ export async function saveContent(
     })),
   };
 
-  try {
-    await saveSiteContent(next);
-  } catch {
-    return { error: "Couldn't save: storage unavailable." };
+  if (auth.role === "admin") {
+    try {
+      await saveSiteContent(next);
+    } catch {
+      return { error: "Couldn't save: storage unavailable." };
+    }
+    revalidatePath("/");
+    return { ok: true };
   }
 
-  revalidatePath("/");
-  return { ok: true };
+  // Editor: nothing goes live yet — save as a pending request for an
+  // admin to review.
+  const supabase = await createClient();
+  const { error } = await supabase.from("content_change_requests").insert({
+    submitted_by: auth.userId,
+    target_type: "content",
+    proposed_content: next,
+    base_content: current,
+  });
+  if (error) {
+    return { error: "Couldn't submit for review. Please try again." };
+  }
+
+  await notifyPendingChangeRequest({
+    targetType: "content",
+    submitterEmail: auth.email,
+  });
+
+  return { ok: true, pending: true };
 }
 
 const IMAGE_KEYS = ["logo", "hero-bg"] as const;
@@ -117,7 +128,8 @@ export async function saveImage(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  if (!(await verifySession())) return { error: "Not logged in." };
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
 
   const key = String(formData.get("key") ?? "");
   if (!IMAGE_KEYS.includes(key as ImageKey)) {
@@ -132,36 +144,73 @@ export async function saveImage(
     return { error: "Image too large (4MB max)." };
   }
 
-  const store = imageBlobStore();
-  if (!store) return { error: "Couldn't save: storage unavailable." };
+  const bytes = await file.arrayBuffer();
 
-  try {
-    const bytes = await file.arrayBuffer();
-
-    // Server Actions are directly POST-reachable regardless of what the
-    // browser's upload UI sent, so re-verify the actual bytes here rather
-    // than trusting the client-declared File.type — in particular this
-    // rejects SVG (which can carry a <script>) even if someone renames one
-    // to claim an image/* type.
-    const detectedType = sniffImageType(bytes);
-    if (!detectedType) {
-      return { error: "That doesn't look like a supported image (JPEG, PNG, or WebP)." };
-    }
-
-    await store.set(`image:${key}`, bytes, { metadata: { type: detectedType } });
-
-    const current = await getRawSiteContent();
-    const updatedAt = Date.now();
-    const slot = key === "logo" ? "logo" : "heroBg";
-    const next: SiteContent = {
-      ...current,
-      images: { ...current.images, [slot]: { updatedAt } },
-    };
-    await saveSiteContent(next);
-  } catch {
-    return { error: "Couldn't save: storage unavailable." };
+  // Server Actions are directly POST-reachable regardless of what the
+  // browser's upload UI sent, so re-verify the actual bytes here rather
+  // than trusting the client-declared File.type — in particular this
+  // rejects SVG (which can carry a <script>) even if someone renames one
+  // to claim an image/* type.
+  const detectedType = sniffImageType(bytes);
+  if (!detectedType) {
+    return { error: "That doesn't look like a supported image (JPEG, PNG, or WebP)." };
   }
 
-  revalidatePath("/");
-  return { ok: true };
+  if (auth.role === "admin") {
+    const store = imageBlobStore();
+    if (!store) return { error: "Couldn't save: storage unavailable." };
+
+    try {
+      await store.set(`image:${key}`, bytes, { metadata: { type: detectedType } });
+
+      const current = await getRawSiteContent();
+      const updatedAt = Date.now();
+      const slot = key === "logo" ? "logo" : "heroBg";
+      const next: SiteContent = {
+        ...current,
+        images: { ...current.images, [slot]: { updatedAt } },
+      };
+      await saveSiteContent(next);
+    } catch {
+      return { error: "Couldn't save: storage unavailable." };
+    }
+
+    revalidatePath("/");
+    return { ok: true };
+  }
+
+  // Editor: upload to the private pending-uploads bucket instead of
+  // writing to the live Blobs store — approval (approvals/actions.ts)
+  // moves it over.
+  const supabase = await createClient();
+  const storagePath = `${auth.userId}/${key}-${Date.now()}`;
+  const { error: uploadError } = await supabase.storage
+    .from("pending-uploads")
+    .upload(storagePath, bytes, { contentType: detectedType });
+  if (uploadError) {
+    return { error: "Couldn't upload for review. Please try again." };
+  }
+
+  const current = await getRawSiteContent();
+  const { error: insertError } = await supabase
+    .from("content_change_requests")
+    .insert({
+      submitted_by: auth.userId,
+      target_type: "image",
+      image_slot: key,
+      storage_path: storagePath,
+      base_content: current,
+    });
+  if (insertError) {
+    await supabase.storage.from("pending-uploads").remove([storagePath]);
+    return { error: "Couldn't submit for review. Please try again." };
+  }
+
+  await notifyPendingChangeRequest({
+    targetType: "image",
+    submitterEmail: auth.email,
+    imageSlot: key,
+  });
+
+  return { ok: true, pending: true };
 }

@@ -216,7 +216,13 @@ export function ContentForm({ content }: { content: SiteContent }) {
           {state.error}
         </p>
       )}
-      {state?.ok && (
+      {state?.ok && state?.pending && (
+        <p className="text-sm text-[#72D35B]" role="status">
+          Submitted for admin approval — it won&apos;t go live until it&apos;s
+          reviewed. Check &quot;Approvals&quot; for the status.
+        </p>
+      )}
+      {state?.ok && !state?.pending && (
         <p className="text-sm text-[#72D35B]" role="status">
           Saved: the live homepage now reflects these changes.
         </p>

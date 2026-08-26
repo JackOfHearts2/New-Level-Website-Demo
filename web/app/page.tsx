@@ -11,6 +11,7 @@ import { MobileDock } from "@/components/mobile-dock";
 import { FloatingActions } from "@/components/floating-actions";
 import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { SiteTour } from "@/components/site-tour";
+import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function Home({
@@ -54,6 +55,7 @@ export default async function Home({
       />
       <MobileDock />
       <FloatingActions />
+      <ReportProblemWidget />
       <ScrollToTopButton />
       <SiteTour startTour={tour === "1"} />
     </>

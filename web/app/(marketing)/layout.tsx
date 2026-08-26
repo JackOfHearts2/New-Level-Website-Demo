@@ -4,6 +4,7 @@ import { MobileDock } from "@/components/mobile-dock";
 import { FloatingActions } from "@/components/floating-actions";
 import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { PageTransition } from "@/components/page-transition";
+import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function MarketingLayout({
@@ -30,6 +31,7 @@ export default async function MarketingLayout({
       />
       <MobileDock />
       <FloatingActions />
+      <ReportProblemWidget />
       <ScrollToTopButton />
     </>
   );

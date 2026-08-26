@@ -1,34 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-import { SESSION_COOKIE_NAME } from "@/lib/auth";
+import { createServerClient } from "@supabase/ssr";
 
 /**
- * Only an optimistic gate — every admin Server Action re-checks the session
- * itself, since Server Actions are directly reachable by POST regardless of
- * what a visitor was shown here (see Next.js's own auth guide).
+ * Only an optimistic gate — is there a valid Supabase session at all? Every
+ * admin Server Action re-checks the actual profiles.role itself (see
+ * lib/admin-auth.ts), since Server Actions are directly reachable by POST
+ * regardless of what a visitor was shown here, and a signed-in 'client'
+ * shouldn't be treated as staff just because they have *a* session.
  */
 export default async function proxy(req: NextRequest) {
-  const secret = process.env.SESSION_SECRET;
-  const token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
+  let response = NextResponse.next({ request: req });
 
-  let authed = false;
-  if (secret && token) {
-    try {
-      await jwtVerify(token, new TextEncoder().encode(secret));
-      authed = true;
-    } catch {
-      // invalid/expired token — treat as logged out
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value));
+          response = NextResponse.next({ request: req });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
     }
-  }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const isLogin = req.nextUrl.pathname === "/admin/login";
-  if (!authed && !isLogin) {
+  if (!user && !isLogin) {
     return NextResponse.redirect(new URL("/admin/login", req.url));
   }
-  if (authed && isLogin) {
+  if (user && isLogin) {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

@@ -58,9 +58,12 @@ export function ImageForm({
         formData.set("file", resized);
         const result = await saveImage(undefined, formData);
         setState(result);
-        if (result?.ok) {
+        if (result?.ok && !result?.pending) {
           // Revoke the previous blob: preview before replacing it — each
           // upload otherwise leaks the last one for the page's lifetime.
+          // Only swap the preview when the change actually went live —
+          // an editor's pending upload hasn't, so showing it here would
+          // misleadingly suggest it already had.
           if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
           const url = URL.createObjectURL(resized);
           objectUrlRef.current = url;
@@ -103,7 +106,13 @@ export function ImageForm({
           {state.error}
         </p>
       )}
-      {state?.ok && (
+      {state?.ok && state?.pending && (
+        <p className="text-sm text-[#72D35B]" role="status">
+          Submitted for admin approval — it won&apos;t go live until it&apos;s
+          reviewed. Check &quot;Approvals&quot; for the status.
+        </p>
+      )}
+      {state?.ok && !state?.pending && (
         <p className="text-sm text-[#72D35B]" role="status">
           Saved: the live homepage now reflects this change.
         </p>
