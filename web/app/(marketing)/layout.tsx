@@ -8,6 +8,8 @@ import { PageTransition } from "@/components/page-transition";
 import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
 import { AutoSignInModal } from "@/components/auto-signin-modal";
 import { PageViewTracker } from "@/components/analytics/page-view-tracker";
+import { EditModeProvider } from "@/components/edit-mode/edit-mode-context";
+import { EditModeToggle } from "@/components/edit-mode/edit-mode-toggle";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function MarketingLayout({
@@ -18,7 +20,7 @@ export default async function MarketingLayout({
   const content = await getSiteContent();
 
   return (
-    <>
+    <EditModeProvider initialContent={content}>
       <SiteHeader
         logoUrl={content.images.logoUrl}
         logoUrlDark={content.images.logoUrlDark}
@@ -36,10 +38,11 @@ export default async function MarketingLayout({
       <FloatingActions />
       <ReportProblemWidget />
       <ScrollToTopButton />
+      <EditModeToggle />
       <Suspense fallback={null}>
         <AutoSignInModal />
       </Suspense>
       <PageViewTracker />
-    </>
+    </EditModeProvider>
   );
 }

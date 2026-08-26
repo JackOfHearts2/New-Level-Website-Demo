@@ -23,6 +23,53 @@ function urlField(formData: FormData, name: string, max: number, fallback: strin
   return /^https?:\/\//i.test(value) ? value : fallback;
 }
 
+/** Inverse of buildContentFromFormData — builds a FormData with every field
+ *  ContentForm's inputs would submit, populated from the current content.
+ *  Needed because buildContentFromFormData has NO partial-merge behavior:
+ *  a field missing from the submitted FormData is treated as an explicit
+ *  blank, not "leave unchanged" (see `field()` above — it defaults to
+ *  ""). Inline-edit (a single field, saved from the live page rather than
+ *  the full dashboard form) has to submit a COMPLETE FormData with just
+ *  its one field overridden, or every other field on the site would get
+ *  wiped to empty on save. Keep this in exact sync with
+ *  buildContentFromFormData's field-name scheme. Typed as a structural
+ *  subset (not the full SiteContent) so callers holding either the raw
+ *  or the images-resolved content shape can both pass their object
+ *  straight through — this never reads `.images`. */
+export function contentToFormData(
+  content: Pick<SiteContent, "brand" | "eventCta" | "trustStats" | "services" | "testimonials" | "team" | "socials">
+): FormData {
+  const fd = new FormData();
+  fd.set("brand.tagline", content.brand.tagline);
+  fd.set("brand.aboutShort", content.brand.aboutShort);
+  fd.set("eventCta.eyebrow", content.eventCta.eyebrow);
+  fd.set("eventCta.heading", content.eventCta.heading);
+  fd.set("eventCta.sub", content.eventCta.sub);
+  fd.set("eventCta.cta", content.eventCta.cta);
+  content.trustStats.forEach((stat, i) => {
+    fd.set(`trustStats.${i}.value`, stat.value);
+    fd.set(`trustStats.${i}.label`, stat.label);
+  });
+  content.services.forEach((service, i) => {
+    fd.set(`services.${i}.t`, service.t);
+    fd.set(`services.${i}.d`, service.d);
+  });
+  content.testimonials.forEach((testimonial, i) => {
+    fd.set(`testimonials.${i}.name`, testimonial.name);
+    fd.set(`testimonials.${i}.role`, testimonial.role);
+    fd.set(`testimonials.${i}.text`, testimonial.text);
+  });
+  content.team.forEach((member, i) => {
+    fd.set(`team.${i}.name`, member.name);
+    fd.set(`team.${i}.role`, member.role);
+    fd.set(`team.${i}.motto`, member.motto);
+  });
+  content.socials.forEach((social, i) => {
+    fd.set(`socials.${i}.href`, social.href);
+  });
+  return fd;
+}
+
 export function buildContentFromFormData(current: SiteContent, formData: FormData): SiteContent {
   return {
     ...current,

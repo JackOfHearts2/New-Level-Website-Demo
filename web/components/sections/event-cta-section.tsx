@@ -1,5 +1,6 @@
 import { ShinePill } from "@/components/ui/shine-shape";
 import { CtaLink } from "@/components/ui/cta-link";
+import { InlineEditable } from "@/components/edit-mode/inline-editable";
 import type { EVENT_CTA } from "@/lib/content";
 
 export function EventCtaSection({
@@ -29,15 +30,26 @@ export function EventCtaSection({
           className="animate-event-glow bg-primary/45 pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-2xl transition-[opacity,transform] duration-500 group-hover:scale-125 group-hover:opacity-90"
         />
         <ShinePill className="bg-background/10 text-background font-heading relative rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide uppercase">
-          {eventCta.eyebrow}
+          <InlineEditable name="eventCta.eyebrow" value={eventCta.eyebrow} />
         </ShinePill>
-        <h2 className="font-heading relative mt-6 text-3xl font-bold text-balance md:text-4xl">
-          {eventCta.heading}
-        </h2>
-        <p className="text-background relative mx-auto mt-4 max-w-xl text-balance">
-          {eventCta.sub}
-        </p>
+        <InlineEditable
+          name="eventCta.heading"
+          value={eventCta.heading}
+          tag="h2"
+          className="font-heading relative mt-6 text-3xl font-bold text-balance md:text-4xl"
+        />
+        <InlineEditable
+          name="eventCta.sub"
+          value={eventCta.sub}
+          textarea
+          tag="p"
+          className="text-background relative mx-auto mt-4 max-w-xl text-balance"
+        />
         <div className="relative mt-8 flex justify-center">
+          {/* Not wrapped in InlineEditable — its trigger button nested
+              inside CtaLink's own <a> would be invalid/broken nested-
+              interactive markup. Edit this one from /admin/content
+              instead. */}
           <CtaLink href="/properties?category=events" variant="light">
             {eventCta.cta}
           </CtaLink>

@@ -15,6 +15,8 @@ import { SiteTour } from "@/components/site-tour";
 import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
 import { AutoSignInModal } from "@/components/auto-signin-modal";
 import { PageViewTracker } from "@/components/analytics/page-view-tracker";
+import { EditModeProvider } from "@/components/edit-mode/edit-mode-context";
+import { EditModeToggle } from "@/components/edit-mode/edit-mode-toggle";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function Home({
@@ -26,7 +28,7 @@ export default async function Home({
   const { tour } = await searchParams;
 
   return (
-    <>
+    <EditModeProvider initialContent={content}>
       <HeroSection
         logoUrl={content.images.logoUrl}
         logoUrlDark={content.images.logoUrlDark}
@@ -60,11 +62,12 @@ export default async function Home({
       <FloatingActions />
       <ReportProblemWidget />
       <ScrollToTopButton />
+      <EditModeToggle />
       <SiteTour startTour={tour === "1"} />
       <Suspense fallback={null}>
         <AutoSignInModal />
       </Suspense>
       <PageViewTracker />
-    </>
+    </EditModeProvider>
   );
 }
