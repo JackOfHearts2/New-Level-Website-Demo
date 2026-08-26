@@ -15,6 +15,8 @@ const SITE_PAGES = [
   { key: "contentLibrary", label: "Content Library", href: "/content-library" },
   { key: "faq", label: "FAQs", href: "/faq" },
   { key: "blog", label: "Blog", href: "/blog" },
+  { key: "partners", label: "Partners", href: "/partners" },
+  { key: "careers", label: "Careers", href: "/careers" },
 ] as const;
 
 export type SitePageKey = (typeof SITE_PAGES)[number]["key"];

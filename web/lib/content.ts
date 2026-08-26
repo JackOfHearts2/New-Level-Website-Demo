@@ -132,6 +132,20 @@ export const PAGES = {
     heading: "Accessibility Statement",
     sub: "Our commitment to a site everyone can use.",
   },
+  partners: {
+    eyebrow: "Our Network",
+    heading: "Partners",
+    sub: "Businesses and specialists we trust and recommend.",
+    intro:
+      "Buying, selling, managing, or investing in Real Estate touches more than one business — New Level works alongside a network of partners across South Florida for the parts outside our own scope.",
+  },
+  careers: {
+    eyebrow: "Careers",
+    heading: "Join New Level",
+    sub: "Real Estate careers, built around real support.",
+    intro:
+      "Whether you're a licensed agent looking for a better home base, or interested in joining another way, we'd like to hear from you.",
+  },
 };
 
 // Draft/demo content — written to accurately describe what this actual
@@ -270,6 +284,47 @@ export const ACCESSIBILITY_SECTIONS = [
     t: "Reporting an issue",
     d: "If any part of this site is difficult to access or use, contact us directly and describe the issue and the assistive technology you were using. We'll work to address it.",
   },
+];
+
+// Category-labeled placeholders, not invented specific company names —
+// naming a real-sounding business we don't actually work with would be a
+// false endorsement claim, a different (and worse) kind of placeholder
+// than the site's other known placeholders (a not-yet-real phone number,
+// a missing team photo). Tracked in CLAUDE.md's "Known placeholders" list.
+export const PARTNERS = [
+  {
+    category: "Title & Escrow",
+    name: "Title & Escrow Partner",
+    blurb: "Smooth, on-time closings, coordinated with the same title partner we recommend to our own clients.",
+  },
+  {
+    category: "Mortgage & Lending",
+    name: "Lending Partner",
+    blurb: "Financing guidance for buyers, from pre-approval through closing day.",
+  },
+  {
+    category: "Home Inspection",
+    name: "Inspection Partner",
+    blurb: "Thorough, buyer-focused inspections before you commit to a property.",
+  },
+  {
+    category: "Property Insurance",
+    name: "Insurance Partner",
+    blurb: "South Florida-specific coverage guidance, including flood and windstorm.",
+  },
+  {
+    category: "Property Management Tech",
+    name: "Management Software Partner",
+    blurb: "The platform behind smooth day-to-day operations for the properties we manage.",
+  },
+];
+
+export const CAREER_ROLES = [
+  { id: "agent", label: "Real Estate Agent" },
+  { id: "broker", label: "Broker Partner" },
+  { id: "property-management", label: "Property Management" },
+  { id: "operations", label: "Operations & Support" },
+  { id: "other", label: "Something Else" },
 ];
 
 export const FAQS = [
@@ -629,6 +684,8 @@ export const NAV_MENU = [
       { label: "Team", href: "/team" },
       { label: "The Broker's Corner", href: "/brokers-corner" },
       { label: "Content Library", href: "/content-library" },
+      { label: "Partners", href: "/partners" },
+      { label: "Careers", href: "/careers" },
     ],
   },
   {
@@ -784,8 +841,9 @@ export const FOOTER_NAV = [
     links: [
       { label: "About Us", href: "/about" },
       { label: "Agents & Partners", href: "/team" },
+      { label: "Our Partners", href: "/partners" },
       { label: "Contact", href: "/contact" },
-      { label: "Join Our Network", href: "/contact?topic=join" },
+      { label: "Careers", href: "/careers" },
     ],
   },
   {
