@@ -39,7 +39,7 @@ export function DonutChart({ slices, title }: { slices: DonutSlice[]; title: str
   );
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex flex-wrap items-center gap-6">
       <svg
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         width={SIZE}
