@@ -31,7 +31,7 @@ export default async function RevisePage({ params }: { params: Promise<{ id: str
   if (
     !row ||
     row.submitted_by !== auth.userId ||
-    (row.status !== "pending" && row.status !== "changes_requested")
+    (row.status !== "pending" && row.status !== "changes_requested" && row.status !== "draft")
   ) {
     redirect("/admin/approvals");
   }
@@ -48,7 +48,12 @@ export default async function RevisePage({ params }: { params: Promise<{ id: str
         </p>
       </div>
       {row.target_type === "content" && row.proposed_content ? (
-        <ContentForm content={row.proposed_content} reviseRequestId={row.id} />
+        <ContentForm
+          content={row.proposed_content}
+          reviseRequestId={row.id}
+          role={auth.role}
+          status={row.status}
+        />
       ) : row.target_type === "image" && row.image_slot ? (
         <ImageForm
           imageKey={row.image_slot}

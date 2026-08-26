@@ -6,6 +6,7 @@ import { ReviewOutcomeButtons } from "./review-outcome-buttons";
 import { EditWithdrawButtons } from "./edit-withdraw-buttons";
 
 export type ChangeRequestStatus =
+  | "draft"
   | "pending"
   | "changes_requested"
   | "approved"
@@ -43,6 +44,7 @@ function formatDate(iso: string) {
 }
 
 const STATUS_LABELS: Record<ChangeRequestStatus, string> = {
+  draft: "draft — not submitted",
   pending: "pending",
   changes_requested: "changes requested",
   approved: "approved",
@@ -52,6 +54,7 @@ const STATUS_LABELS: Record<ChangeRequestStatus, string> = {
 
 function StatusBadge({ status }: { status: ChangeRequestStatus }) {
   const styles: Record<ChangeRequestStatus, string> = {
+    draft: "bg-blue-100 text-blue-900",
     pending: "bg-amber-100 text-amber-900",
     changes_requested: "bg-amber-100 text-amber-900",
     approved: "bg-[#72D35B]/20 text-[#2f6b1f]",
@@ -70,7 +73,8 @@ function RequestCard({ request, isAdmin }: { request: ChangeRequestItem; isAdmin
     request.targetType === "content" && request.proposedContent
       ? diffSiteContent(request.baseContent, request.proposedContent)
       : [];
-  const isActionable = request.status === "pending" || request.status === "changes_requested";
+  const isActionable =
+    request.status === "pending" || request.status === "changes_requested" || request.status === "draft";
 
   return (
     <div className="border-border space-y-4 rounded-2xl border p-6">

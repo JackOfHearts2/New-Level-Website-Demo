@@ -24,7 +24,7 @@ type ChangeRequestRow = {
   image_slot: string | null;
   proposed_content: SiteContent | null;
   storage_path: string | null;
-  status: "pending" | "changes_requested" | "approved" | "rejected" | "withdrawn";
+  status: "draft" | "pending" | "changes_requested" | "approved" | "rejected" | "withdrawn";
 };
 
 async function loadRequest(supabase: Awaited<ReturnType<typeof createClient>>, id: string) {
@@ -192,7 +192,7 @@ export async function withdrawRequest(id: string): Promise<ActionResult> {
   const row = await loadRequest(supabase, id);
   if (!row) return { error: "Request not found." };
   if (row.submitted_by !== auth.userId) return { error: "Not authorized." };
-  if (row.status !== "pending" && row.status !== "changes_requested") {
+  if (row.status !== "pending" && row.status !== "changes_requested" && row.status !== "draft") {
     return { error: "This request can no longer be withdrawn." };
   }
 
@@ -235,10 +235,16 @@ export async function updateOwnContentRequest(
   const row = await loadRequest(supabase, id);
   if (!row) return { error: "Request not found." };
   if (row.submitted_by !== auth.userId) return { error: "Not authorized." };
-  if (row.status !== "pending" && row.status !== "changes_requested") {
+  if (row.status !== "pending" && row.status !== "changes_requested" && row.status !== "draft") {
     return { error: "This request can no longer be revised." };
   }
   if (row.target_type !== "content") return { error: "Wrong request type." };
+
+  // A draft resume can choose to stay a draft (formData "mode" = "draft")
+  // or submit for review — anything already submitted (pending/
+  // changes_requested) always resubmits as pending, unchanged behavior.
+  const keepAsDraft = row.status === "draft" && String(formData.get("mode") ?? "") === "draft";
+  const nextStatus = keepAsDraft ? "draft" : "pending";
 
   // Rebuild against current *live* content, not the request's own stale
   // base_content — so the diff always reflects what's actually live if
@@ -248,9 +254,16 @@ export async function updateOwnContentRequest(
 
   const { error: updateError } = await supabase
     .from("content_change_requests")
-    .update({ proposed_content: next, base_content: current, status: "pending" })
+    .update({ proposed_content: next, base_content: current, status: nextStatus })
     .eq("id", id);
-  if (updateError) return { error: "Couldn't resubmit. Please try again." };
+  if (updateError) return { error: "Couldn't save. Please try again." };
+
+  // Drafts staying drafts don't need an activity-log entry or admin
+  // notification — nothing changed from the admin's point of view, since
+  // they never see drafts in the first place.
+  if (keepAsDraft) {
+    return { ok: true, draft: true };
+  }
 
   await logActivity(supabase, {
     actorId: auth.userId,

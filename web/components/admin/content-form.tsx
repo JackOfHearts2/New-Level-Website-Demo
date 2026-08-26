@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { SiteContent, getSiteContent } from "@/lib/site-content";
 import { buildContentFromFormData } from "@/lib/site-content-form";
 import { resolveSiteImages } from "@/lib/site-content-images";
-import { saveContent, type FormState } from "@/app/admin/(dashboard)/actions";
+import { saveContent, saveContentDraft, type FormState, type DraftFormState } from "@/app/admin/(dashboard)/actions";
 import { updateOwnContentRequest } from "@/app/admin/(dashboard)/approvals/actions";
 import { SitePreview } from "@/components/site-preview";
 import { GlowFieldset } from "@/components/admin/glow-fieldset";
@@ -106,6 +107,8 @@ export function ContentForm({
   content,
   resolved,
   reviseRequestId,
+  role,
+  status,
 }: {
   content: SiteContent;
   // Only present on the main /admin/content page — the narrower "revise a
@@ -115,12 +118,38 @@ export function ContentForm({
   // embedded image slots below just don't render.
   resolved?: Awaited<ReturnType<typeof getSiteContent>>;
   reviseRequestId?: string;
+  /** Drives the Save/Draft/Submit button set below — admin always gets a
+   *  single live "Save changes" button; editor gets a draft/submit split,
+   *  except when resuming an already-submitted (pending/changes_requested)
+   *  row, which keeps the single "Resubmit for review" button unchanged. */
+  role?: "editor" | "admin";
+  /** The row's current status, only meaningful alongside reviseRequestId. */
+  status?: string;
 }) {
   const action = reviseRequestId ? updateOwnContentRequest.bind(null, reviseRequestId) : saveContent;
   const [state, formAction] = useActionState<FormState, FormData>(action, undefined);
   const formRef = useRef<HTMLFormElement>(null);
   const [previewContent, setPreviewContent] = useState<SiteContent | null>(null);
   const [sectionPreview, setSectionPreview] = useState<SectionPreviewState>(null);
+  const router = useRouter();
+  const [draftState, setDraftState] = useState<DraftFormState>(undefined);
+  const [savingDraft, startDraftTransition] = useTransition();
+
+  const isEditor = role === "editor";
+  const isFreshDraftFlow = isEditor && !reviseRequestId;
+  const isResumingDraft = isEditor && reviseRequestId && status === "draft";
+
+  function handleSaveDraft() {
+    if (!formRef.current) return;
+    const fd = new FormData(formRef.current);
+    startDraftTransition(async () => {
+      const result = await saveContentDraft(undefined, fd);
+      setDraftState(result);
+      if (result?.ok && result.draftId) {
+        router.push(`/admin/approvals/${result.draftId}/revise`);
+      }
+    });
+  }
 
   function currentContent() {
     if (!formRef.current) return content;
@@ -360,25 +389,64 @@ export function ContentForm({
         ))}
       </Fieldset>
 
-      {state?.error && (
+      {(state?.error || draftState?.error) && (
         <p className="text-destructive text-sm" role="alert">
-          {state.error}
+          {state?.error || draftState?.error}
         </p>
       )}
-      {state?.ok && state?.pending && (
+      {state?.ok && state?.draft && (
+        <p className="text-sm text-blue-700" role="status">
+          Saved as a draft — not submitted for review yet. Come back anytime to keep editing
+          or submit it.
+        </p>
+      )}
+      {state?.ok && state?.pending && !state?.draft && (
         <p className="text-sm text-[#72D35B]" role="status">
           {reviseRequestId ? "Resubmitted" : "Submitted"} for admin approval — it
           won&apos;t go live until it&apos;s reviewed. Check &quot;Approvals&quot; for
           the status.
         </p>
       )}
-      {state?.ok && !state?.pending && (
+      {state?.ok && !state?.pending && !state?.draft && (
         <p className="text-sm text-[#72D35B]" role="status">
           Saved: the live homepage now reflects these changes.
         </p>
       )}
       <div className="flex flex-wrap gap-3">
-        <SaveButton label={reviseRequestId ? "Resubmit for review" : "Save changes"} />
+        {isResumingDraft ? (
+          <>
+            <button
+              type="submit"
+              name="mode"
+              value="draft"
+              className="font-heading border-border rounded-xl border px-6 py-2.5 text-sm font-semibold"
+            >
+              Save draft
+            </button>
+            <button
+              type="submit"
+              name="mode"
+              value="submit"
+              className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-xl px-6 py-2.5 text-sm font-semibold"
+            >
+              Submit for review
+            </button>
+          </>
+        ) : isFreshDraftFlow ? (
+          <>
+            <button
+              type="button"
+              onClick={handleSaveDraft}
+              disabled={savingDraft}
+              className="font-heading border-border rounded-xl border px-6 py-2.5 text-sm font-semibold disabled:opacity-50"
+            >
+              {savingDraft ? "Saving…" : "Save as draft"}
+            </button>
+            <SaveButton label="Submit for review" />
+          </>
+        ) : (
+          <SaveButton label={reviseRequestId ? "Resubmit for review" : "Save changes"} />
+        )}
         <button
           type="button"
           onClick={handlePreview}

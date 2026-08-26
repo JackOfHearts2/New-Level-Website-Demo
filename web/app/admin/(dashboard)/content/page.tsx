@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { requireAdminRole } from "@/lib/admin-auth";
 import { getRawSiteContent, getSiteContent } from "@/lib/site-content";
 import { ContentForm } from "@/components/admin/content-form";
 
@@ -6,6 +8,9 @@ import { ContentForm } from "@/components/admin/content-form";
 // there's no ambiguity about what an upload is replacing (client ask,
 // 2026-08-26 — see project_admin_dashboard_redesign_2026_08_26 memory).
 export default async function AdminContentPage() {
+  const auth = await requireAdminRole();
+  if (!auth) redirect("/");
+
   const [content, resolved] = await Promise.all([getRawSiteContent(), getSiteContent()]);
   return (
     <div className="space-y-6">
@@ -17,7 +22,7 @@ export default async function AdminContentPage() {
           here yet, ask a developer for that.
         </p>
       </div>
-      <ContentForm content={content} resolved={resolved} />
+      <ContentForm content={content} resolved={resolved} role={auth.role} />
     </div>
   );
 }

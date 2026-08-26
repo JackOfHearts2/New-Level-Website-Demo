@@ -11,7 +11,7 @@ type ChangeRequestRow = {
   proposed_content: SiteContent | null;
   base_content: SiteContent;
   storage_path: string | null;
-  status: "pending" | "changes_requested" | "approved" | "rejected" | "withdrawn";
+  status: "draft" | "pending" | "changes_requested" | "approved" | "rejected" | "withdrawn";
   review_note: string | null;
   created_at: string;
   reviewed_at: string | null;
@@ -26,13 +26,19 @@ export default async function ApprovalsPage() {
   if (!auth) redirect("/");
 
   const supabase = await createClient();
-  const { data } = await supabase
+  let query = supabase
     .from("content_change_requests")
     .select(
       "id, target_type, image_slot, proposed_content, base_content, storage_path, status, review_note, created_at, reviewed_at, submitted_by, reviewed_by"
     )
-    .order("created_at", { ascending: false })
-    .returns<ChangeRequestRow[]>();
+    .order("created_at", { ascending: false });
+  // Drafts are invisible to admins entirely — RLS lets an admin SELECT
+  // every row regardless of status (for auditability elsewhere), but
+  // nobody's work-in-progress belongs in the review queue. An editor's own
+  // query is already restricted to their own rows by RLS, drafts included
+  // — that's exactly what they need to resume one.
+  if (auth.role === "admin") query = query.neq("status", "draft");
+  const { data } = await query.returns<ChangeRequestRow[]>();
 
   const rows = data ?? [];
 

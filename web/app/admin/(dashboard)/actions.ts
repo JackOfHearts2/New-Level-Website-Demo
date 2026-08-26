@@ -17,7 +17,7 @@ import {
 } from "@/lib/site-content";
 
 export type FormState =
-  | { error?: string; ok?: boolean; pending?: boolean }
+  | { error?: string; ok?: boolean; pending?: boolean; draft?: boolean }
   | undefined;
 
 export async function logout() {
@@ -78,6 +78,43 @@ export async function saveContent(
   });
 
   return { ok: true, pending: true };
+}
+
+export type DraftFormState =
+  | { error?: string; ok?: boolean; draftId?: string }
+  | undefined;
+
+// Editor-only "save it but don't submit it yet" — client ask (2026-08-26).
+// No activity-log entry and no admin notification email here: a draft is
+// invisible to admins entirely (filtered out of the Approvals list/badge
+// count at the query level, see approvals/page.tsx), so there's nothing
+// for them to be told about until it's actually submitted.
+export async function saveContentDraft(
+  _prevState: DraftFormState,
+  formData: FormData
+): Promise<DraftFormState> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
+  if (auth.role !== "editor") return { error: "Drafts are for editors — admin saves go live immediately." };
+
+  const current = await getRawSiteContent();
+  const next: SiteContent = buildContentFromFormData(current, formData);
+
+  const supabase = await createClient();
+  const { data: inserted, error } = await supabase
+    .from("content_change_requests")
+    .insert({
+      submitted_by: auth.userId,
+      target_type: "content",
+      proposed_content: next,
+      base_content: current,
+      status: "draft",
+    })
+    .select("id")
+    .single();
+  if (error) return { error: "Couldn't save draft. Please try again." };
+
+  return { ok: true, draftId: inserted.id };
 }
 
 // Matches content_change_requests_image_slot_check (migration 0008) — logo
