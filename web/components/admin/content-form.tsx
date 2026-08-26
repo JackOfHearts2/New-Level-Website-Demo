@@ -7,7 +7,14 @@ import { cn } from "@/lib/utils";
 import type { SiteContent, getSiteContent } from "@/lib/site-content";
 import { buildContentFromFormData } from "@/lib/site-content-form";
 import { resolveSiteImages } from "@/lib/site-content-images";
-import { saveContent, saveContentDraft, type FormState, type DraftFormState } from "@/app/admin/(dashboard)/actions";
+import {
+  saveContent,
+  saveContentDraft,
+  saveContentSection,
+  saveContentSectionDraft,
+  type FormState,
+  type DraftFormState,
+} from "@/app/admin/(dashboard)/actions";
 import { updateOwnContentRequest } from "@/app/admin/(dashboard)/approvals/actions";
 import { SitePreview } from "@/components/site-preview";
 import { GlowFieldset } from "@/components/admin/glow-fieldset";
@@ -86,8 +93,6 @@ function Field({
   );
 }
 
-const Fieldset = GlowFieldset;
-
 function SaveButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
@@ -100,6 +105,178 @@ function SaveButton({ label }: { label: string }) {
     </button>
   );
 }
+
+/** Per-section Save/Draft/Submit/Revert row (queue item 1 + 2, 2026-08-26:
+ *  "each section needs to have their own save as draft or save and
+ *  submit area... needs to have a revert back to previous [state]").
+ *  Only rendered on the main /admin/content page (not the narrower
+ *  revise-a-single-request flow, which keeps its existing single draft/
+ *  submit toggle at the bottom — resuming one specific request doesn't
+ *  need per-section granularity the way the primary editing page does).
+ *
+ *  Reads field values directly from the section's own DOM subtree
+ *  (input/textarea elements with a `name`) rather than needing a
+ *  hardcoded list of field names per section — stays correct
+ *  automatically if a section's fields ever change. Revert similarly
+ *  just resets each input to its own `.defaultValue` (what the page
+ *  loaded with), no separate "original value" bookkeeping needed. */
+function SectionControls({
+  sectionRef,
+  legend,
+  isEditor,
+}: {
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  legend: string;
+  isEditor: boolean;
+}) {
+  const [state, setState] = useState<FormState>(undefined);
+  const [draftState, setDraftState] = useState<DraftFormState>(undefined);
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
+
+  function collectFieldValues(): Record<string, string> {
+    const values: Record<string, string> = {};
+    sectionRef.current
+      ?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input[name], textarea[name]")
+      .forEach((input) => {
+        values[input.name] = input.value;
+      });
+    return values;
+  }
+
+  function handleSave() {
+    setState(undefined);
+    startTransition(async () => {
+      setState(await saveContentSection(collectFieldValues()));
+    });
+  }
+
+  function handleSaveDraft() {
+    setDraftState(undefined);
+    startTransition(async () => {
+      const result = await saveContentSectionDraft(collectFieldValues());
+      setDraftState(result);
+      if (result?.ok && result.draftId) {
+        router.push(`/admin/approvals/${result.draftId}/revise`);
+      }
+    });
+  }
+
+  function handleRevert() {
+    if (!confirm(`Revert "${legend}" back to how it was when the page loaded?`)) return;
+    sectionRef.current
+      ?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input[name], textarea[name]")
+      .forEach((input) => {
+        input.value = input.defaultValue;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+    setState(undefined);
+    setDraftState(undefined);
+  }
+
+  return (
+    <div className="border-border mt-4 space-y-3 border-t pt-4">
+      {(state?.error || draftState?.error) && (
+        <p className="text-destructive text-sm" role="alert">
+          {state?.error || draftState?.error}
+        </p>
+      )}
+      {draftState?.ok && (
+        <p className="text-sm text-blue-700" role="status">
+          Saved as a draft — not submitted for review yet.
+        </p>
+      )}
+      {state?.ok && state?.pending && (
+        <p className="text-sm text-[#72D35B]" role="status">
+          Submitted for admin approval.
+        </p>
+      )}
+      {state?.ok && !state?.pending && (
+        <p className="text-sm text-[#72D35B]" role="status">
+          Saved — this section is now live.
+        </p>
+      )}
+      <div className="flex flex-wrap gap-2">
+        {isEditor ? (
+          <>
+            <button
+              type="button"
+              onClick={handleSaveDraft}
+              disabled={pending}
+              className="font-heading border-border rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50"
+            >
+              {pending ? "Saving…" : "Save as draft"}
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={pending}
+              className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
+            >
+              {pending ? "Submitting…" : "Submit for review"}
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={pending}
+            className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
+          >
+            {pending ? "Saving…" : "Save section"}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={handleRevert}
+          className="font-heading text-muted-foreground hover:text-foreground rounded-lg px-4 py-2 text-sm font-semibold"
+        >
+          Revert
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Wraps one Fieldset with a scroll-anchor id (for the jump-nav) and,
+ *  when enabled, its own SectionControls row. */
+function Section({
+  id,
+  legend,
+  onPreview,
+  showControls,
+  isEditor,
+  className,
+  children,
+}: {
+  id: string;
+  legend: string;
+  onPreview?: () => void;
+  showControls: boolean;
+  isEditor: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  return (
+    <div ref={sectionRef} id={id} className="scroll-mt-24">
+      <GlowFieldset legend={legend} onPreview={onPreview} className={className}>
+        {children}
+        {showControls && <SectionControls sectionRef={sectionRef} legend={legend} isEditor={isEditor} />}
+      </GlowFieldset>
+    </div>
+  );
+}
+
+const SECTION_NAV = [
+  { id: "section-brand", label: "Brand" },
+  { id: "section-event-cta", label: "Event CTA" },
+  { id: "section-trust-stats", label: "Trust Stats" },
+  { id: "section-services", label: "Services" },
+  { id: "section-testimonials", label: "Testimonials" },
+  { id: "section-team", label: "Team" },
+  { id: "section-social", label: "Social links" },
+];
 
 type SectionPreviewState = { title: string; node: React.ReactNode } | null;
 
@@ -138,6 +315,9 @@ export function ContentForm({
   const isEditor = role === "editor";
   const isFreshDraftFlow = isEditor && !reviseRequestId;
   const isResumingDraft = isEditor && reviseRequestId && status === "draft";
+  // Per-section controls only make sense on the primary editing page, not
+  // while resuming one specific already-submitted request.
+  const showSectionControls = !reviseRequestId;
 
   function handleSaveDraft() {
     if (!formRef.current) return;
@@ -179,9 +359,29 @@ export function ContentForm({
   }
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-6">
-      <Fieldset
+    <div className="space-y-6">
+      {/* Jump-nav (queue item 3, 2026-08-26): "not a menu, but... they
+          need to be able to filter through what they are changing." A
+          sticky row of anchor links into the sections below, rather than
+          scrolling through a ~7-section form to find the one that matters. */}
+      <div className="border-border bg-card sticky top-16 z-10 -mx-1 flex flex-wrap gap-1 rounded-xl border p-2 shadow-sm">
+        {SECTION_NAV.map((s) => (
+          <a
+            key={s.id}
+            href={`#${s.id}`}
+            className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
+          >
+            {s.label}
+          </a>
+        ))}
+      </div>
+
+      <form ref={formRef} action={formAction} className="space-y-6">
+      <Section
+        id="section-brand"
         legend="Brand"
+        showControls={showSectionControls}
+        isEditor={isEditor}
         onPreview={() =>
           handlePreviewSection("Brand", (c, images) => (
             <>
@@ -218,10 +418,13 @@ export function ContentForm({
             />
           </div>
         )}
-      </Fieldset>
+      </Section>
 
-      <Fieldset
+      <Section
+        id="section-event-cta"
         legend="Event CTA"
+        showControls={showSectionControls}
+        isEditor={isEditor}
         onPreview={() => handlePreviewSection("Event CTA", (c) => <EventCtaSection eventCta={c.eventCta} />)}
       >
         <Field
@@ -245,10 +448,13 @@ export function ContentForm({
           name="eventCta.cta"
           defaultValue={content.eventCta.cta}
         />
-      </Fieldset>
+      </Section>
 
-      <Fieldset
+      <Section
+        id="section-trust-stats"
         legend="Trust Stats"
+        showControls={showSectionControls}
+        isEditor={isEditor}
         onPreview={() =>
           handlePreviewSection("Trust Stats", (c) => (
             <AboutSection aboutShort={c.brand.aboutShort} trustStats={c.trustStats} />
@@ -269,10 +475,13 @@ export function ContentForm({
             />
           </div>
         ))}
-      </Fieldset>
+      </Section>
 
-      <Fieldset
+      <Section
+        id="section-services"
         legend="Services"
+        showControls={showSectionControls}
+        isEditor={isEditor}
         onPreview={() => handlePreviewSection("Services", (c) => <ServicesSection services={c.services} />)}
       >
         {content.services.map((service, i) => (
@@ -290,10 +499,13 @@ export function ContentForm({
             />
           </div>
         ))}
-      </Fieldset>
+      </Section>
 
-      <Fieldset
+      <Section
+        id="section-testimonials"
         legend="Testimonials"
+        showControls={showSectionControls}
+        isEditor={isEditor}
         onPreview={() =>
           handlePreviewSection("Testimonials", (c) => <TestimonialsSection testimonials={c.testimonials} />)
         }
@@ -330,9 +542,15 @@ export function ContentForm({
             )}
           </div>
         ))}
-      </Fieldset>
+      </Section>
 
-      <Fieldset legend="Team" onPreview={() => handlePreviewSection("Team", (c) => <TeamSection team={c.team} />)}>
+      <Section
+        id="section-team"
+        legend="Team"
+        showControls={showSectionControls}
+        isEditor={isEditor}
+        onPreview={() => handlePreviewSection("Team", (c) => <TeamSection team={c.team} />)}
+      >
         {content.team.map((member, i) => (
           <div key={i} className="grid gap-3 sm:grid-cols-2">
             <Field
@@ -364,10 +582,13 @@ export function ContentForm({
             )}
           </div>
         ))}
-      </Fieldset>
+      </Section>
 
-      <Fieldset
+      <Section
+        id="section-social"
         legend="Social links"
+        showControls={showSectionControls}
+        isEditor={isEditor}
         onPreview={() =>
           handlePreviewSection("Social links", (c, images) => (
             <SiteFooter
@@ -387,7 +608,7 @@ export function ContentForm({
             defaultValue={social.href}
           />
         ))}
-      </Fieldset>
+      </Section>
 
       {(state?.error || draftState?.error) && (
         <p className="text-destructive text-sm" role="alert">
@@ -412,6 +633,11 @@ export function ContentForm({
           Saved: the live homepage now reflects these changes.
         </p>
       )}
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+          Or save everything at once:
+        </span>
+      </div>
       <div className="flex flex-wrap gap-3">
         {isResumingDraft ? (
           <>
@@ -475,6 +701,7 @@ export function ContentForm({
           {sectionPreview.node}
         </SectionPreview>
       )}
-    </form>
+      </form>
+    </div>
   );
 }

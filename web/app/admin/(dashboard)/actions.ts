@@ -2,11 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { requireAdminRole } from "@/lib/admin-auth";
+import { requireAdminRole, type AdminAuth } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { sniffImageType } from "@/lib/image-sniff";
 import { notifyPendingChangeRequest } from "@/lib/email";
-import { buildContentFromFormData } from "@/lib/site-content-form";
+import { buildContentFromFormData, contentToFormData } from "@/lib/site-content-form";
 import { logActivity } from "@/lib/activity-log";
 import {
   getRawSiteContent,
@@ -58,16 +58,12 @@ export async function saveDashboardView(view: "overview" | "compact") {
   return { ok: true };
 }
 
-export async function saveContent(
-  _prevState: FormState,
-  formData: FormData
-): Promise<FormState> {
-  const auth = await requireAdminRole();
-  if (!auth) return { error: "Not logged in." };
-
-  const current = await getRawSiteContent();
-  const next: SiteContent = buildContentFromFormData(current, formData);
-
+/** Shared by saveContent and saveContentSection — admin saves go live
+ *  immediately, editor saves become a pending request. Factored out so
+ *  the whole-page save and the per-section save (client ask, 2026-08-26:
+ *  "each section needs to have their own save as draft or save and
+ *  submit area") can't drift out of sync with each other. */
+async function persistContent(auth: AdminAuth, current: SiteContent, next: SiteContent): Promise<FormState> {
   if (auth.role === "admin") {
     try {
       await saveSiteContent(next);
@@ -112,26 +108,48 @@ export async function saveContent(
   return { ok: true, pending: true };
 }
 
+export async function saveContent(
+  _prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
+
+  const current = await getRawSiteContent();
+  const next: SiteContent = buildContentFromFormData(current, formData);
+  return persistContent(auth, current, next);
+}
+
+/** Per-section save (queue item 1) — takes just the fields belonging to
+ *  ONE fieldset (e.g. only `eventCta.*`) rather than the whole form.
+ *  Safe because it starts from a COMPLETE snapshot of the current content
+ *  (contentToFormData) and only overrides the touched fields before
+ *  handing off to buildContentFromFormData, which has no partial-merge
+ *  behavior of its own — the same pattern InlineEditable already uses
+ *  for a single field, generalized to a batch. Submitting a bare partial
+ *  FormData here would blank every other field on the site. */
+export async function saveContentSection(fieldValues: Record<string, string>): Promise<FormState> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
+
+  const current = await getRawSiteContent();
+  const fd = contentToFormData(current);
+  for (const [name, value] of Object.entries(fieldValues)) fd.set(name, value);
+  const next: SiteContent = buildContentFromFormData(current, fd);
+  return persistContent(auth, current, next);
+}
+
 export type DraftFormState =
   | { error?: string; ok?: boolean; draftId?: string }
   | undefined;
 
-// Editor-only "save it but don't submit it yet" — client ask (2026-08-26).
-// No activity-log entry and no admin notification email here: a draft is
-// invisible to admins entirely (filtered out of the Approvals list/badge
-// count at the query level, see approvals/page.tsx), so there's nothing
-// for them to be told about until it's actually submitted.
-export async function saveContentDraft(
-  _prevState: DraftFormState,
-  formData: FormData
-): Promise<DraftFormState> {
-  const auth = await requireAdminRole();
-  if (!auth) return { error: "Not logged in." };
-  if (auth.role !== "editor") return { error: "Drafts are for editors — admin saves go live immediately." };
-
-  const current = await getRawSiteContent();
-  const next: SiteContent = buildContentFromFormData(current, formData);
-
+/** Shared by saveContentDraft and saveContentSectionDraft. Editor-only
+ *  "save it but don't submit it yet" — client ask (2026-08-26). No
+ *  activity-log entry and no admin notification email here: a draft is
+ *  invisible to admins entirely (filtered out of the Approvals list/badge
+ *  count at the query level, see approvals/page.tsx), so there's nothing
+ *  for them to be told about until it's actually submitted. */
+async function persistDraft(auth: AdminAuth, current: SiteContent, next: SiteContent): Promise<DraftFormState> {
   const supabase = await createClient();
   const { data: inserted, error } = await supabase
     .from("content_change_requests")
@@ -147,6 +165,34 @@ export async function saveContentDraft(
   if (error) return { error: "Couldn't save draft. Please try again." };
 
   return { ok: true, draftId: inserted.id };
+}
+
+export async function saveContentDraft(
+  _prevState: DraftFormState,
+  formData: FormData
+): Promise<DraftFormState> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
+  if (auth.role !== "editor") return { error: "Drafts are for editors — admin saves go live immediately." };
+
+  const current = await getRawSiteContent();
+  const next: SiteContent = buildContentFromFormData(current, formData);
+  return persistDraft(auth, current, next);
+}
+
+/** Per-section draft save — same field-override safety as
+ *  saveContentSection above, but writes a draft instead of going live/
+ *  into the review queue. */
+export async function saveContentSectionDraft(fieldValues: Record<string, string>): Promise<DraftFormState> {
+  const auth = await requireAdminRole();
+  if (!auth) return { error: "Not logged in." };
+  if (auth.role !== "editor") return { error: "Drafts are for editors — admin saves go live immediately." };
+
+  const current = await getRawSiteContent();
+  const fd = contentToFormData(current);
+  for (const [name, value] of Object.entries(fieldValues)) fd.set(name, value);
+  const next: SiteContent = buildContentFromFormData(current, fd);
+  return persistDraft(auth, current, next);
 }
 
 // Matches content_change_requests_image_slot_check (migration 0008) — logo
