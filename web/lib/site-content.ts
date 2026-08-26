@@ -9,6 +9,7 @@ import {
   TEAM,
   SOCIALS,
 } from "./content";
+import { resolveSiteImages } from "./site-content-images";
 
 const STORE_NAME = "site-admin";
 const CONTENT_KEY = "content";
@@ -71,22 +72,7 @@ export async function saveSiteContent(content: SiteContent) {
 /** Resolved view used by pages — turns image metadata into fetchable URLs. */
 export async function getSiteContent() {
   const raw = await getRawSiteContent();
-  const logoUrl = raw.images.logo
-    ? `/api/site-image/logo?v=${raw.images.logo.updatedAt}`
-    : "/logo.png";
-  return {
-    ...raw,
-    images: {
-      logoUrl,
-      // No way to derive a dark-mode variant for an arbitrary admin
-      // upload, so a custom logo just displays as-is in both themes.
-      // Only the built-in default gets the real light/dark swap.
-      logoUrlDark: raw.images.logo ? logoUrl : "/logo-dark.png",
-      heroBgUrl: raw.images.heroBg
-        ? `/api/site-image/hero-bg?v=${raw.images.heroBg.updatedAt}`
-        : "/photos/00.jpg",
-    },
-  };
+  return { ...raw, images: resolveSiteImages(raw.images) };
 }
 
 export function siteContentDefaults() {

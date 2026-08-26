@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
 import { logout } from "./actions";
 
 function NavLink({ href, children, badge }: { href: string; children: React.ReactNode; badge?: number }) {
@@ -31,19 +32,10 @@ export default async function AdminDashboardLayout({
   if (!auth) redirect("/");
 
   const supabase = await createClient();
-  const pendingFilter =
-    auth.role === "admin" ? {} : { submitted_by: auth.userId };
-  const { count: pendingApprovals } = await supabase
-    .from("content_change_requests")
-    .select("id", { count: "exact", head: true })
-    .match({ status: "pending", ...pendingFilter });
-  const { count: openReports } =
-    auth.role === "admin" || auth.role === "editor"
-      ? await supabase
-          .from("problem_reports")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "open")
-      : { count: 0 };
+  const [pendingApprovals, openReports] = await Promise.all([
+    getApprovalsBadgeCount(supabase, auth),
+    getOpenReportsCount(supabase),
+  ]);
 
   return (
     <div className="min-h-screen">
@@ -55,10 +47,10 @@ export default async function AdminDashboardLayout({
             </Link>
             <NavLink href="/admin/content">Content</NavLink>
             <NavLink href="/admin/images">Images</NavLink>
-            <NavLink href="/admin/approvals" badge={pendingApprovals ?? 0}>
+            <NavLink href="/admin/approvals" badge={pendingApprovals}>
               Approvals
             </NavLink>
-            <NavLink href="/admin/reports" badge={openReports ?? 0}>
+            <NavLink href="/admin/reports" badge={openReports}>
               Reports
             </NavLink>
             {auth.role === "admin" && (

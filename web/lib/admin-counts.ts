@@ -1,0 +1,32 @@
+import "server-only";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { AdminAuth } from "@/lib/admin-auth";
+
+// Shared by the dashboard layout's nav badges and the dashboard home's
+// tile subtitles — was previously duplicated in both files. Now that a
+// row can also sit in "changes_requested" (which still needs the
+// *editor's* attention, but not the admin's — the admin already acted by
+// requesting the change), the two roles' counts genuinely diverge rather
+// than just being "everyone's" vs. "my own," which is the actual trigger
+// for factoring this out now rather than leaving it duplicated a second time.
+export async function getApprovalsBadgeCount(
+  supabase: SupabaseClient,
+  auth: AdminAuth
+): Promise<number> {
+  const statuses = auth.role === "admin" ? ["pending"] : ["pending", "changes_requested"];
+  const query = supabase
+    .from("content_change_requests")
+    .select("id", { count: "exact", head: true })
+    .in("status", statuses);
+  const { count } =
+    auth.role === "admin" ? await query : await query.eq("submitted_by", auth.userId);
+  return count ?? 0;
+}
+
+export async function getOpenReportsCount(supabase: SupabaseClient): Promise<number> {
+  const { count } = await supabase
+    .from("problem_reports")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "open");
+  return count ?? 0;
+}

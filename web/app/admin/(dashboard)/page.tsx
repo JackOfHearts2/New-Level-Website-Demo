@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireAdminRole } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import { getApprovalsBadgeCount, getOpenReportsCount } from "@/lib/admin-counts";
 
 function Tile({ href, title, description }: { href: string; title: string; description: string }) {
   return (
@@ -20,15 +21,10 @@ export default async function AdminHomePage() {
   if (!auth) redirect("/");
 
   const supabase = await createClient();
-  const pendingFilter = auth.role === "admin" ? {} : { submitted_by: auth.userId };
-  const { count: pendingApprovals } = await supabase
-    .from("content_change_requests")
-    .select("id", { count: "exact", head: true })
-    .match({ status: "pending", ...pendingFilter });
-  const { count: openReports } = await supabase
-    .from("problem_reports")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "open");
+  const [pendingApprovals, openReports] = await Promise.all([
+    getApprovalsBadgeCount(supabase, auth),
+    getOpenReportsCount(supabase),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -53,7 +49,7 @@ export default async function AdminHomePage() {
         />
         <Tile
           href="/admin/approvals"
-          title={auth.role === "admin" ? `Approvals (${pendingApprovals ?? 0} pending)` : "My Submissions"}
+          title={auth.role === "admin" ? `Approvals (${pendingApprovals} pending)` : "My Submissions"}
           description={
             auth.role === "admin"
               ? "Review pending content and photo changes."
@@ -62,7 +58,7 @@ export default async function AdminHomePage() {
         />
         <Tile
           href="/admin/reports"
-          title={`Reports (${openReports ?? 0} open)`}
+          title={`Reports (${openReports} open)`}
           description="Problems visitors have flagged from the site."
         />
         {auth.role === "admin" && (
