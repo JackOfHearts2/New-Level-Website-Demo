@@ -7,7 +7,14 @@ import { logActivity } from "@/lib/activity-log";
 
 export type ActionResult = { error?: string; ok?: boolean };
 
-export async function grantEditorAccess(
+// Widened 2026-08-26 from a hardcoded 'editor' grant to a real tier picker
+// — see supabase/migrations/0007_access_tier_placeholders.sql. Only
+// 'editor'/'admin' carry real permissions today; 'viewer'/'manager' are
+// selectable placeholders (private.is_staff/is_admin don't recognize them).
+const GRANTABLE_ROLES = ["viewer", "editor", "manager", "admin"] as const;
+type GrantableRole = (typeof GRANTABLE_ROLES)[number];
+
+export async function grantAccess(
   _prevState: ActionResult | undefined,
   formData: FormData
 ): Promise<ActionResult> {
@@ -15,7 +22,9 @@ export async function grantEditorAccess(
   if (!auth) return { error: "Not authorized." };
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const role = String(formData.get("role") ?? "");
   if (!email) return { error: "Enter an email address." };
+  if (!GRANTABLE_ROLES.includes(role as GrantableRole)) return { error: "Choose an access tier." };
 
   const supabase = await createClient();
   const { data: profile, error } = await supabase
@@ -29,16 +38,13 @@ export async function grantEditorAccess(
       error: "No account found with that email. Ask them to create an account on the site first, then grant access.",
     };
   }
-  if (profile.role === "admin") {
-    return { error: "That account is already an admin." };
-  }
-  if (profile.role === "editor") {
-    return { error: "That account already has editor access." };
+  if (profile.role === role) {
+    return { error: `That account already has ${role} access.` };
   }
 
   const { error: updateError } = await supabase
     .from("profiles")
-    .update({ role: "editor" })
+    .update({ role })
     .eq("id", profile.id);
   if (updateError) return { error: "Couldn't grant access. Please try again." };
 
@@ -47,7 +53,7 @@ export async function grantEditorAccess(
     eventType: "editor_granted",
     targetTable: "profiles",
     targetId: profile.id,
-    summary: `${auth.email} granted editor access to ${email}`,
+    summary: `${auth.email} granted ${role} access to ${email}`,
   });
 
   revalidatePath("/admin/editors");
@@ -80,7 +86,7 @@ export async function revokeAccess(userId: string): Promise<ActionResult> {
     eventType: "editor_revoked",
     targetTable: "profiles",
     targetId: userId,
-    summary: `${auth.email} revoked editor access from ${target?.email ?? userId}`,
+    summary: `${auth.email} revoked access from ${target?.email ?? userId}`,
   });
 
   revalidatePath("/admin/editors");

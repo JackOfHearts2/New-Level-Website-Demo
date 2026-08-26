@@ -26,6 +26,7 @@ export default async function AdminDashboardLayout({
     <div className="flex min-h-screen bg-background">
       <AdminSidebar
         logoUrl={content.images.logoUrl}
+        logoUrlDark={content.images.logoUrlDark}
         role={auth.role}
         email={auth.email}
         pendingApprovals={pendingApprovals}

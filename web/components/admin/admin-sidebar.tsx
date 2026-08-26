@@ -8,7 +8,7 @@ import {
   LayoutDashboard,
   BarChart3,
   FileEdit,
-  Image as ImageIcon,
+  Image as MediaIcon,
   ClipboardCheck,
   Flag,
   Users,
@@ -29,12 +29,14 @@ type NavItem = {
 
 export function AdminSidebar({
   logoUrl,
+  logoUrlDark,
   role,
   email,
   pendingApprovals,
   openReports,
 }: {
   logoUrl: string;
+  logoUrlDark: string;
   role: "editor" | "admin";
   email: string;
   pendingApprovals: number;
@@ -48,7 +50,7 @@ export function AdminSidebar({
     { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
     ...(isAdmin ? [{ href: "/admin/analytics", label: "Analytics", Icon: BarChart3 }] : []),
     { href: "/admin/content", label: "Content", Icon: FileEdit },
-    { href: "/admin/images", label: "Images", Icon: ImageIcon },
+    { href: "/admin/images", label: "Media", Icon: MediaIcon },
     { href: "/admin/approvals", label: "Approvals", Icon: ClipboardCheck, badge: pendingApprovals },
     { href: "/admin/reports", label: "Reports", Icon: Flag, badge: openReports },
   ];
@@ -65,14 +67,53 @@ export function AdminSidebar({
         open ? "w-64" : "w-16"
       )}
     >
-      <div className="mb-4 flex items-center gap-3 border-b border-border p-2 pb-4">
-        <div className="grid size-10 shrink-0 place-content-center overflow-hidden rounded-lg bg-white shadow-sm">
-          <NextImage src={logoUrl} alt="New Level" width={32} height={32} className="object-contain" />
-        </div>
-        {open && (
-          <div className="min-w-0">
-            <span className="font-heading block truncate text-sm font-semibold">New Level Admin</span>
-            <span className="text-muted-foreground block text-xs capitalize">{role} access</span>
+      <div className="mb-4 border-b border-border p-2 pb-4">
+        {open ? (
+          <>
+            {/* Same dual-asset dark-mode pattern as the public SiteHeader
+                (logoUrl/logoUrlDark swapped via dark:hidden/dark:block) and
+                the same real size (h-16) — client feedback (2026-08-26):
+                the sidebar logo used to be tiny and boxed in a white card,
+                which also meant it never adapted to dark mode. No card/bg
+                here on purpose — the asset itself carries the right color
+                per theme, same as the public header. */}
+            <div className="relative h-14 w-full">
+              <NextImage
+                src={logoUrl}
+                alt="New Level"
+                fill
+                sizes="220px"
+                className="object-contain object-left dark:hidden"
+              />
+              <NextImage
+                src={logoUrlDark}
+                alt="New Level"
+                fill
+                sizes="220px"
+                className="hidden object-contain object-left dark:block"
+              />
+            </div>
+            <div className="mt-2">
+              <span className="font-heading block truncate text-sm font-semibold">New Level Admin</span>
+              <span className="text-muted-foreground block text-xs capitalize">{role} access</span>
+            </div>
+          </>
+        ) : (
+          <div className="relative h-8 w-full">
+            <NextImage
+              src={logoUrl}
+              alt="New Level"
+              fill
+              sizes="48px"
+              className="object-contain object-left dark:hidden"
+            />
+            <NextImage
+              src={logoUrlDark}
+              alt="New Level"
+              fill
+              sizes="48px"
+              className="hidden object-contain object-left dark:block"
+            />
           </div>
         )}
       </div>

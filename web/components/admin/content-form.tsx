@@ -109,6 +109,16 @@ export function ContentForm({
     setPreviewContent(currentContent());
   }
 
+  // Client ask (2026-08-26): "save or cancel buttons" wherever they're
+  // editing. Native form reset reverts every uncontrolled input/textarea to
+  // its defaultValue; auto-resize needs a manual re-run after that since it
+  // only fires on mount/input, not on a programmatic reset.
+  function handleCancel() {
+    if (!confirm("Discard your unsaved changes?")) return;
+    formRef.current?.reset();
+    formRef.current?.querySelectorAll("textarea").forEach((el) => autoResize(el as HTMLTextAreaElement));
+  }
+
   // Scoped preview — just the one section being edited, not the whole
   // homepage, per the client's "that's redundant" note (2026-08-26).
   function handlePreviewSection(title: string, render: (c: SiteContent, images: ReturnType<typeof resolveSiteImages>) => React.ReactNode) {
@@ -317,6 +327,13 @@ export function ContentForm({
           className="font-heading border-border rounded-xl border px-6 py-2.5 text-sm font-semibold"
         >
           Preview whole page
+        </button>
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="font-heading text-muted-foreground hover:text-foreground rounded-xl px-6 py-2.5 text-sm font-semibold"
+        >
+          Cancel
         </button>
       </div>
 

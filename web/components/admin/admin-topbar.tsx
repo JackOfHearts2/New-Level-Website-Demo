@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const LABELS: Record<string, string> = {
   "/admin": "Dashboard",
@@ -58,9 +59,12 @@ export function AdminTopBar() {
         visible ? "translate-y-0" : "-translate-y-full"
       )}
     >
-      <span className="font-heading text-sm font-semibold text-muted-foreground">
-        Admin / <span className="text-foreground">{labelFor(pathname)}</span>
-      </span>
+      <div className="flex items-center justify-between">
+        <span className="font-heading text-sm font-semibold text-muted-foreground">
+          Admin / <span className="text-foreground">{labelFor(pathname)}</span>
+        </span>
+        <ThemeToggle />
+      </div>
     </div>
   );
 }
