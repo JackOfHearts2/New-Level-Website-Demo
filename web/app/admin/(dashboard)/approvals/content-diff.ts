@@ -14,6 +14,34 @@ export function diffSiteContent(base: SiteContent, proposed: SiteContent): DiffE
 
   push("Tagline", base.brand.tagline, proposed.brand.tagline);
   push("About blurb", base.brand.aboutShort, proposed.brand.aboutShort);
+  push("About mission", base.brand.mission, proposed.brand.mission);
+  push("About story", base.brand.story, proposed.brand.story);
+
+  push("Broker's Corner tagline", base.brokersCorner.tagline, proposed.brokersCorner.tagline);
+  push("Broker's Corner intro", base.brokersCorner.intro, proposed.brokersCorner.intro);
+  push("Broker's Corner bio", base.brokersCorner.bio, proposed.brokersCorner.bio);
+
+  base.values.forEach((v, i) => {
+    const next = proposed.values[i];
+    if (!next) return;
+    push(`Value ${i + 1} title`, v.t, next.t);
+    push(`Value ${i + 1} description`, v.d, next.d);
+  });
+
+  base.faqs.forEach((f, i) => {
+    const next = proposed.faqs[i];
+    if (!next) return;
+    push(`FAQ ${i + 1} question`, f.q, next.q);
+    push(`FAQ ${i + 1} answer`, f.a, next.a);
+  });
+
+  base.partners.forEach((p, i) => {
+    const next = proposed.partners[i];
+    if (!next) return;
+    push(`Partner ${i + 1} name`, p.name, next.name);
+    push(`Partner ${i + 1} category`, p.category, next.category);
+    push(`Partner ${i + 1} description`, p.blurb, next.blurb);
+  });
 
   PAGE_CONTENT_KEYS.forEach((key) => {
     const before = base.pages[key];

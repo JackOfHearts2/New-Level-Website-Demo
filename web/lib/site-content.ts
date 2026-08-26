@@ -9,6 +9,10 @@ import {
   TEAM,
   SOCIALS,
   PAGES,
+  VALUES,
+  FAQS,
+  PARTNERS,
+  BROKERS_CORNER,
 } from "./content";
 import { resolveSiteImages } from "./site-content-images";
 import { PAGE_CONTENT_KEYS, type PageContentKey, type PageHeroContent } from "./page-content-keys";
@@ -43,13 +47,17 @@ function pageHeroFromPages(key: Exclude<PageContentKey, "about">): PageHeroConte
 
 export type SiteContent = {
   schemaVersion: 1;
-  brand: { tagline: string; aboutShort: string };
+  brand: { tagline: string; aboutShort: string; mission: string; story: string };
   eventCta: typeof EVENT_CTA;
   trustStats: typeof TRUST_STATS;
   services: typeof SERVICES;
   testimonials: typeof TESTIMONIALS;
   team: typeof TEAM;
   socials: typeof SOCIALS;
+  values: typeof VALUES;
+  faqs: typeof FAQS;
+  partners: typeof PARTNERS;
+  brokersCorner: typeof BROKERS_CORNER;
   pages: Record<PageContentKey, PageHeroContent>;
   // `slots` holds arbitrary keyed image overrides beyond the original two
   // fixed slots — team-<index>/testimonial-<index> today, more as the
@@ -60,13 +68,22 @@ export type SiteContent = {
 
 const DEFAULTS: SiteContent = {
   schemaVersion: SCHEMA_VERSION,
-  brand: { tagline: NLG_BRAND.tagline, aboutShort: NLG_BRAND.aboutShort },
+  brand: {
+    tagline: NLG_BRAND.tagline,
+    aboutShort: NLG_BRAND.aboutShort,
+    mission: NLG_BRAND.mission,
+    story: NLG_BRAND.story,
+  },
   eventCta: EVENT_CTA,
   trustStats: TRUST_STATS,
   services: SERVICES,
   testimonials: TESTIMONIALS,
   team: TEAM,
   socials: SOCIALS,
+  values: VALUES,
+  faqs: FAQS,
+  partners: PARTNERS,
+  brokersCorner: BROKERS_CORNER,
   pages: {
     about: {
       eyebrow: "About New Level",
@@ -104,16 +121,26 @@ export async function getRawSiteContent(): Promise<SiteContent> {
     const stored = await store.get(CONTENT_KEY, { type: "json" });
     if (stored && (stored as SiteContent).schemaVersion === SCHEMA_VERSION) {
       // Shallow-merged with DEFAULTS, not returned as-is: a blob saved
-      // before a new top-level field existed (e.g. `pages`, added
-      // 2026-08-27) won't have that key at all, and every real admin
-      // customization already saved (logo, hero background, edited team
-      // bios, ...) needs to survive — so this can't just bump
-      // SCHEMA_VERSION and fall back to DEFAULTS wholesale either. Only
-      // guards top-level keys; each of those (pages, images, ...) is
-      // itself written as a complete object on every save, so a deeper
-      // merge has never been needed.
+      // before a new top-level field existed (e.g. `pages`/`values`/
+      // `faqs`/`partners`/`brokersCorner`, added 2026-08-27) won't have
+      // that key at all, and every real admin customization already saved
+      // (logo, hero background, edited team bios, ...) needs to survive —
+      // so this can't just bump SCHEMA_VERSION and fall back to DEFAULTS
+      // wholesale either. A brand-new top-level key is fine under a plain
+      // shallow merge (an old blob simply lacks it, so DEFAULTS wins).
+      // `pages` and `brand` each need one level deeper: `pages` because a
+      // stored blob might have SOME page keys but be missing one added
+      // later, and `brand` because 2026-08-27 also added mission/story to
+      // an object (tagline/aboutShort) older blobs already have — a plain
+      // top-level merge would let a stored `brand` missing those two
+      // fields silently blank them instead of falling back to DEFAULTS.
       const raw = stored as Partial<SiteContent>;
-      return { ...DEFAULTS, ...raw, pages: { ...DEFAULTS.pages, ...raw.pages } };
+      return {
+        ...DEFAULTS,
+        ...raw,
+        brand: { ...DEFAULTS.brand, ...raw.brand },
+        pages: { ...DEFAULTS.pages, ...raw.pages },
+      };
     }
   } catch {
     // Blobs unreachable (local dev, or a real outage) — fall back silently

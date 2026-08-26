@@ -6,7 +6,7 @@ import { CrossNav } from "@/components/cross-nav";
 import { ShinePill, ShineCircle, ShineBox } from "@/components/ui/shine-shape";
 import { GlowCard } from "@/components/ui/glow-card";
 import { AskBrokerButton } from "@/components/ask-broker-button";
-import { BROKERS_CORNER } from "@/lib/content";
+import { BrokersCornerIntroSection } from "@/components/sections/brokers-corner-intro-section";
 import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
@@ -28,6 +28,12 @@ export default async function BrokersCornerPage() {
         editKey="brokersCorner"
       />
 
+      <BrokersCornerIntroSection
+        tagline={content.brokersCorner.tagline}
+        intro={content.brokersCorner.intro}
+        bio={content.brokersCorner.bio}
+      />
+
       <section className="mx-auto max-w-3xl px-6 pb-16">
         <GlowCard className="flex flex-col items-center gap-4 p-8 text-center sm:flex-row sm:text-left">
           <ShineCircle className="relative size-16 shrink-0 overflow-hidden rounded-full">
@@ -47,7 +53,6 @@ export default async function BrokersCornerPage() {
             <AskBrokerButton />
           </div>
         </GlowCard>
-        <p className="text-foreground mt-8 text-balance">{BROKERS_CORNER.bio}</p>
       </section>
 
       <section className="mx-auto max-w-4xl px-6 pb-24">

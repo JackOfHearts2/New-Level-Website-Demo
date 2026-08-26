@@ -3,7 +3,7 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
-import { PARTNERS } from "@/lib/content";
+import { PartnersGrid } from "@/components/sections/partners-grid";
 import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
@@ -27,17 +27,7 @@ export default async function PartnersPage() {
       />
 
       <section className="mx-auto max-w-6xl px-6 pb-16">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {PARTNERS.map((p) => (
-            <GlowCard key={p.name} className="p-6">
-              <p className="text-primary font-heading text-xs font-semibold tracking-wide uppercase">
-                {p.category}
-              </p>
-              <h2 className="font-heading mt-1 text-lg font-semibold">{p.name}</h2>
-              <p className="text-foreground mt-2 text-sm">{p.blurb}</p>
-            </GlowCard>
-          ))}
-        </div>
+        <PartnersGrid partners={content.partners} />
       </section>
 
       <section className="mx-auto max-w-3xl px-6 pb-24 text-center">

@@ -4,7 +4,6 @@ import { CrossNav } from "@/components/cross-nav";
 import { FaqList } from "@/components/faq-list";
 import { CtaLink } from "@/components/ui/cta-link";
 import { GlowCard } from "@/components/ui/glow-card";
-import { FAQS } from "@/lib/content";
 import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
@@ -27,7 +26,7 @@ export default async function FaqPage() {
       />
 
       <section className="px-6 pb-16">
-        <FaqList faqs={FAQS} />
+        <FaqList faqs={content.faqs} />
       </section>
 
       <section className="mx-auto max-w-3xl px-6 pb-24 text-center">

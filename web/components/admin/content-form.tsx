@@ -29,6 +29,11 @@ import { EventCtaSection } from "@/components/sections/event-cta-section";
 import { TeamSection } from "@/components/sections/team-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { SiteFooter } from "@/components/sections/site-footer";
+import { AboutMissionStorySection } from "@/components/sections/about-mission-story-section";
+import { AboutValuesSection } from "@/components/sections/about-values-section";
+import { PartnersGrid } from "@/components/sections/partners-grid";
+import { BrokersCornerIntroSection } from "@/components/sections/brokers-corner-intro-section";
+import { FaqList } from "@/components/faq-list";
 import { PageHero } from "@/components/page-hero";
 import { PAGE_CONTENT_KEYS, PAGE_CONTENT_LABELS } from "@/lib/page-content-keys";
 
@@ -311,6 +316,11 @@ const SECTION_NAV = [
   { id: "section-testimonials", label: "Testimonials" },
   { id: "section-team", label: "Team" },
   { id: "section-social", label: "Social links" },
+  { id: "section-about-content", label: "About content" },
+  { id: "section-values", label: "Values" },
+  { id: "section-partners", label: "Partners" },
+  { id: "section-faqs", label: "FAQs" },
+  { id: "section-brokers-corner", label: "Broker's Corner" },
   ...PAGE_CONTENT_KEYS.map((key) => ({
     id: `section-page-${key}`,
     label: `${PAGE_CONTENT_LABELS[key]} page`,
@@ -678,6 +688,146 @@ export function ContentForm({
         ))}
       </Section>
 
+      <Section
+        id="section-about-content"
+        legend="About content"
+        showControls={showSectionControls}
+        isEditor={isEditor}
+        onPreview={() =>
+          handlePreviewSection("About content", (c) => (
+            <AboutMissionStorySection mission={c.brand.mission} story={c.brand.story} />
+          ))
+        }
+      >
+        <Field
+          label="Mission"
+          name="brand.mission"
+          defaultValue={content.brand.mission}
+          textarea
+        />
+        <Field
+          label="Story"
+          name="brand.story"
+          defaultValue={content.brand.story}
+          textarea
+        />
+      </Section>
+
+      <Section
+        id="section-values"
+        legend="Values"
+        showControls={showSectionControls}
+        isEditor={isEditor}
+        onPreview={() => handlePreviewSection("Values", (c) => <AboutValuesSection values={c.values} />)}
+      >
+        {content.values.map((value, i) => (
+          <div key={i} className="grid min-w-0 gap-3 sm:grid-cols-2">
+            <Field
+              label={`Title ${i + 1}`}
+              name={`values.${i}.t`}
+              defaultValue={value.t}
+            />
+            <div className="min-w-0 sm:col-span-2">
+              <Field
+                label={`Description ${i + 1}`}
+                name={`values.${i}.d`}
+                defaultValue={value.d}
+                textarea
+              />
+            </div>
+          </div>
+        ))}
+      </Section>
+
+      <Section
+        id="section-partners"
+        legend="Partners"
+        showControls={showSectionControls}
+        isEditor={isEditor}
+        onPreview={() => handlePreviewSection("Partners", (c) => <PartnersGrid partners={c.partners} />)}
+      >
+        {content.partners.map((p, i) => (
+          <div key={i} className="grid min-w-0 gap-3 sm:grid-cols-2">
+            <Field
+              label={`Name ${i + 1}`}
+              name={`partners.${i}.name`}
+              defaultValue={p.name}
+            />
+            <Field
+              label={`Category ${i + 1}`}
+              name={`partners.${i}.category`}
+              defaultValue={p.category}
+            />
+            <div className="min-w-0 sm:col-span-2">
+              <Field
+                label={`Description ${i + 1}`}
+                name={`partners.${i}.blurb`}
+                defaultValue={p.blurb}
+                textarea
+              />
+            </div>
+          </div>
+        ))}
+      </Section>
+
+      <Section
+        id="section-faqs"
+        legend="FAQs"
+        showControls={showSectionControls}
+        isEditor={isEditor}
+        onPreview={() => handlePreviewSection("FAQs", (c) => <FaqList faqs={c.faqs} />)}
+      >
+        {content.faqs.map((f, i) => (
+          <div key={i} className="space-y-2">
+            <Field
+              label={`Question ${i + 1}`}
+              name={`faqs.${i}.q`}
+              defaultValue={f.q}
+            />
+            <Field
+              label={`Answer ${i + 1}`}
+              name={`faqs.${i}.a`}
+              defaultValue={f.a}
+              textarea
+            />
+          </div>
+        ))}
+      </Section>
+
+      <Section
+        id="section-brokers-corner"
+        legend="Broker's Corner"
+        showControls={showSectionControls}
+        isEditor={isEditor}
+        onPreview={() =>
+          handlePreviewSection("Broker's Corner", (c) => (
+            <BrokersCornerIntroSection
+              tagline={c.brokersCorner.tagline}
+              intro={c.brokersCorner.intro}
+              bio={c.brokersCorner.bio}
+            />
+          ))
+        }
+      >
+        <Field
+          label="Tagline"
+          name="brokersCorner.tagline"
+          defaultValue={content.brokersCorner.tagline}
+        />
+        <Field
+          label="Intro"
+          name="brokersCorner.intro"
+          defaultValue={content.brokersCorner.intro}
+          textarea
+        />
+        <Field
+          label="Bio"
+          name="brokersCorner.bio"
+          defaultValue={content.brokersCorner.bio}
+          textarea
+        />
+      </Section>
+
       {/* One section per landing page's hero copy (client ask, 2026-08-27:
           "for the rest of the web page... make sure that we can edit
           every element... it has to be labeled so that when someone is
@@ -687,10 +837,11 @@ export function ContentForm({
           itself (see PageHero/InlineEditable) — this is the only surface
           editors have for them, since inline editing is admin-only.
           Preview renders the real PageHero component so "where does this
-          show up" is never a guess. Deep-dive body content per page
-          (About's mission/story, FAQ answers, Services detail cards, ...)
-          isn't covered yet — flagged as the next phase, not silently
-          left out. */}
+          show up" is never a guess. Deep-dive body content — About's
+          mission/story/values, Partners, FAQs, Broker's Corner's tagline/
+          intro/bio — is now covered by the dedicated sections above; only
+          Services' per-card detail copy (long descriptions, capability
+          lists on services/[slug]) remains out of scope. */}
       {PAGE_CONTENT_KEYS.map((key) => {
         const page = content.pages[key];
         const label = PAGE_CONTENT_LABELS[key];

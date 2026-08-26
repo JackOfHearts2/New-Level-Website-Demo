@@ -10,6 +10,10 @@ const SECTION_LABELS: Record<string, string> = {
   team: "Team",
   socials: "Social links",
   pages: "Page headers",
+  values: "Values",
+  faqs: "FAQs",
+  partners: "Partners",
+  brokersCorner: "Broker's Corner",
 };
 
 // Only these top-level keys are ever field-editable from ContentForm —

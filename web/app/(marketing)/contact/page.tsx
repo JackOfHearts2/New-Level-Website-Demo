@@ -3,7 +3,6 @@ import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
 import { FaqList } from "@/components/faq-list";
 import { CtaLink } from "@/components/ui/cta-link";
-import { FAQS } from "@/lib/content";
 import { getSiteContent } from "@/lib/site-content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 import { ContactForm } from "./contact-form";
@@ -43,7 +42,7 @@ export default async function ContactPage({
           Quick answers
         </h2>
         <div className="mt-8">
-          <FaqList faqs={FAQS.slice(0, 3)} />
+          <FaqList faqs={content.faqs.slice(0, 3)} />
         </div>
         <div className="mt-8 flex justify-center">
           <CtaLink href="/faq">See the full FAQ</CtaLink>

@@ -40,12 +40,41 @@ function urlField(formData: FormData, name: string, max: number, fallback: strin
 export function contentToFormData(
   content: Pick<
     SiteContent,
-    "brand" | "eventCta" | "trustStats" | "services" | "testimonials" | "team" | "socials" | "pages"
+    | "brand"
+    | "eventCta"
+    | "trustStats"
+    | "services"
+    | "testimonials"
+    | "team"
+    | "socials"
+    | "pages"
+    | "values"
+    | "faqs"
+    | "partners"
+    | "brokersCorner"
   >
 ): FormData {
   const fd = new FormData();
   fd.set("brand.tagline", content.brand.tagline);
   fd.set("brand.aboutShort", content.brand.aboutShort);
+  fd.set("brand.mission", content.brand.mission);
+  fd.set("brand.story", content.brand.story);
+  fd.set("brokersCorner.tagline", content.brokersCorner.tagline);
+  fd.set("brokersCorner.intro", content.brokersCorner.intro);
+  fd.set("brokersCorner.bio", content.brokersCorner.bio);
+  content.values.forEach((v, i) => {
+    fd.set(`values.${i}.t`, v.t);
+    fd.set(`values.${i}.d`, v.d);
+  });
+  content.faqs.forEach((f, i) => {
+    fd.set(`faqs.${i}.q`, f.q);
+    fd.set(`faqs.${i}.a`, f.a);
+  });
+  content.partners.forEach((p, i) => {
+    fd.set(`partners.${i}.name`, p.name);
+    fd.set(`partners.${i}.category`, p.category);
+    fd.set(`partners.${i}.blurb`, p.blurb);
+  });
   PAGE_CONTENT_KEYS.forEach((key) => {
     const page = content.pages[key];
     fd.set(`pages.${key}.eyebrow`, page.eyebrow);
@@ -88,7 +117,27 @@ export function buildContentFromFormData(current: SiteContent, formData: FormDat
     brand: {
       tagline: field(formData, "brand.tagline", SHORT),
       aboutShort: field(formData, "brand.aboutShort", LONG),
+      mission: field(formData, "brand.mission", LONG),
+      story: field(formData, "brand.story", LONG),
     },
+    brokersCorner: {
+      tagline: field(formData, "brokersCorner.tagline", SHORT),
+      intro: field(formData, "brokersCorner.intro", LONG),
+      bio: field(formData, "brokersCorner.bio", LONG),
+    },
+    values: current.values.map((v, i) => ({
+      t: field(formData, `values.${i}.t`, SHORT),
+      d: field(formData, `values.${i}.d`, MEDIUM),
+    })),
+    faqs: current.faqs.map((f, i) => ({
+      q: field(formData, `faqs.${i}.q`, MEDIUM),
+      a: field(formData, `faqs.${i}.a`, LONG),
+    })),
+    partners: current.partners.map((p, i) => ({
+      name: field(formData, `partners.${i}.name`, SHORT),
+      category: field(formData, `partners.${i}.category`, SHORT),
+      blurb: field(formData, `partners.${i}.blurb`, MEDIUM),
+    })),
     pages: Object.fromEntries(
       PAGE_CONTENT_KEYS.map((key) => [
         key,
