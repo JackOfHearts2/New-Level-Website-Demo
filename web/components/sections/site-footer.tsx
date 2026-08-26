@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUp, ArrowUpRight } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Home, BadgeCheck, Accessibility } from "lucide-react";
 import { FOOTER_NAV, NLG_BRAND } from "@/lib/content";
 import type { SOCIALS } from "@/lib/content";
 import { SOCIAL_ICONS } from "@/components/social-icons";
@@ -113,6 +113,31 @@ export function SiteFooter({
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Generic text+icon badges, not a reproduction of NAR's/HUD's actual
+          licensed trademark artwork — client ask (2026-08-26) for a
+          Realtor®/Equal Housing/Accessibility presence in the footer.
+          Real REALTOR® membership status isn't confirmed for this demo,
+          same caveat as the other known placeholders (phone, broker
+          license #) tracked in CLAUDE.md. */}
+      <div className="text-muted-foreground flex flex-wrap items-center justify-center gap-4 pb-6 text-xs font-medium">
+        <span className="flex items-center gap-1.5" title="Equal Housing Opportunity">
+          <Home className="size-4" aria-hidden />
+          Equal Housing Opportunity
+        </span>
+        <span className="flex items-center gap-1.5" title="REALTOR®">
+          <BadgeCheck className="size-4" aria-hidden />
+          REALTOR®
+        </span>
+        <Link
+          href="/accessibility"
+          className="hover:text-primary flex items-center gap-1.5 transition-colors"
+          title="Accessibility Statement"
+        >
+          <Accessibility className="size-4" aria-hidden />
+          Accessibility
+        </Link>
       </div>
 
       {/* mb-24 on mobile: the fixed MobileDock always floats over whatever

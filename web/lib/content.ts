@@ -127,6 +127,11 @@ export const PAGES = {
     heading: "Fair Housing Statement",
     sub: "Our commitment to equal housing opportunity.",
   },
+  accessibility: {
+    eyebrow: "Legal",
+    heading: "Accessibility Statement",
+    sub: "Our commitment to a site everyone can use.",
+  },
 };
 
 // Draft/demo content — written to accurately describe what this actual
@@ -245,6 +250,25 @@ export const FAIR_HOUSING_SECTIONS = [
   {
     t: "Reporting a concern",
     d: "If you believe you've experienced discrimination in connection with any New Level property or service, you can contact us directly, or file a complaint with the U.S. Department of Housing and Urban Development (HUD) at hud.gov/fairhousing.",
+  },
+];
+
+export const ACCESSIBILITY_SECTIONS = [
+  {
+    t: "Our commitment",
+    d: "New Level wants this site to be usable by as many people as possible, including people who use a screen reader, navigate by keyboard alone, or rely on other assistive technology. Accessibility is an ongoing effort, not a one-time checkbox.",
+  },
+  {
+    t: "What's in place today",
+    d: "A \"skip to content\" link lets keyboard users jump past repeated navigation on every page. Interactive elements use real semantic HTML (buttons, links, form labels) rather than divs standing in for controls, so screen readers can identify them correctly. Color choices are checked for contrast against the site's black/white/green palette, and no information on the site is conveyed by color alone.",
+  },
+  {
+    t: "Known gaps",
+    d: "This is a demo site under active development, and a full WCAG 2.1 AA audit hasn't been completed yet. If you encounter something that doesn't work with your assistive technology, please tell us using the contact info below so it can be fixed.",
+  },
+  {
+    t: "Reporting an issue",
+    d: "If any part of this site is difficult to access or use, contact us directly and describe the issue and the assistive technology you were using. We'll work to address it.",
   },
 ];
 
@@ -789,6 +813,7 @@ export const FOOTER_NAV = [
       { label: "Terms of Use", href: "/terms" },
       { label: "Risk Disclosure", href: "/risk-disclosure" },
       { label: "Fair Housing", href: "/fair-housing" },
+      { label: "Accessibility", href: "/accessibility" },
     ],
   },
 ];

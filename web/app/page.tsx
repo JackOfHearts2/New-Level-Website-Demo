@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { SkipToContent } from "@/components/skip-to-content";
 import { HeroSection } from "@/components/ui/hero-section";
 import { SearchBox } from "@/components/search-box";
 import { AboutSection } from "@/components/sections/about-section";
@@ -13,6 +14,7 @@ import { FloatingActions } from "@/components/floating-actions";
 import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { SiteTour } from "@/components/site-tour";
 import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { AutoSignInModal } from "@/components/auto-signin-modal";
 import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { EditModeProvider } from "@/components/edit-mode/edit-mode-context";
@@ -29,12 +31,13 @@ export default async function Home({
 
   return (
     <EditModeProvider initialContent={content}>
+      <SkipToContent />
       <HeroSection
         logoUrl={content.images.logoUrl}
         logoUrlDark={content.images.logoUrlDark}
         heroBgUrl={content.images.heroBgUrl}
       />
-      <div className="pb-24 md:pb-0">
+      <div id="main-content" className="pb-24 md:pb-0">
         <SearchBox />
         <AboutSection
           aboutShort={content.brand.aboutShort}
@@ -68,6 +71,7 @@ export default async function Home({
         <AutoSignInModal />
       </Suspense>
       <PageViewTracker />
+      <CookieConsentBanner />
     </EditModeProvider>
   );
 }

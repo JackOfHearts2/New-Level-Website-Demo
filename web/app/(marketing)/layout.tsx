@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { SkipToContent } from "@/components/skip-to-content";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { MobileDock } from "@/components/mobile-dock";
@@ -6,6 +7,7 @@ import { FloatingActions } from "@/components/floating-actions";
 import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { PageTransition } from "@/components/page-transition";
 import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { AutoSignInModal } from "@/components/auto-signin-modal";
 import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { EditModeProvider } from "@/components/edit-mode/edit-mode-context";
@@ -21,11 +23,12 @@ export default async function MarketingLayout({
 
   return (
     <EditModeProvider initialContent={content}>
+      <SkipToContent />
       <SiteHeader
         logoUrl={content.images.logoUrl}
         logoUrlDark={content.images.logoUrlDark}
       />
-      <div className="pb-24 md:pb-0">
+      <div id="main-content" className="pb-24 md:pb-0">
         <PageTransition>{children}</PageTransition>
       </div>
       <SiteFooter
@@ -43,6 +46,7 @@ export default async function MarketingLayout({
         <AutoSignInModal />
       </Suspense>
       <PageViewTracker />
+      <CookieConsentBanner />
     </EditModeProvider>
   );
 }

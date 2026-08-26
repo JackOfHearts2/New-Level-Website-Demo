@@ -50,6 +50,7 @@ export function SubscribeForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [wantsAccount, setWantsAccount] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result>({ kind: "idle" });
@@ -61,6 +62,10 @@ export function SubscribeForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!e.currentTarget.reportValidity()) return;
+    if (!consent) {
+      setResult({ kind: "error", message: "Please agree to be contacted before subscribing." });
+      return;
+    }
     setLoading(true);
     setResult({ kind: "idle" });
     const supabase = createClient();
@@ -211,6 +216,25 @@ export function SubscribeForm() {
               />
             </div>
           )}
+        </div>
+
+        {/* Explicit consent checkbox — client ask (2026-08-26): "get
+            exclusive listings via email sign up... with an agreement box
+            that they click to give consent to be contacted." Kept separate
+            from the "also create an account" checkbox above; this one
+            gates every subscribe path, not just the account-creation one. */}
+        <div className="flex items-start gap-2.5">
+          <Checkbox
+            id="subscribe-consent"
+            checked={consent}
+            onCheckedChange={(checked) => setConsent(checked === true)}
+            className="mt-0.5"
+          />
+          <Label htmlFor="subscribe-consent" className="flex-1 font-normal">
+            <span className="block text-sm">
+              I agree to be contacted by New Level about the updates I selected above.
+            </span>
+          </Label>
         </div>
 
         {result.kind === "error" && (
