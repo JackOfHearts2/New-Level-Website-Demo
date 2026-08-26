@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { PasswordField } from "@/components/ui/password-field";
 import {
   requestPasswordChangeCode,
   confirmPasswordChange,
@@ -92,25 +93,23 @@ export function ChangePasswordForm() {
     <form action={step1Action} onSubmit={() => setForcePasswordView(false)} className="space-y-4">
       <label className="block text-sm">
         <span className="font-heading font-medium">Current password</span>
-        <input
+        <PasswordField
           name="currentPassword"
-          type="password"
           required
           autoComplete="current-password"
-          className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="mt-1"
         />
       </label>
       <label className="block text-sm">
         <span className="font-heading font-medium">New password</span>
-        <input
+        <PasswordField
           name="newPassword"
-          type="password"
           required
           minLength={6}
           autoComplete="new-password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          className="border-border mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="mt-1"
         />
       </label>
       <p className="text-muted-foreground text-xs">

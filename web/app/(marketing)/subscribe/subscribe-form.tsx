@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { GlowCard } from "@/components/ui/glow-card";
 import { Input } from "@/components/ui/input";
+import { PasswordField } from "@/components/ui/password-field";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -206,9 +207,8 @@ export function SubscribeForm() {
           {wantsAccount && (
             <div className="mt-4 space-y-2">
               <Label htmlFor="subscribe-password">Password</Label>
-              <Input
+              <PasswordField
                 id="subscribe-password"
-                type="password"
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

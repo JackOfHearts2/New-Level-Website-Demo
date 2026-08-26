@@ -3,6 +3,7 @@
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import { PasswordField } from "@/components/ui/password-field";
 import { createClient } from "@/lib/supabase/client";
 import { requestOnboardingCode, confirmOnboardingCode, type OnboardingState } from "./actions";
 
@@ -176,25 +177,23 @@ export function OnboardingFlow() {
       <p className="text-muted-foreground text-sm">Set a password to finish setting up your account.</p>
       <label className="block text-sm">
         <span className="font-heading font-medium">Password</span>
-        <input
-          type="password"
+        <PasswordField
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           minLength={6}
           required
           autoFocus
-          className="border-border mt-1.5 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="mt-1.5"
         />
       </label>
       <label className="block text-sm">
         <span className="font-heading font-medium">Confirm password</span>
-        <input
-          type="password"
+        <PasswordField
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           minLength={6}
           required
-          className="border-border mt-1.5 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="mt-1.5"
         />
       </label>
       {passwordError && (

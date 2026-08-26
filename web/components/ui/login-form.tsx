@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Lock, ArrowRight } from "lucide-react";
+import { User, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 // The reference used a custom WebGL shader (SmokeyBackground) behind the
@@ -55,6 +55,7 @@ export function LoginForm({
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [loading, setLoading] = useState(false);
   const [emailValue, setEmailValue] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const isSignIn = mode === "signin";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -193,10 +194,10 @@ export function LoginForm({
 
           <div className="relative z-0">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               id="floating_password"
-              className="peer block w-full appearance-none border-0 border-b-2 border-white/40 bg-transparent px-0 py-2.5 text-sm text-white focus:border-primary focus:ring-0 focus:outline-none"
+              className="peer block w-full appearance-none border-0 border-b-2 border-white/40 bg-transparent px-0 py-2.5 pr-8 text-sm text-white focus:border-primary focus:ring-0 focus:outline-none"
               placeholder=" "
               minLength={6}
               required
@@ -208,6 +209,15 @@ export function LoginForm({
               <Lock className="mr-2 -mt-1 inline-block" size={16} />
               Password
             </label>
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              tabIndex={-1}
+              className="absolute top-2.5 right-0 text-white/70 hover:text-white"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
 
           {isSignIn && (

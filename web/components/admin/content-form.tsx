@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -58,6 +58,22 @@ function Field({
     "border-border bg-background mt-1.5 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Was an inline ref-callback (`ref={(el) => { ...; autoResize(el); }}`)
+  // that ran autoResize on every render of this Field, not just mount —
+  // an inline arrow function is a new reference every render, so React
+  // detaches/reattaches the ref (calling it again) each time, regardless
+  // of whether this field's own content changed. With every section's
+  // fields re-rendering together whenever any of this page's shared state
+  // updates (a preview, a save, another section's status message), that
+  // meant every textarea on the page needlessly re-measured/resized on
+  // each of those — a real, measurable source of the "still feels janky"
+  // feedback (2026-08-27), not just this one field's own typing. A plain
+  // ref + a mount-only effect runs it exactly once for the initial value,
+  // leaving onInput as the only thing that resizes it afterward.
+  useEffect(() => {
+    autoResize(textareaRef.current);
+  }, []);
+
   return (
     <label className="block">
       <span className="font-heading text-base font-semibold">{label}</span>
@@ -67,10 +83,7 @@ function Field({
             <RichTextToolbar targetRef={textareaRef} />
           </div>
           <textarea
-            ref={(el) => {
-              textareaRef.current = el;
-              autoResize(el);
-            }}
+            ref={textareaRef}
             name={name}
             defaultValue={defaultValue}
             rows={3}
@@ -369,15 +382,23 @@ export function ContentForm({
   return (
     <div className="space-y-6">
       {/* Jump-nav (queue item 3, 2026-08-26): "not a menu, but... they
-          need to be able to filter through what they are changing." A
-          sticky row of anchor links into the sections below, rather than
-          scrolling through a ~7-section form to find the one that matters. */}
-      <div className="border-border bg-card sticky top-16 z-10 -mx-1 flex flex-wrap gap-1 rounded-xl border p-2 shadow-sm">
+          need to be able to filter through what they are changing." Client
+          feedback (2026-08-27): the original sticky+flex-wrap version was
+          "too full" (7 pills wrapping to 2 lines) and "looked off" when
+          scrolling — it stuck at a fixed top-16 offset assuming AdminTopBar
+          always occupies that space, but AdminTopBar hides itself
+          (translates out of view, still sticky so its layout space doesn't
+          collapse) on scroll-down, leaving dead space above this bar right
+          where it mattered. Redesigned as a single-line horizontally-
+          scrollable row instead of sticky+wrapping — stays compact, and
+          dropping `sticky` removes the AdminTopBar interaction entirely
+          rather than trying to keep the two in sync. */}
+      <div className="border-border bg-card -mx-1 flex flex-nowrap gap-1 overflow-x-auto rounded-xl border p-2 shadow-sm">
         {SECTION_NAV.map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
-            className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
+            className="text-muted-foreground hover:bg-muted hover:text-foreground shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
           >
             {s.label}
           </a>
