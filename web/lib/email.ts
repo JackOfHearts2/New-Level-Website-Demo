@@ -1,5 +1,6 @@
 import "server-only";
 import { Resend } from "resend";
+import { getSettings } from "@/lib/settings";
 
 /**
  * Admin notification emails (a pending change to review, a new bug report).
@@ -48,6 +49,11 @@ export async function notifyPendingChangeRequest(request: {
   submitterEmail: string;
   imageSlot?: string;
 }) {
+  // Fail-open: if Settings can't be read, send anyway — matches the
+  // always-on behavior this toggle is layered on top of.
+  const settings = await getSettings().catch(() => null);
+  if (settings && !settings.notifyOnSubmission) return;
+
   const what =
     request.targetType === "image"
       ? `an image update (${request.imageSlot})`
@@ -66,6 +72,9 @@ export async function notifyProblemReport(report: {
   details: string;
   pageUrl: string;
 }) {
+  const settings = await getSettings().catch(() => null);
+  if (settings && !settings.notifyOnReport) return;
+
   await sendAdminNotification({
     subject: `New Level: a visitor reported a problem (${report.issueType})`,
     html: `

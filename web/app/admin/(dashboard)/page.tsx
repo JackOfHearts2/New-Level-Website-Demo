@@ -62,12 +62,24 @@ export default async function AdminHomePage() {
           description="Problems visitors have flagged from the site."
         />
         {auth.role === "admin" && (
-          <Tile
-            href="/admin/editors"
-            title="Editors"
-            description="Grant or revoke editor access."
-          />
+          <>
+            <Tile
+              href="/admin/editors"
+              title="Editors"
+              description="Grant or revoke editor access."
+            />
+            <Tile
+              href="/admin/activity"
+              title="Activity"
+              description="A running record of everything that&apos;s happened."
+            />
+          </>
         )}
+        <Tile
+          href="/admin/settings"
+          title="Settings"
+          description="Your account and notification preferences."
+        />
       </div>
     </div>
   );

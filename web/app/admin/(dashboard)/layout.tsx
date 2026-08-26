@@ -54,8 +54,12 @@ export default async function AdminDashboardLayout({
               Reports
             </NavLink>
             {auth.role === "admin" && (
-              <NavLink href="/admin/editors">Editors</NavLink>
+              <>
+                <NavLink href="/admin/editors">Editors</NavLink>
+                <NavLink href="/admin/activity">Activity</NavLink>
+              </>
             )}
+            <NavLink href="/admin/settings">Settings</NavLink>
           </nav>
           <div className="flex items-center gap-3">
             <Link
