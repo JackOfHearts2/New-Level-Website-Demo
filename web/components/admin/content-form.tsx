@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { SiteContent, getSiteContent } from "@/lib/site-content";
 import { buildContentFromFormData } from "@/lib/site-content-form";
@@ -162,7 +163,14 @@ function SectionControls({
   function handleSave() {
     setState(undefined);
     startTransition(async () => {
-      setState(await saveContentSection(collectFieldValues()));
+      const result = await saveContentSection(collectFieldValues());
+      setState(result);
+      if (result?.error) toast.error(result.error);
+      else if (result?.ok) {
+        toast.success(
+          result.pending ? `"${legend}" submitted for admin approval` : `"${legend}" saved — now live`
+        );
+      }
     });
   }
 
@@ -193,7 +201,10 @@ function SectionControls({
   function handleSaveDraft() {
     setDraftState(undefined);
     startTransition(async () => {
-      setDraftState(await saveContentSectionDraft(collectFieldValues()));
+      const result = await saveContentSectionDraft(collectFieldValues());
+      setDraftState(result);
+      if (result?.error) toast.error(result.error);
+      else if (result?.ok) toast.success(`"${legend}" saved as a draft`);
     });
   }
 
@@ -334,6 +345,20 @@ export function ContentForm({
   const [draftState, setDraftState] = useState<DraftFormState>(undefined);
   const [savingDraft, startDraftTransition] = useTransition();
 
+  // The whole-page submit goes through a native <form action={formAction}>
+  // (useActionState), not a click handler this component controls directly
+  // — a result-keyed effect is the only place to fire a toast once `state`
+  // actually changes, without also firing on the initial (undefined) render.
+  useEffect(() => {
+    if (!state) return;
+    if (state.error) toast.error(state.error);
+    else if (state.ok) {
+      if (state.draft) toast.success("Saved as a draft");
+      else if (state.pending) toast.success(`${reviseRequestId ? "Resubmitted" : "Submitted"} for admin approval`);
+      else toast.success("Saved — the live homepage now reflects these changes");
+    }
+  }, [state, reviseRequestId]);
+
   const isEditor = role === "editor";
   // Not editor-gated: an admin can now also save a draft (client ask,
   // 2026-08-26) and resume it from here. Resuming always goes through the
@@ -352,6 +377,8 @@ export function ContentForm({
     startDraftTransition(async () => {
       const result = await saveContentDraft(undefined, fd);
       setDraftState(result);
+      if (result?.error) toast.error(result.error);
+      else if (result?.ok) toast.success("Saved as a draft");
       if (result?.ok && result.draftId) {
         router.push(`/admin/approvals/${result.draftId}/revise`);
       }

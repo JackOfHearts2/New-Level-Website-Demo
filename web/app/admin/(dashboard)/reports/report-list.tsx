@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { resolveReport, reopenReport } from "./actions";
 
 export type ReportItem = {
@@ -75,6 +76,7 @@ function ReportRow({ report }: { report: ReportItem }) {
         onClick={() =>
           startTransition(async () => {
             await (report.status === "open" ? resolveReport(report.id) : reopenReport(report.id));
+            toast.success(report.status === "open" ? "Report marked resolved" : "Report reopened");
             router.refresh();
           })
         }

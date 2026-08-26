@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { toast } from "sonner";
 import type { SiteContent } from "@/lib/site-content";
 import { saveImage, type FormState } from "@/app/admin/(dashboard)/actions";
 import { updateOwnImageRequest } from "@/app/admin/(dashboard)/approvals/actions";
@@ -104,11 +105,19 @@ export function ImageForm({
           ? await updateOwnImageRequest(reviseRequestId, formData)
           : await saveImage(undefined, formData);
         setState(result);
+        if (result?.error) {
+          toast.error(result.error);
+        } else if (result?.ok) {
+          toast.success(
+            result.pending ? `"${label}" submitted for admin approval` : `"${label}" uploaded — now live`
+          );
+        }
         if (result?.ok && !result?.pending) {
           setLivePreviewUrl(objectUrl);
         }
       } catch {
         setState({ error: "Couldn't process that image." });
+        toast.error("Couldn't process that image.");
       } finally {
         if (inputRef.current) inputRef.current.value = "";
       }

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { sniffImageType } from "@/lib/image-sniff";
 import { buildContentFromFormData } from "@/lib/site-content-form";
 import { logActivity } from "@/lib/activity-log";
+import { diffSiteContent, describeContentChanges } from "@/lib/activity-diff";
 import {
   getRawSiteContent,
   saveSiteContent,
@@ -23,6 +24,7 @@ type ChangeRequestRow = {
   target_type: "content" | "image";
   image_slot: string | null;
   proposed_content: SiteContent | null;
+  base_content: SiteContent | null;
   storage_path: string | null;
   status: "draft" | "pending" | "changes_requested" | "approved" | "rejected" | "withdrawn";
 };
@@ -30,11 +32,23 @@ type ChangeRequestRow = {
 async function loadRequest(supabase: Awaited<ReturnType<typeof createClient>>, id: string) {
   const { data, error } = await supabase
     .from("content_change_requests")
-    .select("id, submitted_by, target_type, image_slot, proposed_content, storage_path, status")
+    .select("id, submitted_by, target_type, image_slot, proposed_content, base_content, storage_path, status")
     .eq("id", id)
     .single<ChangeRequestRow>();
   if (error || !data) return null;
   return data;
+}
+
+/** Same "pinpoint the area, and whether it was added/removed/updated" ask
+ *  as persistContent/persistDraft in ../actions.ts, applied to a request
+ *  row instead of two SiteContent params directly — an image-slot request
+ *  has no base/proposed content to diff, so this just names the slot. */
+function describeRequestChange(row: ChangeRequestRow): string | null {
+  if (row.target_type === "image") {
+    return row.image_slot ? `Photo (${row.image_slot})` : null;
+  }
+  if (!row.base_content || !row.proposed_content) return null;
+  return describeContentChanges(diffSiteContent(row.base_content, row.proposed_content));
 }
 
 export async function approveRequest(id: string): Promise<ActionResult> {
@@ -99,12 +113,15 @@ export async function approveRequest(id: string): Promise<ActionResult> {
     .eq("id", id);
   if (updateError) return { error: "Saved, but couldn't update the request's status." };
 
+  const changeDescription = describeRequestChange(row);
   await logActivity(supabase, {
     actorId: auth.userId,
     eventType: "submission_approved",
     targetTable: "content_change_requests",
     targetId: id,
-    summary: `${auth.email} approved a ${row.target_type} change`,
+    summary: changeDescription
+      ? `${auth.email} approved a ${row.target_type} change — ${changeDescription}`
+      : `${auth.email} approved a ${row.target_type} change`,
   });
 
   revalidatePath("/");
@@ -137,12 +154,15 @@ export async function rejectRequest(id: string, note: string): Promise<ActionRes
     .eq("id", id);
   if (updateError) return { error: "Couldn't reject the request." };
 
+  const changeDescription = describeRequestChange(row);
   await logActivity(supabase, {
     actorId: auth.userId,
     eventType: "submission_rejected",
     targetTable: "content_change_requests",
     targetId: id,
-    summary: `${auth.email} rejected a ${row.target_type} change`,
+    summary: changeDescription
+      ? `${auth.email} rejected a ${row.target_type} change — ${changeDescription}`
+      : `${auth.email} rejected a ${row.target_type} change`,
   });
 
   revalidatePath("/admin/approvals");
@@ -172,12 +192,15 @@ export async function requestChanges(id: string, note: string): Promise<ActionRe
     .eq("id", id);
   if (updateError) return { error: "Couldn't request changes." };
 
+  const changeDescription = describeRequestChange(row);
   await logActivity(supabase, {
     actorId: auth.userId,
     eventType: "submission_changes_requested",
     targetTable: "content_change_requests",
     targetId: id,
-    summary: `${auth.email} requested changes on a ${row.target_type} submission`,
+    summary: changeDescription
+      ? `${auth.email} requested changes on a ${row.target_type} submission — ${changeDescription}`
+      : `${auth.email} requested changes on a ${row.target_type} submission`,
   });
 
   revalidatePath("/admin/approvals");
@@ -263,22 +286,35 @@ export async function updateOwnContentRequest(
   // skips the admin notification email: nothing needs an admin's attention
   // yet, since drafts stay invisible to them until submitted.
   if (keepAsDraft) {
+    const draftChangeDescription = row.proposed_content
+      ? describeContentChanges(diffSiteContent(row.proposed_content, next))
+      : null;
     await logActivity(supabase, {
       actorId: auth.userId,
       eventType: "content_draft_saved",
       targetTable: "content_change_requests",
       targetId: id,
-      summary: `${auth.email} updated a content draft`,
+      summary: draftChangeDescription
+        ? `${auth.email} updated a content draft — ${draftChangeDescription}`
+        : `${auth.email} updated a content draft`,
     });
     return { ok: true, draft: true };
   }
 
+  // Diffed against the request's OWN previous proposed content (what an
+  // admin last reviewed), not the live site — that's what actually changed
+  // in this revision, which is the thing worth pinpointing here.
+  const revisionChangeDescription = row.proposed_content
+    ? describeContentChanges(diffSiteContent(row.proposed_content, next))
+    : null;
   await logActivity(supabase, {
     actorId: auth.userId,
     eventType: "submission_updated",
     targetTable: "content_change_requests",
     targetId: id,
-    summary: `${auth.email} revised and resubmitted a content change`,
+    summary: revisionChangeDescription
+      ? `${auth.email} revised and resubmitted a content change — ${revisionChangeDescription}`
+      : `${auth.email} revised and resubmitted a content change`,
   });
 
   revalidatePath("/admin/approvals");

@@ -119,8 +119,13 @@ export default async function AnalyticsPage() {
         </p>
       </div>
 
-      <section className="space-y-4">
-        <h2 className="font-heading text-sm font-semibold">Traffic — last {DAYS} days</h2>
+      {/* scroll-mt-24 clears AdminTopBar's sticky height, same as the
+          jump-nav targets in content-form.tsx's Section wrapper — the
+          dashboard's overview cards link straight into these two ids
+          (client ask, 2026-08-27: "the dashboard icons also need to take
+          you to that particular part in the analytics page"). */}
+      <section id="analytics-traffic" className="scroll-mt-24 space-y-4">
+        <h2 className="font-heading text-lg font-semibold">Traffic — last {DAYS} days</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <StatTile label="Pageviews" value={String(views.length)} />
           <StatTile label="Unique sessions" value={String(uniqueSessions)} />
@@ -133,13 +138,13 @@ export default async function AnalyticsPage() {
           <DailyViewsChart data={daily} />
         </GlowCard>
         <GlowCard className="p-5">
-          <h3 className="mb-3 text-sm font-semibold">Top pages</h3>
+          <h3 className="font-heading mb-3 text-base font-semibold">Top pages</h3>
           <RankedBarList rows={topPages} />
         </GlowCard>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="font-heading text-sm font-semibold">Team activity — all time</h2>
+      <section id="analytics-team-activity" className="scroll-mt-24 space-y-4">
+        <h2 className="font-heading text-lg font-semibold">Team activity — all time</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <StatTile label="Total submissions" value={String(requests.length)} />
           <StatTile
@@ -149,7 +154,7 @@ export default async function AnalyticsPage() {
           />
         </div>
         <GlowCard className="p-5">
-          <h3 className="mb-3 text-sm font-semibold">Submissions by editor</h3>
+          <h3 className="font-heading mb-3 text-base font-semibold">Submissions by editor</h3>
           <RankedBarList rows={editorRows} />
         </GlowCard>
       </section>

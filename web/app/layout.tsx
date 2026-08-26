@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins, DM_Sans } from "next/font/google";
 import { AmbientBackground } from "@/components/ambient-background";
+import { Toaster } from "@/components/ui/sonner";
+import { SignedOutToast } from "@/components/signed-out-toast";
 import "./globals.css";
 
 // Matches --font-display / --font-body in the vanilla site's styles.css —
@@ -84,6 +86,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <AmbientBackground />
         {children}
+        <Toaster />
+        <SignedOutToast />
       </body>
     </html>
   );

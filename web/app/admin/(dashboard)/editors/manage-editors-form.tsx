@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
+import { useActionState, useEffect, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { grantAccess, revokeAccess, inviteStaff, type ActionResult } from "./actions";
 
 function InviteButton() {
@@ -27,6 +28,12 @@ export function InviteStaffForm() {
     inviteStaff,
     undefined
   );
+
+  useEffect(() => {
+    if (!state) return;
+    if (state.error) toast.error(state.error);
+    else if (state.ok) toast.success("Invite sent");
+  }, [state]);
 
   return (
     <form action={formAction} className="border-border space-y-3 rounded-2xl border p-6">
@@ -92,6 +99,12 @@ export function GrantEditorForm() {
     undefined
   );
 
+  useEffect(() => {
+    if (!state) return;
+    if (state.error) toast.error(state.error);
+    else if (state.ok) toast.success("Access granted");
+  }, [state]);
+
   return (
     <form action={formAction} className="border-border space-y-3 rounded-2xl border p-6">
       <div className="grid gap-3 sm:grid-cols-[2fr_1fr]">
@@ -146,7 +159,11 @@ export function RevokeButton({ userId }: { userId: string }) {
   function handleClick() {
     startTransition(async () => {
       const result = await revokeAccess(userId);
-      if (!result.error) router.refresh();
+      if (result.error) toast.error(result.error);
+      else {
+        toast.success("Access revoked");
+        router.refresh();
+      }
     });
   }
 

@@ -85,7 +85,7 @@ export function DashboardView({
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-heading text-sm font-semibold">Dashboard view</h2>
+          <h2 className="font-heading text-base font-semibold">Dashboard view</h2>
           {toggle}
         </div>
 
@@ -112,7 +112,12 @@ export function DashboardView({
 
         {activity && (
           <GlowCard className="p-5">
-            <h3 className="font-heading mb-3 text-sm font-semibold">Recent Activity</h3>
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="font-heading text-base font-semibold">Recent Activity</h3>
+              <Link href="/admin/activity" className="text-primary text-xs font-semibold">
+                View all
+              </Link>
+            </div>
             {activity.length === 0 ? (
               <p className="text-muted-foreground text-sm">Nothing recorded yet.</p>
             ) : (
@@ -175,7 +180,7 @@ export function DashboardView({
         {activity && (
           <GlowCard className="p-5">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-heading text-sm font-semibold">Recent Activity</h3>
+              <h3 className="font-heading text-base font-semibold">Recent Activity</h3>
               <Link href="/admin/activity" className="text-primary text-xs font-semibold">
                 View all
               </Link>

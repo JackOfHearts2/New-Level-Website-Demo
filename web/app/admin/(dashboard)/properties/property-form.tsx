@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   PROPERTY_CATEGORIES,
   LISTING_STATUSES,
@@ -102,6 +103,14 @@ export function PropertyForm({
       router.replace(`/admin/properties/${state.propertyId}/edit`);
     }
   }, [state, property, router]);
+
+  // Client ask (2026-08-27): every save needs a confirmation, not just an
+  // inline status this form didn't even have before.
+  useEffect(() => {
+    if (!state) return;
+    if (state.error) toast.error(state.error);
+    else if (state.ok) toast.success("Listing saved");
+  }, [state]);
 
   return (
     <form action={formAction} className="space-y-6">

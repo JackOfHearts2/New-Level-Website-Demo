@@ -3,10 +3,31 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useFormStatus } from "react-dom";
 import { Monitor, LogOut, User as UserIcon, UserCog } from "lucide-react";
 import { ShineCircle } from "@/components/ui/shine-shape";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { logout } from "@/app/admin/(dashboard)/actions";
+
+// A plain submit button gave zero feedback on click — client report
+// (2026-08-27): "that initial click, nothing on the page actually
+// indicates that it worked." The redirect that follows is real confirmation
+// enough on its own (see SignedOutToast), but there's a network round trip
+// before it lands; this covers that gap.
+function LogoutButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      role="menuitem"
+      disabled={pending}
+      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-foreground hover:bg-muted disabled:opacity-60"
+    >
+      <LogOut className="size-4" />
+      {pending ? "Logging out…" : "Log out"}
+    </button>
+  );
+}
 
 // Tailwind needs static, literal class strings to scan at build time —
 // `size-${size}` would silently fail to generate the CSS for whichever
@@ -150,14 +171,7 @@ export function AdminProfileMenu({
           </div>
           <div className="my-2 border-t border-border" />
           <form action={logout}>
-            <button
-              type="submit"
-              role="menuitem"
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-foreground hover:bg-muted"
-            >
-              <LogOut className="size-4" />
-              Log out
-            </button>
+            <LogoutButton />
           </form>
         </div>
       )}

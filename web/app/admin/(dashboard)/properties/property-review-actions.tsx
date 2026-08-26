@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { approveProperty, rejectProperty, requestPropertyChanges } from "./actions";
 
 /** Admin-only three-way review, same shape as the existing content-request
@@ -16,8 +17,13 @@ export function PropertyReviewActions({ propertyId }: { propertyId: string }) {
   function approve() {
     startTransition(async () => {
       const result = await approveProperty(propertyId);
-      if (result.error) setError(result.error);
-      else router.refresh();
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success("Listing approved — now live");
+        router.refresh();
+      }
     });
   }
 
@@ -28,8 +34,10 @@ export function PropertyReviewActions({ propertyId }: { propertyId: string }) {
         noteMode === "reject" ? await rejectProperty(propertyId, note) : await requestPropertyChanges(propertyId, note);
       if (result.error) {
         setError(result.error);
+        toast.error(result.error);
         return;
       }
+      toast.success(noteMode === "reject" ? "Listing rejected" : "Changes requested");
       setNoteMode(null);
       setNote("");
       router.refresh();

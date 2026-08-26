@@ -41,6 +41,23 @@ function dayLabel(d: Date) {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+// One shared header row for every overview card — client ask (2026-08-27):
+// "if we're gonna put the sub headers for... the dashboard cards, it has to
+// be in the same spot for all of them, so it identifies it." Also carries
+// each card's deep link into the matching Analytics section (same request:
+// "the dashboard icons also need to take you to that particular part in
+// the analytics page... right now they don't take you anywhere").
+function OverviewCardHeader({ title, href }: { title: string; href: string }) {
+  return (
+    <div className="mb-3 flex items-center justify-between">
+      <h3 className="font-heading text-base font-semibold">{title}</h3>
+      <Link href={href} className="text-primary text-xs font-semibold">
+        View →
+      </Link>
+    </div>
+  );
+}
+
 export default async function AdminHomePage({
   searchParams,
 }: {
@@ -70,12 +87,15 @@ export default async function AdminHomePage({
     isAdmin
       ? supabase.from("profiles").select("id", { count: "exact", head: true }).in("role", ["editor", "admin"])
       : Promise.resolve({ count: null }),
+    // 3, not 6 — client ask (2026-08-27): "the recent activity section
+    // doesn't need to show any more than the last 3... that's when they
+    // would click [View all] to see the full log."
     isAdmin
       ? supabase
           .from("activity_log")
           .select("id, actor_id, summary, created_at")
           .order("created_at", { ascending: false })
-          .limit(6)
+          .limit(3)
           .returns<ActivityRow[]>()
       : Promise.resolve({ data: null }),
     supabase.from("profiles").select("dashboard_view").eq("id", auth.userId).maybeSingle<{
@@ -243,7 +263,7 @@ export default async function AdminHomePage({
       {isAdmin && overviewDaily && statusSlices && (
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-heading text-sm font-semibold">
+            <h2 className="font-heading text-lg font-semibold">
               Business overview — last {OVERVIEW_DAYS} days
             </h2>
             <Link href="/admin/analytics" className="text-primary text-xs font-semibold">
@@ -252,21 +272,24 @@ export default async function AdminHomePage({
           </div>
           <div className="grid gap-4 lg:grid-cols-3">
             <GlowCard className="p-5 lg:col-span-2">
-              <h3 className="mb-3 text-sm font-semibold">Pageviews</h3>
+              <OverviewCardHeader title="Pageviews" href="/admin/analytics#analytics-traffic" />
               <TrendChart data={overviewDaily} />
             </GlowCard>
-            <GlowCard className="flex items-center justify-center p-5">
-              <RadialProgress value={approvalRate} label="Approval rate" sublabel={approvalRateSublabel} />
+            <GlowCard className="p-5">
+              <OverviewCardHeader title="Approval rate" href="/admin/analytics#analytics-team-activity" />
+              <div className="flex items-center justify-center">
+                <RadialProgress value={approvalRate} label="Approval rate" sublabel={approvalRateSublabel} />
+              </div>
             </GlowCard>
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
             <GlowCard className="p-5">
-              <h3 className="mb-3 text-sm font-semibold">Submissions by status</h3>
+              <OverviewCardHeader title="Submissions by status" href="/admin/analytics#analytics-team-activity" />
               <DonutChart slices={statusSlices} title="Content submissions by status, all time" />
             </GlowCard>
             {overviewTopPages && overviewTopPages.length > 0 && (
               <GlowCard className="p-5">
-                <h3 className="mb-3 text-sm font-semibold">Top pages</h3>
+                <OverviewCardHeader title="Top pages" href="/admin/analytics#analytics-traffic" />
                 <RankedBarList rows={overviewTopPages} />
               </GlowCard>
             )}
@@ -276,7 +299,7 @@ export default async function AdminHomePage({
 
       {drafts.length > 0 && (
         <section className="space-y-4">
-          <h2 className="font-heading text-sm font-semibold">
+          <h2 className="font-heading text-lg font-semibold">
             Your drafts ({drafts.length})
           </h2>
           <GlowCard className="block divide-y divide-border p-0">

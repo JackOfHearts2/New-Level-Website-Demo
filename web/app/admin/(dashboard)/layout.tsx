@@ -55,7 +55,17 @@ export default async function AdminDashboardLayout({
           pendingProperties={pendingProperties}
           savedOrder={profile?.sidebar_order ?? null}
         />
-        <main className="min-w-0 flex-1 px-4 py-6 lg:px-6 lg:py-10">
+        {/* pb-24, not the plain py-6 the rest of this padding uses — on
+            mobile (below lg, where AdminSidebar collapses to a hamburger
+            drawer and stops occupying the left edge, see its lg:hidden
+            drawer) TroubleshootWidget's fixed bottom-4 left-4 button sits
+            directly over whatever content is scrolled to the bottom of the
+            viewport, with nothing reserving clearance for it — client
+            report (2026-08-27), a screenshot showing the flag icon
+            overlapping a Team "Name 2" field on Content & Media. Desktop
+            (lg:) doesn't need this: the button's left-6 anchor there lands
+            within AdminSidebar's own footprint, not over `main`. */}
+        <main className="min-w-0 flex-1 px-4 pt-6 pb-24 lg:px-6 lg:py-10">
           <AdminTopBar
             pendingApprovals={pendingApprovals}
             openReports={openReports}

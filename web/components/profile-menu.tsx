@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import { User, LogIn, UserPlus, LogOut, Heart, Compass, HelpCircle, Mail, LayoutDashboard } from "lucide-react";
 import { ShineCircle } from "@/components/ui/shine-shape";
 import { LoginModal } from "@/components/login-modal";
@@ -139,9 +140,17 @@ export function ProfileMenu() {
                 type="button"
                 role="menuitem"
                 onClick={async () => {
-                  const supabase = createClient();
-                  await supabase.auth.signOut();
                   setOpen(false);
+                  const supabase = createClient();
+                  // No redirect happens on this sign-out (unlike the admin
+                  // dashboard's, which navigates away to "/") — client
+                  // report (2026-08-27): "when you log out you just hit
+                  // sign out, nothing really indicates that you signed out
+                  // until you click on the profile icon again." A toast is
+                  // the only feedback this path had none of.
+                  const { error } = await supabase.auth.signOut();
+                  if (error) toast.error("Couldn't sign out — try again.");
+                  else toast.success("Signed out");
                 }}
                 className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium"
               >

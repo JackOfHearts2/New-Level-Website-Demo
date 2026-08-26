@@ -8,6 +8,7 @@ import { sniffImageType } from "@/lib/image-sniff";
 import { notifyPendingChangeRequest } from "@/lib/email";
 import { buildContentFromFormData, contentToFormData } from "@/lib/site-content-form";
 import { logActivity } from "@/lib/activity-log";
+import { diffSiteContent, describeContentChanges } from "@/lib/activity-diff";
 import {
   getRawSiteContent,
   saveSiteContent,
@@ -23,7 +24,12 @@ export type FormState =
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/");
+  // The redirect itself replaces the whole page, so a toast fired before it
+  // would just be torn down with the rest of this tree — the ?signedOut=1
+  // flag lets SignedOutToast (mounted in the root layout) fire it once the
+  // new page (this one) has actually loaded. Client report (2026-08-27):
+  // logging out gave no confirmation at all.
+  redirect("/?signedOut=1");
 }
 
 /** Sidebar nav reorder — client ask (2026-08-26): "put the stuff they
@@ -64,6 +70,14 @@ export async function saveDashboardView(view: "overview" | "compact") {
  *  "each section needs to have their own save as draft or save and
  *  submit area") can't drift out of sync with each other. */
 async function persistContent(auth: AdminAuth, current: SiteContent, next: SiteContent): Promise<FormState> {
+  // Computed once and reused in both branches below — client ask
+  // (2026-08-27): "pinpoint the particular area where it was changed, and
+  // pinpoint if something was updated or if something was removed",
+  // rather than a generic "a content change" summary that just relies on
+  // whatever the actor typed elsewhere.
+  const changes = diffSiteContent(current, next);
+  const changeDescription = describeContentChanges(changes);
+
   if (auth.role === "admin") {
     try {
       await saveSiteContent(next);
@@ -81,7 +95,10 @@ async function persistContent(auth: AdminAuth, current: SiteContent, next: SiteC
       actorId: auth.userId,
       eventType: "content_published",
       targetTable: "content_change_requests",
-      summary: `${auth.email} published a content change live`,
+      summary: changeDescription
+        ? `${auth.email} published a content change live — ${changeDescription}`
+        : `${auth.email} published a content change live`,
+      metadata: { changes },
     });
 
     revalidatePath("/");
@@ -111,7 +128,10 @@ async function persistContent(auth: AdminAuth, current: SiteContent, next: SiteC
     eventType: "submission_created",
     targetTable: "content_change_requests",
     targetId: inserted?.id,
-    summary: `${auth.email} submitted a content change for review`,
+    summary: changeDescription
+      ? `${auth.email} submitted a content change for review — ${changeDescription}`
+      : `${auth.email} submitted a content change for review`,
+    metadata: { changes },
   });
 
   await notifyPendingChangeRequest({
@@ -178,6 +198,9 @@ async function persistDraft(auth: AdminAuth, current: SiteContent, next: SiteCon
     .single();
   if (error) return { error: "Couldn't save draft. Please try again." };
 
+  const changes = diffSiteContent(current, next);
+  const changeDescription = describeContentChanges(changes);
+
   // Client ask (2026-08-26): every save — draft or live, editor or admin —
   // shows up in Activity.
   await logActivity(supabase, {
@@ -185,7 +208,10 @@ async function persistDraft(auth: AdminAuth, current: SiteContent, next: SiteCon
     eventType: "content_draft_saved",
     targetTable: "content_change_requests",
     targetId: inserted?.id,
-    summary: `${auth.email} saved a content draft`,
+    summary: changeDescription
+      ? `${auth.email} saved a content draft — ${changeDescription}`
+      : `${auth.email} saved a content draft`,
+    metadata: { changes },
   });
 
   return { ok: true, draftId: inserted.id };

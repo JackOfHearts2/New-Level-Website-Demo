@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { User, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 
 // The reference used a custom WebGL shader (SmokeyBackground) behind the
@@ -74,6 +75,7 @@ export function LoginForm({
         setStatus({ kind: "error", message: friendlyAuthError(error.message) });
         return;
       }
+      toast.success("Signed in");
       (onSuccess ?? onClose)();
       return;
     }
@@ -89,6 +91,7 @@ export function LoginForm({
       setStatus({ kind: "check-email" });
       return;
     }
+    toast.success("Account created");
     (onSuccess ?? onClose)();
   }
 

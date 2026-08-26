@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, X, Upload } from "lucide-react";
 import { uploadPropertyPhoto, removePropertyPhoto, reorderPropertyPhoto } from "./actions";
 
@@ -22,8 +23,13 @@ export function PropertyPhotos({ propertyId, photos }: { propertyId: string; pho
     fd.set("file", file);
     startTransition(async () => {
       const result = await uploadPropertyPhoto(propertyId, fd);
-      if (result.error) setError(result.error);
-      else router.refresh();
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success("Photo uploaded");
+        router.refresh();
+      }
       if (fileInputRef.current) fileInputRef.current.value = "";
     });
   }
@@ -32,16 +38,25 @@ export function PropertyPhotos({ propertyId, photos }: { propertyId: string; pho
     if (!confirm("Remove this photo?")) return;
     startTransition(async () => {
       const result = await removePropertyPhoto(propertyId, path);
-      if (result.error) setError(result.error);
-      else router.refresh();
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success("Photo removed");
+        router.refresh();
+      }
     });
   }
 
   function handleReorder(path: string, direction: -1 | 1) {
     startTransition(async () => {
       const result = await reorderPropertyPhoto(propertyId, path, direction);
-      if (result.error) setError(result.error);
-      else router.refresh();
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        router.refresh();
+      }
     });
   }
 

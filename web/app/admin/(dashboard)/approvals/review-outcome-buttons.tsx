@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { approveRequest, rejectRequest, requestChanges } from "./actions";
 
 type NoteFlow = "reject" | "changes" | null;
@@ -17,8 +18,13 @@ export function ReviewOutcomeButtons({ id }: { id: string }) {
     setError(null);
     startTransition(async () => {
       const result = await approveRequest(id);
-      if (result.error) setError(result.error);
-      else router.refresh();
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success("Approved — now live");
+        router.refresh();
+      }
     });
   }
 
@@ -27,8 +33,13 @@ export function ReviewOutcomeButtons({ id }: { id: string }) {
     startTransition(async () => {
       const result =
         noteFlow === "reject" ? await rejectRequest(id, note) : await requestChanges(id, note);
-      if (result.error) setError(result.error);
-      else router.refresh();
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success(noteFlow === "reject" ? "Rejected" : "Changes requested");
+        router.refresh();
+      }
     });
   }
 

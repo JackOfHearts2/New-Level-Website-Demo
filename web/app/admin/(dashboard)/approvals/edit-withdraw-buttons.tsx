@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { withdrawRequest } from "./actions";
 
 export function EditWithdrawButtons({ id }: { id: string }) {
@@ -11,7 +12,9 @@ export function EditWithdrawButtons({ id }: { id: string }) {
 
   function handleWithdraw() {
     startTransition(async () => {
-      await withdrawRequest(id);
+      const result = await withdrawRequest(id);
+      if (result.error) toast.error(result.error);
+      else toast.success("Withdrawn");
       router.refresh();
     });
   }

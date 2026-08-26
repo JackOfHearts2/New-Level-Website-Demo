@@ -41,9 +41,15 @@ function useHasMounted() {
   );
 }
 
+/** Shared with components/ui/sonner.tsx so toasts pick up the same manual
+ *  dark-class toggle this project uses instead of next-themes. */
+export function useIsDark() {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
 export function ThemeToggle() {
   const hasMounted = useHasMounted();
-  const isDark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const isDark = useIsDark();
 
   if (!hasMounted) {
     return <div className="size-8" aria-hidden />;
