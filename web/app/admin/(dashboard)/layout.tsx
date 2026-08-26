@@ -57,6 +57,7 @@ export default async function AdminDashboardLayout({
               <>
                 <NavLink href="/admin/editors">Editors</NavLink>
                 <NavLink href="/admin/activity">Activity</NavLink>
+                <NavLink href="/admin/analytics">Analytics</NavLink>
               </>
             )}
             <NavLink href="/admin/settings">Settings</NavLink>

@@ -73,6 +73,11 @@ export default async function AdminHomePage() {
               title="Activity"
               description="A running record of everything that&apos;s happened."
             />
+            <Tile
+              href="/admin/analytics"
+              title="Analytics"
+              description="Visitor traffic and team submission activity."
+            />
           </>
         )}
         <Tile

@@ -14,6 +14,7 @@ import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { SiteTour } from "@/components/site-tour";
 import { ReportProblemWidget } from "@/components/report-problem/report-problem-widget";
 import { AutoSignInModal } from "@/components/auto-signin-modal";
+import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { getSiteContent } from "@/lib/site-content";
 
 export default async function Home({
@@ -63,6 +64,7 @@ export default async function Home({
       <Suspense fallback={null}>
         <AutoSignInModal />
       </Suspense>
+      <PageViewTracker />
     </>
   );
 }
