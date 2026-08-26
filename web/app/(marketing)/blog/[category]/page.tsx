@@ -38,7 +38,12 @@ export default async function BlogCategoryPage({
 
   return (
     <>
-      <PageHero eyebrow="Blog" heading={cat.label} sub={cat.blurb} />
+      <PageHero
+        eyebrow="Blog"
+        heading={cat.label}
+        sub={cat.blurb}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: cat.label }]}
+      />
 
       <section className="mx-auto max-w-3xl px-6 pb-16">
         <GlowCard className="p-8">

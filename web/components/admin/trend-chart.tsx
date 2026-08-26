@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { useId, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { TrendingUp, TrendingDown, Minus, Download, RefreshCw } from "lucide-react";
 import { computeTrend } from "@/lib/chart-data";
 
 export type TrendPoint = { date: string; label: string; count: number };
@@ -28,19 +29,36 @@ function TrendBadge({ direction, deltaPct }: { direction: "up" | "down" | "flat"
   );
 }
 
-/** Single-series magnitude-over-time chart — a smoothed line + filled area.
- *  Same one-hue-no-legend-needed rule (a single series names itself via
- *  the card heading) and the same hover-crosshair+tooltip pattern the
- *  dataviz interaction guidance calls for on line/area charts. Used for
- *  both the Dashboard's compact Pageviews card and the full Analytics
- *  page's Traffic section (client ask, 2026-08-27: "you're still using a
- *  bar graph in the full analytics while using the chart with an arrow on
- *  the dashboard" — this replaced the separate bar-chart component
- *  (DailyViewsChart, since deleted) so both views share one chart type;
- *  `height` lets Analytics render it taller than the Dashboard's compact
- *  card without duplicating the component). */
+function downloadCsv(data: TrendPoint[]) {
+  const rows = ["date,label,pageviews", ...data.map((d) => `${d.date},"${d.label}",${d.count}`)];
+  const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "pageviews.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/** Single-series magnitude-over-time chart — a smoothed line + gradient-
+ *  filled area (client design references, 2026-08-27: a composed sales
+ *  chart with a fading area fill and a small export/refresh toolbar — "the
+ *  examples were the charts... obviously gonna go through the admin side
+ *  where we have our charts"). Same one-hue-no-legend-needed rule (a
+ *  single series names itself via the card heading) and the same
+ *  hover-crosshair+tooltip pattern the dataviz interaction guidance calls
+ *  for on line/area charts. Used for both the Dashboard's compact
+ *  Pageviews card and the full Analytics page's Traffic section (client
+ *  ask, 2026-08-27: "you're still using a bar graph in the full analytics
+ *  while using the chart with an arrow on the dashboard" — this replaced
+ *  the separate bar-chart component (DailyViewsChart, since deleted) so
+ *  both views share one chart type; `height` lets Analytics render it
+ *  taller than the Dashboard's compact card without duplicating the
+ *  component). */
 export function TrendChart({ data, height = DEFAULT_HEIGHT }: { data: TrendPoint[]; height?: number }) {
   const [hover, setHover] = useState<number | null>(null);
+  const gradientId = useId();
+  const router = useRouter();
   const max = Math.max(1, ...data.map((d) => d.count));
   const plotW = WIDTH - PAD_LEFT;
   const plotH = height - PAD_TOP - PAD_BOTTOM;
@@ -81,8 +99,26 @@ export function TrendChart({ data, height = DEFAULT_HEIGHT }: { data: TrendPoint
 
   return (
     <div className="relative">
-      <div className="mb-2 flex justify-end">
+      <div className="mb-2 flex items-center justify-end gap-2">
         <TrendBadge direction={trend.direction} deltaPct={trend.deltaPct} />
+        <button
+          type="button"
+          onClick={() => downloadCsv(data)}
+          aria-label="Export as CSV"
+          title="Export as CSV"
+          className="text-muted-foreground hover:bg-muted hover:text-foreground flex size-7 items-center justify-center rounded-full transition-colors"
+        >
+          <Download className="size-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => router.refresh()}
+          aria-label="Refresh"
+          title="Refresh"
+          className="text-muted-foreground hover:bg-muted hover:text-foreground flex size-7 items-center justify-center rounded-full transition-colors"
+        >
+          <RefreshCw className="size-3.5" />
+        </button>
       </div>
       <svg
         viewBox={`0 0 ${WIDTH} ${height}`}
@@ -92,6 +128,12 @@ export function TrendChart({ data, height = DEFAULT_HEIGHT }: { data: TrendPoint
         onMouseMove={handleMove}
         onMouseLeave={() => setHover(null)}
       >
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.32} />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.02} />
+          </linearGradient>
+        </defs>
         {[0, mid, max].map((v, i) => {
           const y = PAD_TOP + plotH - (v / max) * plotH;
           return (
@@ -103,7 +145,7 @@ export function TrendChart({ data, height = DEFAULT_HEIGHT }: { data: TrendPoint
             </g>
           );
         })}
-        {areaPath && <path d={areaPath} fill="var(--primary)" opacity={0.12} />}
+        {areaPath && <path d={areaPath} fill={`url(#${gradientId})`} />}
         {linePath && <path d={linePath} fill="none" stroke="var(--primary)" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />}
         {hover !== null && (
           <line

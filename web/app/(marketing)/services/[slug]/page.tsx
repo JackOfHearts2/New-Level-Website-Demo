@@ -46,7 +46,16 @@ export default async function ServiceDetailPage({
 
   return (
     <>
-      <PageHero eyebrow="Services" heading={service.t} sub={service.d} />
+      <PageHero
+        eyebrow="Services"
+        heading={service.t}
+        sub={service.d}
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Services", href: "/services" },
+          { label: service.t },
+        ]}
+      />
 
       <section className="mx-auto max-w-4xl px-6 pb-16">
         <p className="text-foreground text-lg text-balance">{service.long}</p>

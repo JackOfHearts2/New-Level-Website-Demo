@@ -39,6 +39,7 @@ export default async function PropertyCategoryPage({
         eyebrow="Properties"
         heading={cat.label}
         sub={`Browse ${cat.label.toLowerCase()} listings, sectioned by type.`}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Properties", href: "/properties" }, { label: cat.label }]}
       />
 
       <section className="mx-auto max-w-7xl space-y-12 px-6 pb-24">

@@ -10,6 +10,7 @@ import { NavMenu } from "@/components/nav-menu";
 import { NavMenuMobile } from "@/components/nav-menu-mobile";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProfileMenu } from "@/components/profile-menu";
+import { SiteSearch } from "@/components/site-search";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { GALLERY_STRIP } from "@/lib/content";
 
@@ -287,6 +288,7 @@ const HeroHeader = ({
                 <NavMenuMobile onNavigate={() => setMenuState(false)} />
               </div>
               <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:flex-nowrap md:w-fit">
+                <SiteSearch />
                 <ThemeToggle />
                 <ProfileMenu />
                 <Link

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PropertyForm, type PropertyRecord } from "../../property-form";
 import { PropertyPhotos, type PhotoItem } from "../../property-photos";
 import { PROPERTY_STATUS_LABELS, type PropertyStatus } from "@/lib/property-categories";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 type PropertyPhoto = { path: string; uploadedAt: string };
 
@@ -27,6 +28,7 @@ export default async function EditPropertyPage({ params }: { params: Promise<{ i
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs items={[{ label: "Properties", href: "/admin/properties" }, { label: data.title }]} />
       <div>
         <h1 className="font-heading text-2xl font-bold">{data.title}</h1>
         <p className="text-muted-foreground mt-1 text-sm capitalize">

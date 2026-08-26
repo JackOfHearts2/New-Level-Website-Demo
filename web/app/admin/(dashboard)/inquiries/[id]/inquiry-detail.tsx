@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Copy, Mail, Phone } from "lucide-react";
 import { GlowCard } from "@/components/ui/glow-card";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { updateInquiryStatus, assignInquiry, addInquiryNote } from "../actions";
 import {
   INQUIRY_STATUSES,
@@ -133,6 +134,7 @@ export function InquiryDetail({
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs items={[{ label: "Inquiries", href: "/admin/inquiries" }, { label: inquiry.name }]} />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-heading text-2xl font-bold">{inquiry.name}</h1>
