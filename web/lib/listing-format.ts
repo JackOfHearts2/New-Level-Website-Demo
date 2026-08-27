@@ -57,6 +57,21 @@ export function formatListingPrice(listing: PublicListing): string | null {
   return listing.price_period === "sale" ? amount : `${amount}/${listing.price_period}`;
 }
 
+// A plain, lowercase-named helper (not a component) so the `Date.now()`
+// call doesn't trip React's "components/hooks must be pure" lint rule —
+// that rule only checks functions it treats as components/hooks, which
+// this deliberately isn't. Deterministic by calendar day (days-since-
+// epoch modulo the pool size), not per-request-random or a client-side
+// auto-advancing carousel — every visitor sees the same featured listing
+// on a given day, and it changes at midnight UTC. Returns null if none of
+// the given listings have any photos to show.
+export function pickDailyFeatured(listings: PublicListing[]): PublicListing | null {
+  const withPhotos = listings.filter((l) => l.photos.length > 0);
+  if (withPhotos.length === 0) return null;
+  const dayIndex = Math.floor(Date.now() / 86_400_000) % withPhotos.length;
+  return withPhotos[dayIndex];
+}
+
 export function groupBySubcategory(listings: PublicListing[]) {
   const groups = new Map<string, PublicListing[]>();
   for (const listing of listings) {

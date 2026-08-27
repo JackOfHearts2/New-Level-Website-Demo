@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
@@ -8,8 +7,10 @@ import { CtaLink } from "@/components/ui/cta-link";
 import { Timeline } from "@/components/ui/timeline";
 import { AboutMissionStorySection } from "@/components/sections/about-mission-story-section";
 import { AboutValuesSection } from "@/components/sections/about-values-section";
+import { AboutFeaturedPropertySection } from "@/components/sections/about-featured-property-section";
 import { NLG_BRAND, SERVICES } from "@/lib/content";
 import { getSiteContent } from "@/lib/site-content";
+import { getApprovedListings } from "@/lib/properties-public";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const content = await getSiteContent();
+  const [content, listings] = await Promise.all([getSiteContent(), getApprovedListings()]);
   const page = content.pages.about;
 
   // Real milestones only — the founding year is confirmed content
@@ -83,31 +84,7 @@ export default async function AboutPage() {
         <Timeline data={TIMELINE} />
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-16">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="group border-border relative aspect-[4/3] overflow-hidden rounded-2xl border shadow-sm transition-shadow duration-300 hover:shadow-lg">
-            <Image
-              src="/photos/27.jpg"
-              alt="Screened patio at 1331 NW 87th Street"
-              fill
-              sizes="(min-width: 640px) 50vw, 100vw"
-              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            />
-          </div>
-          <div className="group border-border relative aspect-[4/3] overflow-hidden rounded-2xl border shadow-sm transition-shadow duration-300 hover:shadow-lg">
-            <Image
-              src="/photos/04.jpg"
-              alt="Kitchen at 1331 NW 87th Street"
-              fill
-              sizes="(min-width: 640px) 50vw, 100vw"
-              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            />
-          </div>
-        </div>
-        <p className="text-foreground mt-3 text-center text-sm">
-          A look inside 1331 NW 87th Street, our featured New Level property.
-        </p>
-      </section>
+      <AboutFeaturedPropertySection listings={listings} />
 
       <AboutValuesSection values={content.values} />
 
