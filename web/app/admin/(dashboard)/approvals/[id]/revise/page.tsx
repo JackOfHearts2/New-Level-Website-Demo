@@ -5,6 +5,7 @@ import { getSiteContent, type SiteContent } from "@/lib/site-content";
 import { imageSlotLabel } from "@/lib/site-content-images";
 import { ContentForm } from "@/components/admin/content-form";
 import { ImageForm } from "@/components/admin/image-form";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 type ChangeRequestRow = {
   id: string;
@@ -40,6 +41,7 @@ export default async function RevisePage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs items={[{ label: "Approvals", href: "/admin/approvals" }, { label: "Revise submission" }]} />
       <div>
         <h1 className="font-heading text-2xl font-bold">Revise submission</h1>
         <p className="text-muted-foreground mt-1 text-sm">

@@ -112,33 +112,44 @@
      (below) layered on top and white GlowCards stacked on top of that.
      Page background drops to a soft off-white; card/popover/sidebar stay
      lighter than the page (so elevated surfaces still read as "elevated")
-     but are no longer stark #ffffff either. */
-  --background: #f2f2ef;
+     but are no longer stark #ffffff either.
+
+     Warmed further per client feedback (2026-08-27): the neutral-gray
+     off-white above still read as cold/clinical next to the brand green —
+     client referenced Sherwin-Williams Alabaster and Benjamin Moore Cloud
+     White as the target feel (both warm, slightly yellow-toned whites).
+     Every surface below shifted a few points toward that same warm/cream
+     direction (R > G > B, same relative hierarchy background < muted <
+     border kept intact) rather than just retinting one token in
+     isolation — a single warm card next to an unchanged cool-gray
+     background/border would read as mismatched, not "warmer." Dark mode
+     (below) is untouched — it was never part of this complaint. */
+  --background: #f5f1e6;
   --foreground: #0a0a0a; /* --ink */
-  --card: #fafaf8;
+  --card: #fbf8f0;
   --card-foreground: #0a0a0a;
-  --popover: #fafaf8;
+  --popover: #fbf8f0;
   --popover-foreground: #0a0a0a;
   --primary: #72d35b; /* --green */
   --primary-foreground: #ffffff;
   --secondary: #0a0a0a; /* --ink, matches .btn--solid */
   --secondary-foreground: #ffffff;
-  --muted: #eceae4; /* --paper-2, darkened alongside background */
+  --muted: #ece4d3; /* --paper-2, darkened alongside background */
   --muted-foreground: #6a6a6a; /* --muted */
   --accent: #e3f2dd; /* --green-tint, slightly deepened to match */
   --accent-foreground: #0a0a0a;
   --destructive: #b00020; /* matches the inline form-error color in app.js */
-  --border: #ddddd6; /* --line, darkened slightly so it still shows against the dimmer background */
-  --input: #ddddd6;
+  --border: #ddd4bf; /* --line, darkened slightly so it still shows against the dimmer background */
+  --input: #ddd4bf;
   --ring: #72d35b; /* --green, matches the site's existing focus-outline color */
   --radius: 0.875rem; /* --radius: 14px */
-  --sidebar: #fafaf8;
+  --sidebar: #fbf8f0;
   --sidebar-foreground: #0a0a0a;
   --sidebar-primary: #72d35b;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #e3f2dd;
   --sidebar-accent-foreground: #0a0a0a;
-  --sidebar-border: #ddddd6;
+  --sidebar-border: #ddd4bf;
   --sidebar-ring: #72d35b;
 }
 
@@ -196,8 +207,11 @@
        mode is way too bright" — the two near-white blobs at full 1.0
        opacity were the main culprit, especially stacked under white
        GlowCards) — same positions/falloff shape, just dimmer blobs over a
-       darker base fill so the whole page reads calmer. */
-    background-color: #eceae4;
+       darker base fill so the whole page reads calmer. Base fill matches
+       the warmed --muted token above (2026-08-27 warm-white pass) so the
+       gradient's base and the page's flat surfaces read as one consistent
+       tone rather than two slightly different off-whites. */
+    background-color: #ece4d3;
     background-image:
       radial-gradient(
         circle at 65.34% 44.62%,

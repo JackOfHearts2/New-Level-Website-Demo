@@ -2,6 +2,8 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { Star, MapPin, BedDouble, Bath, Users, Mail, Phone, Clock } from "lucide-react";
 import { CrossNav } from "@/components/cross-nav";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 import { GlowCard } from "@/components/ui/glow-card";
 import { CtaLink } from "@/components/ui/cta-link";
 import { ShineBox, ShineListItem, ShinePill } from "@/components/ui/shine-shape";
@@ -90,11 +92,22 @@ export default async function PropertyPage({
         </PhotoTour>
       </div>
 
+      {/* Client report (2026-08-27): clicking into the one real listing
+          from /properties left no way back except the browser's own back
+          button — every other detail page (services/[slug], team/[slug],
+          the generic /properties/[category]/[id] listing page, ...) has
+          a Breadcrumbs trail, but this hand-built flagship page never
+          got one since it predates that pattern and its hero is a
+          full-bleed photo tour with no PageHero slot to carry it. */}
+      <div className="mx-auto max-w-5xl px-6 pt-6">
+        <Breadcrumbs items={getBreadcrumbTrail("/properties", PROPERTY.siteName)} />
+      </div>
+
       {/* Listing agent + last-updated — client ask (2026-08-26): "listing
           agent info under featured listing with last updated time and
           date." This is the site's one real ("featured") listing, so it
           sits right under the hero, before the purpose selector. */}
-      <section className="mx-auto max-w-5xl px-6 pt-8">
+      <section className="mx-auto max-w-5xl px-6 pt-2">
         <div className="border-border bg-card flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-5">
           <div>
             <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
