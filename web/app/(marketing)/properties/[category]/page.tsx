@@ -6,7 +6,7 @@ import { CrossNav } from "@/components/cross-nav";
 import { getApprovedListings, groupBySubcategory, PROPERTY_CATEGORIES, type ListingFilters } from "@/lib/properties-public";
 import type { PropertyCategory } from "@/lib/property-categories";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
-import { SubcategoryFilter } from "./subcategory-filter";
+import { ListingViewToggle } from "./listing-view-toggle";
 import { ListingFilterBar } from "./listing-filters";
 
 function parseFilters(sp: Record<string, string | string[] | undefined>): ListingFilters {
@@ -22,6 +22,7 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Listin
     minBeds: num(sp.minBeds),
     minBaths: num(sp.minBaths),
     zip: str(sp.zip),
+    radiusMiles: num(sp.radiusMiles),
     sort: sortRaw === "price_asc" || sortRaw === "price_desc" ? sortRaw : "newest",
   };
 }
@@ -78,7 +79,7 @@ export default async function PropertyCategoryPage({
           <ListingFilterBar />
         </Suspense>
         {groups.length > 0 ? (
-          <SubcategoryFilter groups={groups} />
+          <ListingViewToggle groups={groups} listings={listings} />
         ) : hasActiveFilters ? (
           <p className="text-muted-foreground text-center">
             No {cat.label.toLowerCase()} listings match those filters — try widening your search.

@@ -32,6 +32,7 @@ import { QuoteSidebar } from "@/components/property/quote-sidebar";
 import { InquiryForm } from "@/components/property/inquiry-form";
 import { StickyBookingBar } from "@/components/property/sticky-booking-bar";
 import { NearbyList } from "@/components/property/nearby-list";
+import { LeafletMap } from "@/components/properties/leaflet-map";
 
 const PROPERTY_DESCRIPTION = `${PROPERTY.address} - ${PROPERTY_SPECS.bedrooms} bedrooms, ${PROPERTY_SPECS.bathrooms} bathrooms, sleeps up to ${PROPERTY_SPECS.maxGuests}. Presented by New Level, a South Florida Real Estate group.`;
 
@@ -237,11 +238,9 @@ export default async function PropertyPage({
           <p className="text-foreground mt-2 max-w-2xl text-sm">{NEIGHBORHOOD.blurb}</p>
           <div className="mt-8 grid gap-8 lg:grid-cols-2">
             <ShineBox className="border-border overflow-hidden rounded-2xl border">
-              <iframe
-                title="Map"
-                className="h-80 w-full"
-                loading="lazy"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(NEIGHBORHOOD.mapQuery)}&output=embed`}
+              <LeafletMap
+                points={[{ id: "property", lat: NEIGHBORHOOD.lat, lng: NEIGHBORHOOD.lng, label: PROPERTY.siteName }]}
+                height={320}
               />
             </ShineBox>
             <div>

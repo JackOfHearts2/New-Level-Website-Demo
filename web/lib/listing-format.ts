@@ -16,6 +16,7 @@ export type PublicListing = {
   address_line1: string | null;
   city: string | null;
   state: string | null;
+  zip: string | null;
   price: number | null;
   price_period: string | null;
   beds: number | null;
@@ -24,6 +25,8 @@ export type PublicListing = {
   description: string | null;
   photos: { path: string; uploadedAt: string }[];
   listing_status: string;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 // getPublicUrl doesn't need auth/RLS — it's pure string construction from

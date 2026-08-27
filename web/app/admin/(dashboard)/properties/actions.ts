@@ -7,6 +7,7 @@ import { logActivity } from "@/lib/activity-log";
 import { notifyPendingProperty } from "@/lib/email";
 import { sniffImageType } from "@/lib/image-sniff";
 import { isValidSubcategory, LISTING_STATUSES, PRICE_PERIODS } from "@/lib/property-categories";
+import { geocodeAddress, geocodeZip } from "@/lib/geocode";
 
 export type PropertyFormState = { error?: string; ok?: boolean; propertyId?: string } | undefined;
 export type ActionResult = { error?: string; ok?: boolean };
@@ -134,6 +135,33 @@ function num(formData: FormData, key: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/** Best-effort coordinates for the map/radius-search features (client
+ *  ask, 2026-08-27) — a precise street geocode first (US Census Bureau's
+ *  free geocoder), falling back to the zip's centroid if that fails
+ *  (bad/incomplete street address, or the free service being briefly
+ *  down). Both are free/keyless — see lib/geocode.ts. Returns nulls
+ *  rather than throwing so a geocoding hiccup never blocks saving the
+ *  listing itself; the caller only writes these into the row when a
+ *  value actually came back, so an edit never wipes a previously-good
+ *  coordinate just because this attempt failed. */
+async function resolveCoordinates(row: {
+  address_line1: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+}): Promise<{ latitude: number | null; longitude: number | null }> {
+  if (row.address_line1 && row.city && row.state) {
+    const full = [row.address_line1, row.city, row.state, row.zip].filter(Boolean).join(", ");
+    const precise = await geocodeAddress(full);
+    if (precise) return { latitude: precise.lat, longitude: precise.lng };
+  }
+  if (row.zip) {
+    const approx = await geocodeZip(row.zip);
+    if (approx) return { latitude: approx.lat, longitude: approx.lng };
+  }
+  return { latitude: null, longitude: null };
+}
+
 function buildRowFromFormData(formData: FormData) {
   return {
     title: str(formData, "title") ?? "",
@@ -193,6 +221,7 @@ export async function saveProperty(
 
   const isAdmin = auth.role === "admin";
   const status = mode === "draft" ? "draft" : isAdmin ? "approved" : "pending";
+  const coords = await resolveCoordinates(row);
 
   const supabase = await createClient();
 
@@ -208,12 +237,20 @@ export async function saveProperty(
       return { error: "This listing can no longer be edited from here." };
     }
 
-    const { error } = await supabase.from("properties").update({ ...row, status }).eq("id", propertyId);
+    // Only overwrite latitude/longitude when this save actually resolved
+    // a fresh value — never null out a previously-good coordinate just
+    // because a re-geocode attempt failed (address unchanged but the
+    // free service hiccuped, say).
+    const updatePayload: Record<string, unknown> = { ...row, status };
+    if (coords.latitude != null) updatePayload.latitude = coords.latitude;
+    if (coords.longitude != null) updatePayload.longitude = coords.longitude;
+
+    const { error } = await supabase.from("properties").update(updatePayload).eq("id", propertyId);
     if (error) return { error: "Couldn't save. Please try again." };
   } else {
     const { data: inserted, error } = await supabase
       .from("properties")
-      .insert({ ...row, status, submitted_by: auth.userId })
+      .insert({ ...row, ...coords, status, submitted_by: auth.userId })
       .select("id")
       .single();
     if (error) return { error: "Couldn't save. Please try again." };

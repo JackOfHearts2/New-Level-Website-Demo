@@ -1499,6 +1499,15 @@ export const FEES_POLICIES = {
 export const NEIGHBORHOOD = {
   blurb: "The home sits in a quiet Miami-Dade residential pocket with quick access to the airport, highways and the city, easy for guests arriving from anywhere.",
   mapQuery: "1331 NW 87th St, Miami, FL 33147",
+  // Real coordinates, geocoded 2026-08-27 via the free US Census Bureau
+  // geocoder (see lib/geocode.ts) — replaces the old Google keyless
+  // iframe embed (`/maps?q=...&output=embed`), which relies on
+  // undocumented Google behavior and wasn't reliably showing a pin.
+  // These same coordinates were also backfilled onto this listing's own
+  // `properties` table row so it participates in the radius search/map
+  // view on the Properties browsing pages, not just here.
+  lat: 25.854167631203,
+  lng: -80.220194133703,
   nearby: {
     corporate: ["Meeting / coworking space", "Business dining & catering", "Airport ~15 min", "Hotels for overflow staff"],
     family: ["Parks & kid-friendly spots", "Family dining", "Grocery & pharmacy", "Beaches ~25 min"],

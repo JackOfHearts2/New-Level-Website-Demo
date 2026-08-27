@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const BEDS_BATHS_OPTIONS = ["1", "2", "3", "4", "5"];
+const RADIUS_OPTIONS = ["5", "10", "15", "25", "50"];
 const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "newest", label: "Newest" },
   { value: "price_asc", label: "Price: Low to High" },
@@ -31,6 +32,7 @@ export function ListingFilterBar() {
   const [minBeds, setMinBeds] = useState(searchParams.get("minBeds") ?? "");
   const [minBaths, setMinBaths] = useState(searchParams.get("minBaths") ?? "");
   const [zip, setZip] = useState(searchParams.get("zip") ?? "");
+  const [radiusMiles, setRadiusMiles] = useState(searchParams.get("radiusMiles") ?? "");
   const [sort, setSort] = useState(searchParams.get("sort") ?? "newest");
 
   const hasActiveFilters = Boolean(
@@ -50,6 +52,8 @@ export function ListingFilterBar() {
     if (minBeds) params.set("minBeds", minBeds);
     if (minBaths) params.set("minBaths", minBaths);
     if (zip.trim()) params.set("zip", zip.trim());
+    // A radius only means anything alongside a zip to measure it from.
+    if (zip.trim() && radiusMiles) params.set("radiusMiles", radiusMiles);
     if (sort !== "newest") params.set("sort", sort);
     const qs = params.toString();
     router.push(qs ? `${pathname}?${qs}` : pathname);
@@ -61,6 +65,7 @@ export function ListingFilterBar() {
     setMinBeds("");
     setMinBaths("");
     setZip("");
+    setRadiusMiles("");
     setSort("newest");
     router.push(pathname);
   }
@@ -127,6 +132,22 @@ export function ListingFilterBar() {
           onChange={(e) => setZip(e.target.value)}
           className={cn(fieldClass, "w-28")}
         />
+      </label>
+      <label className="text-sm">
+        <span className="font-heading text-sm font-medium">Within</span>
+        <select
+          value={radiusMiles}
+          onChange={(e) => setRadiusMiles(e.target.value)}
+          disabled={!zip.trim()}
+          className={cn(fieldClass, "w-32 disabled:opacity-50")}
+        >
+          <option value="">Exact zip only</option>
+          {RADIUS_OPTIONS.map((n) => (
+            <option key={n} value={n}>
+              {n} miles
+            </option>
+          ))}
+        </select>
       </label>
       <label className="text-sm">
         <span className="font-heading text-sm font-medium">Sort</span>
