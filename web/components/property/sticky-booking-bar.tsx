@@ -77,12 +77,23 @@ export function StickyBookingBar() {
           </>
         )}
       </div>
-      <a
-        href="#booking"
+      {/* Client report (2026-08-27): once the quote was complete, this
+          still said "Continue" but pointed at #booking — the section the
+          visitor was already at/past, not the inquiry form further down.
+          It now actually continues: #booking while a quote is still being
+          built, #inquiry once it's done. scrollIntoView (not a plain
+          anchor jump) to match InquiryForm's own validate(). */}
+      <button
+        type="button"
+        onClick={() =>
+          document
+            .getElementById(quote.status === "ok" ? "inquiry" : "booking")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
         className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 shrink-0 rounded-xl px-4 py-2 text-sm font-semibold"
       >
-        {quote.status === "ok" ? "Continue" : "Choose your dates"}
-      </a>
+        {quote.status === "ok" ? "Continue to inquiry" : "Choose your dates"}
+      </button>
     </div>
   );
 }

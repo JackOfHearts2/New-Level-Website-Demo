@@ -90,7 +90,21 @@ export function NavMenu() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={reduceMotion ? undefined : { opacity: 0, y: -8, scale: 0.96 }}
                   transition={reduceMotion ? { duration: 0 } : SPRING}
-                  className="bg-popover border-border absolute top-full left-1/2 z-30 mt-3 w-56 -translate-x-1/2 rounded-2xl border p-2 shadow-lg"
+                  // z-50, not the z-30 this had before: every persistent
+                  // floating widget on the page (FloatingActions,
+                  // ReportProblemWidget, ScrollToTopButton, and —
+                  // admin-only — EditModeToggle, which sits near the TOP
+                  // of the screen at top-20, unlike the others) is z-40.
+                  // Client report (2026-08-27, signed in as admin): About >
+                  // Team and a couple of other dropdown items appeared to
+                  // do nothing and the menu just closed — root cause was
+                  // EditModeToggle's fixed top-20 button sitting ABOVE
+                  // this panel in stacking order at exactly the screen
+                  // positions where certain dropdown items rendered,
+                  // silently eating the hover/click. An open interactive
+                  // dropdown should never lose to a floating corner
+                  // widget, so this now clears all of them.
+                  className="bg-popover border-border absolute top-full left-1/2 z-50 mt-3 w-56 -translate-x-1/2 rounded-2xl border p-2 shadow-lg"
                 >
                   {item.children!.map((child) => (
                     <Link

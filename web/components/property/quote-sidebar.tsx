@@ -130,6 +130,23 @@ export function QuoteSidebar() {
             reserve with a deposit. Free cancellation with a full deposit refund any time before{" "}
             {fmtDate(quote.cancelCutoff)}. {DEPOSIT_POLICY.cancellation.afterFullCharge}
           </p>
+
+          {/* Client report (2026-08-27): a completed quote gave no
+              indication of what to do next — nothing here pointed at the
+              inquiry form further down the page, so a visitor either
+              intuited they had to keep scrolling or just left. Same
+              scrollIntoView pattern InquiryForm's own validate() already
+              uses to guide a visitor to a section, not a plain <a href>
+              jump-cut. */}
+          <button
+            type="button"
+            onClick={() =>
+              document.getElementById("inquiry")?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+            className="font-heading bg-primary text-primary-foreground hover:bg-primary/80 w-full rounded-xl px-4 py-3 text-sm font-semibold"
+          >
+            Continue to inquiry ↓
+          </button>
         </div>
       )}
     </div>

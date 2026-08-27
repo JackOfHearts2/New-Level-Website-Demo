@@ -221,6 +221,20 @@ export function PaymentSimulator({ onDone }: { onDone: () => void }) {
         >
           {processing ? "Processing…" : `Pay ${money(quote.depositAmount)} deposit`}
         </button>
+
+        {/* Client report (2026-08-27): this screen was a dead end — the
+            only way back to the free-inquiry option (or anywhere else)
+            was the browser's own back button. onDone already existed for
+            the post-payment "Done" button below; reused here so backing
+            out before paying is just as real a path as completing it. */}
+        <button
+          type="button"
+          onClick={onDone}
+          disabled={processing}
+          className="font-heading text-foreground hover:text-primary w-full text-center text-sm font-semibold disabled:opacity-60"
+        >
+          ← Back — send a free inquiry instead
+        </button>
       </form>
     </GlowCard>
   );
