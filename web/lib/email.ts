@@ -12,20 +12,24 @@ import { getSettings } from "@/lib/settings";
  * don't block the user" philosophy as the notification-preferences
  * fallback writes in app/(marketing)/subscribe/subscribe-form.tsx.
  */
+// Returns whether the email actually went out — most callers ignore this
+// (fail-soft: a routine notification failing shouldn't matter to them),
+// but notifyInquiryFallback below needs to know, since it's the last line
+// of defense for an inquiry whose DB write already failed.
 async function sendAdminNotification({
   subject,
   html,
 }: {
   subject: string;
   html: string;
-}) {
+}): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.ADMIN_NOTIFICATION_EMAIL;
   if (!apiKey || !to) {
     console.error(
       "sendAdminNotification: RESEND_API_KEY or ADMIN_NOTIFICATION_EMAIL not set — skipping email."
     );
-    return;
+    return false;
   }
 
   try {
@@ -33,14 +37,20 @@ async function sendAdminNotification({
     // Resend's own shared sending address — no custom domain verification
     // needed, since the recipient (ADMIN_NOTIFICATION_EMAIL) is the same
     // dedicated inbox the Resend account itself is registered under.
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: "New Level Notifications <onboarding@resend.dev>",
       to,
       subject,
       html,
     });
+    if (error) {
+      console.error("sendAdminNotification failed:", error);
+      return false;
+    }
+    return true;
   } catch (err) {
     console.error("sendAdminNotification failed:", err);
+    return false;
   }
 }
 
@@ -179,6 +189,53 @@ export async function notifyNewInquiry(inquiry: {
     html: `
       <p><strong>${escapeHtml(inquiry.name)}</strong> (${escapeHtml(inquiry.email)}) submitted an inquiry via ${sourceLabel}.</p>
       <p>Review it in the admin dashboard under "Inquiries."</p>
+    `,
+  });
+}
+
+/** Last line of defense for submitInquiry (app/actions/inquiries.ts) when
+ *  the `inquiries` table insert itself fails (outage, RLS misconfig,
+ *  transient network error) — the visitor's message would otherwise just
+ *  be gone, with nothing in the dashboard and no notification. Unlike
+ *  notifyNewInquiry, this carries the FULL submission (this email is the
+ *  only surviving copy of it, not just a heads-up pointing at a dashboard
+ *  row) and ignores the notifyOnSubmission preference — that toggle means
+ *  "don't bother me for routine inquiries," not "it's fine to lose one
+ *  that never made it into the database." Returns whether it actually
+ *  sent, so the caller knows whether this redundancy path itself worked
+ *  or whether both layers failed together. */
+export async function notifyInquiryFallback(inquiry: {
+  source: "property" | "contact" | "careers";
+  name: string;
+  email: string;
+  phone?: string;
+  contactMethod?: string;
+  message?: string;
+  metadata?: Record<string, unknown>;
+  dbErrorMessage: string;
+}): Promise<boolean> {
+  const sourceLabel =
+    inquiry.source === "property" ? "the property page" : inquiry.source === "careers" ? "the careers page" : "the contact page";
+  const metadataRows = Object.entries(inquiry.metadata ?? {})
+    .filter(([, v]) => v !== null && v !== undefined && v !== "")
+    .map(([k, v]) => `<tr><td style="padding-right:12px;color:#6a6a6a">${escapeHtml(k)}</td><td>${escapeHtml(String(v))}</td></tr>`)
+    .join("");
+
+  return sendAdminNotification({
+    subject: `New Level: an inquiry from ${inquiry.name} couldn't be saved — action needed`,
+    html: `
+      <p><strong>The site's database write for this inquiry failed</strong> (${escapeHtml(inquiry.dbErrorMessage)}),
+      so it will NOT appear in the admin dashboard under "Inquiries." This email is the only
+      record of it — please follow up directly and check why the database write is failing.</p>
+      <p>Submitted via ${sourceLabel}.</p>
+      <table cellpadding="0" cellspacing="0">
+        <tr><td style="padding-right:12px;color:#6a6a6a">Name</td><td>${escapeHtml(inquiry.name)}</td></tr>
+        <tr><td style="padding-right:12px;color:#6a6a6a">Email</td><td>${escapeHtml(inquiry.email)}</td></tr>
+        ${inquiry.phone ? `<tr><td style="padding-right:12px;color:#6a6a6a">Phone</td><td>${escapeHtml(inquiry.phone)}</td></tr>` : ""}
+        ${inquiry.contactMethod ? `<tr><td style="padding-right:12px;color:#6a6a6a">Preferred contact</td><td>${escapeHtml(inquiry.contactMethod)}</td></tr>` : ""}
+        ${metadataRows}
+      </table>
+      ${inquiry.message ? `<p><strong>Message:</strong><br>${escapeHtml(inquiry.message).replace(/\n/g, "<br>")}</p>` : ""}
     `,
   });
 }
