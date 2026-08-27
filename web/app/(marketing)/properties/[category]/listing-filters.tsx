@@ -27,6 +27,7 @@ export function ListingFilterBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") ?? "");
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") ?? "");
   const [minBeds, setMinBeds] = useState(searchParams.get("minBeds") ?? "");
@@ -34,19 +35,28 @@ export function ListingFilterBar() {
   const [zip, setZip] = useState(searchParams.get("zip") ?? "");
   const [radiusMiles, setRadiusMiles] = useState(searchParams.get("radiusMiles") ?? "");
   const [sort, setSort] = useState(searchParams.get("sort") ?? "newest");
+  // Only ever arrives via a deep link from the homepage search box (e.g.
+  // "For Rent > Short-Term") — this bar has no control of its own for it,
+  // but still needs to carry it through on Apply/Reset rather than
+  // silently drop it the moment someone touches another field.
+  const subcategory = searchParams.get("subcategory");
 
   const hasActiveFilters = Boolean(
-    searchParams.get("minPrice") ||
+    searchParams.get("keyword") ||
+      searchParams.get("minPrice") ||
       searchParams.get("maxPrice") ||
       searchParams.get("minBeds") ||
       searchParams.get("minBaths") ||
       searchParams.get("zip") ||
+      subcategory ||
       (searchParams.get("sort") && searchParams.get("sort") !== "newest")
   );
 
   function apply(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
+    if (subcategory) params.set("subcategory", subcategory);
+    if (keyword.trim()) params.set("keyword", keyword.trim());
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
     if (minBeds) params.set("minBeds", minBeds);
@@ -60,6 +70,7 @@ export function ListingFilterBar() {
   }
 
   function reset() {
+    setKeyword("");
     setMinPrice("");
     setMaxPrice("");
     setMinBeds("");
@@ -67,6 +78,8 @@ export function ListingFilterBar() {
     setZip("");
     setRadiusMiles("");
     setSort("newest");
+    // Reset means "show everything in this category" — including
+    // dropping a subcategory that arrived via a homepage deep link.
     router.push(pathname);
   }
 
@@ -75,6 +88,16 @@ export function ListingFilterBar() {
       onSubmit={apply}
       className="border-border bg-card mb-10 flex flex-wrap items-end gap-4 rounded-2xl border p-5"
     >
+      <label className="min-w-[160px] flex-1 text-sm">
+        <span className="font-heading text-sm font-medium">Keyword</span>
+        <input
+          type="text"
+          placeholder="Title, address, or city"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          className={fieldClass}
+        />
+      </label>
       <label className="text-sm">
         <span className="font-heading text-sm font-medium">Min price</span>
         <input

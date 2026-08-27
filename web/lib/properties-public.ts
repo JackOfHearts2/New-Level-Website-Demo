@@ -15,13 +15,14 @@ export {
 const LISTING_COLUMNS =
   "id, title, category, subcategory, address_line1, city, state, zip, price, price_period, beds, baths, sqft, description, photos, listing_status, latitude, longitude";
 
-// Real, structured filters against the live table — price/beds/baths/zip
-// as actual WHERE predicates and a real ORDER BY, not the old homepage
-// search box's approach (SEARCH_FILTERS' values got string-concatenated
-// into a keyword blob matched against the separate static legacy content,
-// never touching this table at all — see components/search-box.tsx and
-// the `?category=<old-tier-id>` branch of properties/page.tsx, both still
-// there but unrelated to this).
+// Real, structured filters against the live table — price/beds/baths/zip/
+// subcategory/keyword as actual WHERE predicates and a real ORDER BY.
+// This is now the ONE search path on the site (client ask, 2026-08-27:
+// "make sure it's one unified system... I don't want them to be laying
+// on multiple different types of results") — the homepage SearchBox
+// (components/search-box.tsx) builds these same params and lands here
+// instead of the old separate `?category=<legacy-id>` static grid, which
+// has been removed from properties/page.tsx.
 //
 // `zip` alone is an exact match. `zip` + `radiusMiles` together switch to
 // a real "within N miles of this zip" search (client ask, 2026-08-27) —
@@ -36,6 +37,12 @@ const LISTING_COLUMNS =
 // price/beds/baths-filtered candidates first and does the distance
 // filter/sort in JS — fine at this table's size, revisit with PostGIS if
 // the listing count ever grows enough for that to matter.
+//
+// `keyword` is what replaces the old SearchBox's "Neighborhood" dropdown
+// (a fixed list of place names with no matching DB column) — a plain
+// case-insensitive substring match across title/description/address/city
+// instead, which actually reflects what's in this table rather than a
+// hardcoded list that had nothing real to match against.
 export type ListingFilters = {
   minPrice?: number;
   maxPrice?: number;
@@ -43,6 +50,8 @@ export type ListingFilters = {
   minBaths?: number;
   zip?: string;
   radiusMiles?: number;
+  subcategory?: string;
+  keyword?: string;
   sort?: "newest" | "price_asc" | "price_desc";
 };
 
@@ -66,10 +75,15 @@ export async function getApprovedListings(
     .eq("status", "approved")
     .in("listing_status", CURRENT_LISTING_STATUSES);
   if (category) query = query.eq("category", category);
+  if (filters?.subcategory) query = query.eq("subcategory", filters.subcategory);
   if (filters?.minPrice != null) query = query.gte("price", filters.minPrice);
   if (filters?.maxPrice != null) query = query.lte("price", filters.maxPrice);
   if (filters?.minBeds != null) query = query.gte("beds", filters.minBeds);
   if (filters?.minBaths != null) query = query.gte("baths", filters.minBaths);
+  if (filters?.keyword) {
+    const term = `%${filters.keyword.replace(/[%_]/g, "\\$&")}%`;
+    query = query.or(`title.ilike.${term},description.ilike.${term},address_line1.ilike.${term},city.ilike.${term}`);
+  }
   // A plain zip filter can still be pushed down to SQL; a radius search
   // can't (matches may be in other zips entirely), so it's applied in JS
   // below instead, against every candidate that has coordinates.

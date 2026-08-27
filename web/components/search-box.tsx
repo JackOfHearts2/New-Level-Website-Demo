@@ -7,7 +7,6 @@ import { GlowCard, useGlowRing } from "@/components/ui/glow-card";
 import { SEARCH_CATEGORIES, SEARCH_FILTERS } from "@/lib/content";
 
 const FILTER_LABELS: Record<keyof typeof SEARCH_FILTERS, string> = {
-  neighborhood: "Neighborhood",
   beds: "Min Beds",
   baths: "Min Baths",
   minPrice: "Min Price",
@@ -16,16 +15,39 @@ const FILTER_LABELS: Record<keyof typeof SEARCH_FILTERS, string> = {
 
 type Filters = Record<keyof typeof SEARCH_FILTERS, string>;
 const EMPTY_FILTERS: Filters = {
-  neighborhood: "",
   beds: "",
   baths: "",
   minPrice: "",
   maxPrice: "",
 };
 
+// "$200k" -> 200000, "$1M" -> 1000000, "$10M+" -> 10000000 — the same
+// tokens SEARCH_FILTERS.minPrice/maxPrice already show, turned into the
+// real numbers lib/properties-public.ts's minPrice/maxPrice filters need.
+function parsePriceToken(token: string): number | undefined {
+  const m = token.match(/^\$(\d+(?:\.\d+)?)(k|M)\+?$/i);
+  if (!m) return undefined;
+  const n = parseFloat(m[1]);
+  return Math.round(n * (m[2].toLowerCase() === "k" ? 1_000 : 1_000_000));
+}
+
+// "3+" -> 3
+function parseMinToken(token: string): number | undefined {
+  const n = parseInt(token, 10);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+// A 5-digit input is treated as a zip and gets a real radius search (the
+// same "within N miles" mechanism the on-page ListingFilterBar uses) —
+// 15 miles as a sensible default, matching the client's own example
+// ("if they say 33461... within 15 to 20 miles"). Anything else falls
+// through to the keyword search (title/description/address/city).
+const ZIP_PATTERN = /^\d{5}$/;
+const DEFAULT_SEARCH_RADIUS_MILES = "15";
+
 export function SearchBox() {
   const router = useRouter();
-  const [activeTop, setActiveTop] = useState(SEARCH_CATEGORIES[0].id);
+  const [activeTop, setActiveTop] = useState<string>(SEARCH_CATEGORIES[0].id);
   const [activeChild, setActiveChild] = useState<string | null>(null);
   const [keyword, setKeyword] = useState("");
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
@@ -44,19 +66,48 @@ export function SearchBox() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (contactTopic) {
-      router.push(`/contact?topic=${contactTopic}`);
+    // Narrowing directly on `activeCategory` (not the derived `contactTopic`
+    // variable) so TypeScript can actually rule the Selling/Home Evaluation
+    // shapes out for the rest of this function — a check on a separately
+    // computed value doesn't narrow the union it was read from.
+    if ("contactTopic" in activeCategory) {
+      router.push(`/contact?topic=${activeCategory.contactTopic}`);
+      return;
+    }
+    // "Investment Properties" has no database category of its own — see
+    // the SEARCH_CATEGORIES comment in lib/content.ts for why this goes
+    // to the existing Full Portfolio page instead of a new results view.
+    if ("href" in activeCategory) {
+      router.push(activeCategory.href);
       return;
     }
     if (!selectedId) return;
-    // The demo's ~8-listing dataset isn't real MLS inventory, so these can't
-    // drive a real structured filter — but folding a selected filter into
-    // the same keyword search (matchesKeyword() in properties/page.tsx) at
-    // least makes it affect the result set instead of being decorative.
-    const terms = [keyword.trim(), ...Object.values(filters).filter(Boolean)].join(" ").trim();
-    const params = new URLSearchParams({ category: selectedId });
-    if (terms) params.set("q", terms);
-    router.push(`/properties?${params.toString()}`);
+
+    // Lands on the exact same live-database page and query params the
+    // on-page ListingFilterBar builds (lib/properties-public.ts's
+    // ListingFilters) — one real search, not a second parallel one.
+    const params = new URLSearchParams();
+    if (children && activeChild) params.set("subcategory", activeChild);
+
+    const term = keyword.trim();
+    if (ZIP_PATTERN.test(term)) {
+      params.set("zip", term);
+      params.set("radiusMiles", DEFAULT_SEARCH_RADIUS_MILES);
+    } else if (term) {
+      params.set("keyword", term);
+    }
+
+    const minBeds = filters.beds && parseMinToken(filters.beds);
+    if (minBeds) params.set("minBeds", String(minBeds));
+    const minBaths = filters.baths && parseMinToken(filters.baths);
+    if (minBaths) params.set("minBaths", String(minBaths));
+    const minPrice = filters.minPrice && parsePriceToken(filters.minPrice);
+    if (minPrice) params.set("minPrice", String(minPrice));
+    const maxPrice = filters.maxPrice && parsePriceToken(filters.maxPrice);
+    if (maxPrice) params.set("maxPrice", String(maxPrice));
+
+    const qs = params.toString();
+    router.push(`/properties/${activeCategory.dbCategory}${qs ? `?${qs}` : ""}`);
   }
 
   function handleReset() {
@@ -101,7 +152,7 @@ export function SearchBox() {
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="Keyword, address, or neighborhood"
+                placeholder="Zip code, city, or keyword"
                 className="border-border placeholder:text-foreground mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
               />
             </label>

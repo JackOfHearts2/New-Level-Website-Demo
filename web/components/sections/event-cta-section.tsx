@@ -50,7 +50,7 @@ export function EventCtaSection({
               inside CtaLink's own <a> would be invalid/broken nested-
               interactive markup. Edit this one from /admin/content
               instead. */}
-          <CtaLink href="/properties?category=events" variant="light">
+          <CtaLink href="/events" variant="light">
             {eventCta.cta}
           </CtaLink>
         </div>

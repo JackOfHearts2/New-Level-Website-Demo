@@ -3,7 +3,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
+import { GlowCard } from "@/components/ui/glow-card";
+import { ShineListItem } from "@/components/ui/shine-shape";
+import { FaqList } from "@/components/faq-list";
 import { getApprovedListings, groupBySubcategory, PROPERTY_CATEGORIES, type ListingFilters } from "@/lib/properties-public";
+import { PROPERTY_CATEGORY_INFO } from "@/lib/content";
 import type { PropertyCategory } from "@/lib/property-categories";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 import { ListingViewToggle } from "./listing-view-toggle";
@@ -23,6 +27,8 @@ function parseFilters(sp: Record<string, string | string[] | undefined>): Listin
     minBaths: num(sp.minBaths),
     zip: str(sp.zip),
     radiusMiles: num(sp.radiusMiles),
+    subcategory: str(sp.subcategory),
+    keyword: str(sp.keyword),
     sort: sortRaw === "price_asc" || sortRaw === "price_desc" ? sortRaw : "newest",
   };
 }
@@ -55,13 +61,20 @@ export default async function PropertyCategoryPage({
 
   const filters = parseFilters(await searchParams);
   const hasActiveFilters = Boolean(
-    filters.minPrice || filters.maxPrice || filters.minBeds || filters.minBaths || filters.zip
+    filters.minPrice ||
+      filters.maxPrice ||
+      filters.minBeds ||
+      filters.minBaths ||
+      filters.zip ||
+      filters.subcategory ||
+      filters.keyword
   );
   const listings = await getApprovedListings(category as PropertyCategory, filters);
   const bySubcategory = groupBySubcategory(listings);
   const groups = Object.entries(cat.subcategories)
     .map(([id, label]) => ({ id, label, listings: bySubcategory.get(id) ?? [] }))
     .filter((g) => g.listings.length > 0);
+  const info = PROPERTY_CATEGORY_INFO[category as keyof typeof PROPERTY_CATEGORY_INFO];
 
   return (
     <>
@@ -71,6 +84,25 @@ export default async function PropertyCategoryPage({
         sub={`Browse ${cat.label.toLowerCase()} listings, sectioned by type.`}
         breadcrumbs={getBreadcrumbTrail(`/properties/${category}`)}
       />
+
+      {info && (
+        <section className="mx-auto max-w-3xl px-6 pb-16">
+          <GlowCard className="p-8">
+            <h2 className="font-heading text-lg font-semibold">What to expect</h2>
+            <p className="text-foreground mt-3 text-balance">{info.whatToExpect}</p>
+          </GlowCard>
+          <div className="mt-6">
+            <h2 className="font-heading text-lg font-semibold">Ideal for</h2>
+            <ul className="mt-4 space-y-3">
+              {info.idealFor.map((item) => (
+                <ShineListItem key={item} className="border-border rounded-xl border p-4 text-sm">
+                  {item}
+                </ShineListItem>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
         {/* useSearchParams inside needs a Suspense boundary — same pattern
@@ -88,6 +120,17 @@ export default async function PropertyCategoryPage({
           <p className="text-muted-foreground text-center">No {cat.label.toLowerCase()} listings yet — check back soon.</p>
         )}
       </section>
+
+      {info && info.faqs.length > 0 && (
+        <section className="mx-auto max-w-3xl px-6 pb-24">
+          <h2 className="font-heading text-center text-2xl font-bold">
+            Questions about {cat.label.toLowerCase()}
+          </h2>
+          <div className="mt-8">
+            <FaqList faqs={info.faqs} />
+          </div>
+        </section>
+      )}
 
       <CrossNav current="properties" />
     </>

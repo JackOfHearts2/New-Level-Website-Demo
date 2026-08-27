@@ -830,58 +830,157 @@ export const BLOG_CATEGORIES = [
   },
 ];
 
-// Homepage search bar (index.html's #choose section). The tabs + keyword
-// field are the only inputs that affect the resulting properties.html URL —
-// the 5 filter dropdowns below are populated/interactive but intentionally
-// decorative (this demo has one real listing, not an MLS inventory to
-// filter against).
-// Most tabs browse listings (submit routes to /properties?category=<id>,
-// the pre-existing behavior) — `contactTopic` marks the ones that aren't a
-// browsable category at all, just a lead-capture intent (client ask,
-// 2026-08-26: "buying, selling, home evaluation, also a commercial option
-// next to the ones we have in the lookup tool"). "Buying" isn't its own
-// tab here — it's the same intent "For Sale" already covers, so a second
-// tab for it would just duplicate that one's results rather than showing
-// anything new; Selling and Home Evaluation route to the same contact
-// topic since a valuation is the first step of selling, not a separate
-// flow. Commercial IS a browsable category, tying into the new
-// `properties` table's category taxonomy.
+// Homepage search bar (index.html's #choose section). Unified with the
+// Properties browsing pages (client ask, 2026-08-27: "make sure it's one
+// unified system... I don't want them to be laying on multiple different
+// types of results") — every browsable tab here maps onto a real
+// `dbCategory` from lib/property-categories.ts and lands on that same
+// live-database page (`/properties/[category]`, optionally with a
+// `subcategory`/price/bed/bath/keyword filter already applied), the exact
+// same query components/search-box.tsx and the on-page ListingFilterBar
+// both build from. There is no longer a separate static results grid this
+// used to route to instead (the old `?category=<legacy-id>` branch of
+// properties/page.tsx, and the marketing-copy array that drove it, are
+// gone — see PROPERTY_CATEGORY_INFO below for where that copy went).
+//
+// "For Sale" maps to the `residential` category specifically, not a mix
+// of residential+commercial — that's not a simplification, it's how the
+// schema actually splits things: `rental` is its own top-level category
+// (any furnished/leased stay, short or long), so anything under
+// `residential` is inherently a for-sale home already. `contactTopic`
+// marks the two tabs that aren't a browsable category at all, just a
+// lead-capture intent (client ask, 2026-08-26). "Buying" isn't its own
+// tab — it's the same intent "For Sale" already covers. "Investment
+// Properties" has no real database category of its own (an investment
+// opportunity can be residential OR commercial) — it routes to the
+// existing /portfolio page instead, which already surfaces every
+// `seeking_investors`-flagged listing regardless of category, rather than
+// inventing a second parallel listings view for it.
 export const SEARCH_CATEGORIES = [
-  { id: "for-sale", label: "For Sale" },
+  { id: "for-sale", label: "For Sale", dbCategory: "residential" },
   {
     id: "for-rent",
     label: "For Rent",
+    dbCategory: "rental",
     children: [
-      { id: "long-term", label: "Long-Term" },
-      { id: "short-term", label: "Short-Term" },
-      { id: "extended-stay", label: "Extended" },
+      { id: "long_term", label: "Long-Term" },
+      { id: "short_term", label: "Short-Term" },
+      { id: "extended_stay", label: "Extended" },
     ],
   },
-  { id: "investment", label: "Investment Properties" },
-  { id: "commercial", label: "Commercial" },
+  { id: "commercial", label: "Commercial", dbCategory: "commercial" },
+  { id: "investment", label: "Investment Properties", href: "/portfolio" },
   { id: "sell", label: "Selling", contactTopic: "sell" },
   { id: "home-evaluation", label: "Home Evaluation", contactTopic: "sell" },
-];
+] as const;
 
+// Feed real filters on the Properties pages (lib/properties-public.ts'
+// ListingFilters) — beds/baths/price become actual gte/lte predicates,
+// same as the on-page ListingFilterBar. There's no separate "Neighborhood"
+// dropdown anymore: that used to be a fixed list of place names with no
+// matching database column (decorative), replaced by the same free-text
+// `keyword` search the "Search" field already offers (matches
+// title/description/address/city) — one honest mechanism instead of two,
+// one of which never did anything.
 export const SEARCH_FILTERS = {
-  neighborhood: [
-    "Any",
-    "Downtown Miami",
-    "Brickell",
-    "Coral Gables",
-    "Coconut Grove",
-    "Wynwood",
-    "Miami Beach",
-    "Aventura",
-    "Key Biscayne",
-    "Doral",
-    "Fort Lauderdale",
-    "Boca Raton",
-  ],
   beds: ["Any", "1+", "2+", "3+", "4+", "5+"],
   baths: ["Any", "1+", "2+", "3+", "4+"],
   minPrice: ["Any", "$200k", "$500k", "$1M", "$2M", "$5M"],
   maxPrice: ["Any", "$500k", "$1M", "$2M", "$5M", "$10M+"],
+};
+
+// Category-level "what to expect / ideal for / FAQs" copy for the real
+// Properties browsing pages — migrated from the old static per-tier
+// PROPERTY_CATEGORIES marketing array (removed 2026-08-27 along with the
+// separate results grid it drove) rather than dropped outright, since it
+// was real authored copy, not placeholder text. `rental` blends what used
+// to be four separate entries (luxury-short-term/short-term/long-term/
+// extended-stay) into one, since /properties/rental already sections real
+// listings by those exact subcategories — a second, finer split of this
+// copy would just repeat itself under headings the page already provides.
+export const PROPERTY_CATEGORY_INFO: Record<
+  "residential" | "commercial" | "rental",
+  { whatToExpect: string; idealFor: string[]; faqs: { q: string; a: string }[] }
+> = {
+  residential: {
+    whatToExpect:
+      "Full-service brokerage representation for buying or selling a home: market analysis, showings, negotiation, and coordination through closing.",
+    idealFor: [
+      "Buyers ready to purchase a primary residence or second home in South Florida",
+      "Sellers who want a full-service brokerage handling pricing, marketing, and negotiation",
+      "Anyone comparing buying versus renting before committing either way",
+    ],
+    faqs: [
+      {
+        q: "Do you represent both buyers and sellers?",
+        a: "Yes — our licensed team works both sides of a sale, from first valuation conversation through closing.",
+      },
+      {
+        q: "Can you help me sell somewhere outside your current listings?",
+        a: "Absolutely — this list reflects what's active today, not the limit of what we work on. Contact us about any property you're looking to sell.",
+      },
+    ],
+  },
+  commercial: {
+    whatToExpect:
+      "Commercial space across the standard property types — office, retail, industrial, multifamily (5+ units), hospitality, and special-purpose — evaluated the way a business decision should be: location, zoning, lease structure, and total cost of occupancy, not just square footage.",
+    idealFor: [
+      "Business owners looking for their own space to lease or buy",
+      "Investors targeting commercial asset classes rather than residential",
+      "Anyone evaluating a mixed-use or multifamily (5+ unit) opportunity",
+    ],
+    faqs: [
+      {
+        q: "Do you handle leasing as well as sales?",
+        a: "Yes — both. We work with tenants and landlords, and with buyers and sellers.",
+      },
+      {
+        q: "What counts as \"multifamily\" here versus a residential multi-unit property?",
+        a: "5 or more units is the standard commercial-financing threshold and is treated as commercial. A 2-4 unit property is generally financed and categorized as residential instead.",
+      },
+    ],
+  },
+  rental: {
+    whatToExpect:
+      "Furnished stays across three lengths — short-term (a few nights to a few weeks, priced nightly, closer to a boutique hotel than a typical rental for our higher-end listings), extended stay (weeks to a few months, priced weekly or monthly), and long-term (traditional 12-month leases, with month-to-month options on some units, backed by our property management team). Booking, pricing, and cancellation terms are always shown up front on the property's own page.",
+    idealFor: [
+      "Vacations, family visits, or a milestone trip where the property is part of the occasion",
+      "Traveling professionals, insurance-displacement stays, or snowbirds needing a furnished home for a defined stretch of time",
+      "Anyone relocating to South Florida who wants the stability of a real lease instead of month-to-month uncertainty",
+    ],
+    faqs: [
+      {
+        q: "What's the shortest stay I can book?",
+        a: "Each listing shows its own minimum night count — most short-term properties allow anywhere from a couple of nights up to a few weeks.",
+      },
+      {
+        q: "How is pricing structured for an extended stay or long-term lease?",
+        a: "Extended stays are typically quoted at a weekly or monthly rate lower than the equivalent nightly short-term rate. Long-term listings are standard 12-month leases with a security deposit; some owners offer month-to-month terms instead.",
+      },
+      {
+        q: "Can a short-term or extended stay convert into a long-term lease?",
+        a: "In many cases, yes — talk to us before your stay ends if you'd like to explore converting to a standard lease on the same unit.",
+      },
+    ],
+  },
+};
+
+// Also migrated from the old per-tier PROPERTY_CATEGORIES array (see the
+// comment near OTHER_PROPERTIES) — "Investment" never had its own real
+// database category (an investment opportunity can be residential OR
+// commercial), so rather than force it into PROPERTY_CATEGORY_INFO above,
+// its copy lives here and renders on /portfolio, which is where the
+// SEARCH_CATEGORIES "Investment Properties" tab now points — that page
+// already surfaces every `seeking_investors`-flagged listing regardless
+// of category.
+export const INVESTMENT_INFO = {
+  whatToExpect:
+    "Properties and opportunities evaluated for return rather than lifestyle: rental yield, appreciation potential, and how a purchase fits a broader portfolio strategy. Pairs directly with our Investment service — see Services for how we structure that relationship.",
+  idealFor: [
+    "First-time investors who want a strategy built around their goals and risk tolerance",
+    "Existing portfolio owners looking to diversify into new markets or property types",
+    "Anyone evaluating a specific property primarily on projected returns",
+  ],
 };
 
 export const FOOTER_NAV = [
@@ -929,213 +1028,28 @@ export const FOOTER_NAV = [
 // Properties + the property detail page — ported verbatim from ../content.js.
 // =============================================================================
 
-// Beyond `label`/`blurb` (used everywhere as a short tag), each category
-// carries enough of its own content to stand as a real landing page rather
-// than a filtered grid with a swapped headline: `icon` gives it a shape-
-// differentiated visual identity (never a second color, per the sitewide
-// one-green rule), `whatToExpect`/`idealFor` frame the category in
-// decision-relevant terms, and `faqs` answers the questions specific to
-// that kind of stay/sale rather than the generic sitewide FAQ list.
-export const PROPERTY_CATEGORIES = [
-  {
-    id: "luxury-short-term",
-    label: "Luxury Short-Term Rentals",
-    blurb: "High-end stays for discerning guests.",
-    icon: "Gem",
-    whatToExpect:
-      "Fully furnished, design-forward homes booked by the night or the week, with a service level closer to a boutique hotel than a typical rental: professional cleaning between every stay, concierge-style communication, and amenities picked for the property rather than the lowest common denominator.",
-    idealFor: [
-      "A milestone trip where the property is part of the occasion, not just where you sleep",
-      "Visiting executives or clients who expect a polished, private space over a hotel suite",
-      "Photo or content shoots that need a distinctive, camera-ready backdrop",
-    ],
-    faqs: [
-      {
-        q: "How is this different from a regular short-term rental?",
-        a: "Same night-by-night flexibility, but the properties are selected and presented for it: higher-end finishes, styled interiors, and a service standard (cleaning, communication, turnover) that matches what guests expect at that price point.",
-      },
-      {
-        q: "Is a deposit required?",
-        a: "Yes — reserving a date puts down a percentage of the total as a deposit, with the balance charged closer to check-in. The exact breakdown is shown once you pick your dates on a property's page.",
-      },
-      {
-        q: "Can these be booked for a single night?",
-        a: "It depends on the property's minimum-night policy, shown on its own listing. Some are set up for single-night stays; others have a short minimum to keep turnover manageable.",
-      },
-    ],
-  },
-  {
-    id: "short-term",
-    label: "Short-Term Rentals",
-    blurb: "Flexible stays, days to a few weeks.",
-    icon: "Luggage",
-    whatToExpect:
-      "Furnished homes for guests who need somewhere for a few nights to a few weeks — vacations, family visits, a bridge between two leases — without committing to a hotel or a long-term lease. Booking, pricing, and cancellation terms are all shown up front on the property page.",
-    idealFor: [
-      "Vacations and family visits where a house beats a hotel room",
-      "Contractors or relocating employees who need a home base for a few weeks",
-      "Anyone bridging the gap between move-out and move-in dates",
-    ],
-    faqs: [
-      {
-        q: "What's the shortest stay I can book?",
-        a: "Each listing shows its own minimum night count. Most short-term properties are set up for anywhere from a couple of nights up to a few weeks.",
-      },
-      {
-        q: "Are utilities and Wi-Fi included?",
-        a: "Yes — short-term stays are priced all-in. What's included versus billed separately is spelled out in that property's Fees & Policies section.",
-      },
-    ],
-  },
-  {
-    id: "long-term",
-    label: "Long-Term Rentals",
-    blurb: "Month-to-month and annual leases.",
-    icon: "KeyRound",
-    whatToExpect:
-      "Traditional leasing: a signed lease term (typically 12 months, with month-to-month options on some units), a security deposit, and the tenant handling their own utilities and day-to-day setup — the same structure as renting anywhere, backed by New Level's property management team for maintenance and communication.",
-    idealFor: [
-      "Anyone relocating to South Florida who wants a real home base, not a hotel",
-      "Tenants who want the stability of a lease instead of month-to-month uncertainty",
-      "Owners looking to place a reliable long-term tenant through a managed process",
-    ],
-    faqs: [
-      {
-        q: "What's the typical lease term?",
-        a: "Most long-term listings are 12-month leases, though some owners offer month-to-month terms — check the specific listing or ask us directly.",
-      },
-      {
-        q: "What does the application process look like?",
-        a: "Standard screening: income verification, background/credit check, and references, coordinated through our property management team once you've found a unit you want.",
-      },
-    ],
-  },
-  {
-    id: "extended-stay",
-    label: "Extended Stays",
-    blurb: "Weeks to months, fully furnished.",
-    icon: "CalendarRange",
-    whatToExpect:
-      "The middle ground between a short-term rental and a full lease: furnished, move-in-ready homes booked for weeks to a few months, with pricing and terms structured for a longer stay rather than a nightly rate.",
-    idealFor: [
-      "Traveling professionals or insurance-displacement stays needing a furnished home for a defined stretch of time",
-      "Snowbirds spending a season in South Florida",
-      "Anyone who wants a real kitchen and living space without signing a full-year lease",
-    ],
-    faqs: [
-      {
-        q: "How is pricing structured for an extended stay?",
-        a: "Extended stays are typically quoted at a weekly or monthly rate that's lower than the equivalent nightly short-term rate, reflecting the longer commitment.",
-      },
-      {
-        q: "Can an extended stay convert into a long-term lease?",
-        a: "In many cases, yes — talk to us before your stay ends if you'd like to explore converting to a standard lease on the same unit.",
-      },
-    ],
-  },
-  {
-    id: "events",
-    label: "Private Events",
-    blurb: "Venues set up to host, not just sleep.",
-    icon: "PartyPopper",
-    whatToExpect:
-      "Properties chosen and set up for gatherings — pool decks, open floor plans, parking for guests — rented as a full-day or full-night venue rather than an overnight stay. See the Events page for our calendar and package tiers (Self-Provided through All-Inclusive).",
-    idealFor: [
-      "Birthdays, showers, weddings, graduations, and religious or corporate gatherings",
-      "Anyone who wants a private residential feel instead of a banquet hall",
-      "Groups who want catering/entertainment/sound handled for them via a package",
-    ],
-    faqs: [
-      {
-        q: "How is an event rental priced differently from a stay?",
-        a: "Event rentals are a flat 24-hour rate rather than a per-night rate, plus a refundable security deposit and an optional service package (catering, entertainment, sound, content creation).",
-      },
-      {
-        q: "Can I bring my own vendors instead of a package?",
-        a: "Yes — the Self-Provided package is exactly that: you bring your own catering, entertainment, and sound, and only pay the base venue rate.",
-      },
-    ],
-  },
-  {
-    id: "for-sale",
-    label: "For Sale",
-    blurb: "Properties available for purchase.",
-    icon: "Tag",
-    whatToExpect:
-      "Full-service brokerage representation for buying or selling: market analysis, showings, negotiation, and coordination through closing. This demo currently has one active listing plus placeholders for what's coming — reach out and we'll walk you through anything on or off this list.",
-    idealFor: [
-      "Buyers ready to purchase a primary residence or second home in South Florida",
-      "Sellers who want a full-service brokerage handling pricing, marketing, and negotiation",
-      "Anyone comparing buying versus renting before committing either way",
-    ],
-    faqs: [
-      {
-        q: "Do you represent both buyers and sellers?",
-        a: "Yes — our licensed team works both sides of a sale, from first valuation conversation through closing.",
-      },
-      {
-        q: "Can you help me sell somewhere outside your current listings?",
-        a: "Absolutely — this list reflects what's active in this demo today, not the limit of what we work on. Contact us about any property you're looking to sell.",
-      },
-    ],
-  },
-  {
-    id: "investment",
-    label: "Investment",
-    blurb: "Opportunities for portfolio growth.",
-    icon: "TrendingUp",
-    whatToExpect:
-      "Properties and opportunities evaluated for return rather than lifestyle: rental yield, appreciation potential, and how a purchase fits a broader portfolio strategy. Pairs directly with our Investment service — see Services for how we structure that relationship.",
-    idealFor: [
-      "First-time investors who want a strategy built around their goals and risk tolerance",
-      "Existing portfolio owners looking to diversify into new markets or property types",
-      "Anyone evaluating a specific property primarily on projected returns",
-    ],
-    faqs: [
-      {
-        q: "Do you only work with experienced investors?",
-        a: "No — we work with first-time and experienced investors alike. Every relationship starts with understanding your goals and risk comfort before we talk about specific properties.",
-      },
-      {
-        q: "Can New Level manage an investment property after purchase?",
-        a: "Yes — our Property Management service is built for exactly that handoff, so you don't need a separate manager once you close.",
-      },
-    ],
-  },
-  {
-    id: "commercial",
-    label: "Commercial",
-    blurb: "Office, retail, industrial, and mixed-use.",
-    icon: "Building2",
-    whatToExpect:
-      "Commercial space across the standard property types — office, retail, industrial, multifamily (5+ units), hospitality, and special-purpose — evaluated the way a business decision should be: location, zoning, lease structure, and total cost of occupancy, not just square footage.",
-    idealFor: [
-      "Business owners looking for their own space to lease or buy",
-      "Investors targeting commercial asset classes rather than residential",
-      "Anyone evaluating a mixed-use or multifamily (5+ unit) opportunity",
-    ],
-    faqs: [
-      {
-        q: "Do you handle leasing as well as sales?",
-        a: "Yes — both. We work with tenants and landlords, and with buyers and sellers.",
-      },
-      {
-        q: "What counts as \"multifamily\" here versus a residential multi-unit property?",
-        a: "5 or more units is the standard commercial-financing threshold and is treated as commercial. A 2-4 unit property is generally financed and categorized as residential instead.",
-      },
-    ],
-  },
-];
+// The old per-tier PROPERTY_CATEGORIES marketing array (luxury-short-term/
+// short-term/long-term/extended-stay/events/for-sale/investment/
+// commercial) and the separate `?category=<id>` results grid it drove in
+// properties/page.tsx were removed 2026-08-27 — the site had two parallel
+// property-browsing systems producing two different result sets for
+// related searches (client: "make sure it's one unified system... I don't
+// want them to be laying on multiple different types of results"). Its
+// real authored copy was migrated into PROPERTY_CATEGORY_INFO above,
+// mapped onto the three real database categories rather than dropped.
 
 // `photo` fields reuse the real 87th St. property's own photo set as demo
 // placeholder imagery for these "coming soon" listings (client confirmed
 // 2026-08-21 this is fine for a demo — each card is still clearly labeled
-// "Coming soon", it's just not a bare gray box anymore).
+// "Coming soon", it's just not a bare gray box anymore). Purely a teaser
+// block on the flagship /property page ("More New Level homes") — not
+// wired into the real Properties search/browse system at all, so there's
+// no `categories` field pretending otherwise.
 export const OTHER_PROPERTIES = [
-  { title: "Bay Harbor villa", meta: "Sleeps 10 · Waterfront", rate: "from $600 / night", soon: true, categories: ["luxury-short-term", "short-term"], photo: "05" },
-  { title: "Wynwood loft", meta: "Sleeps 6 · Events", rate: "from $900 / day", soon: true, categories: ["events", "short-term"], photo: "14" },
-  { title: "Coral Gables estate", meta: "Sleeps 20 · Retreats", rate: "from $750 / night", soon: true, categories: ["extended-stay", "events", "long-term"], photo: "22" },
-  { title: "Brickell Skyline Residence", meta: "3 BR · Downtown", rate: "Listed at $1.4M", soon: true, categories: ["for-sale", "investment"], photo: "23" },
+  { title: "Bay Harbor villa", meta: "Sleeps 10 · Waterfront", rate: "from $600 / night", soon: true, photo: "05" },
+  { title: "Wynwood loft", meta: "Sleeps 6 · Events", rate: "from $900 / day", soon: true, photo: "14" },
+  { title: "Coral Gables estate", meta: "Sleeps 20 · Retreats", rate: "from $750 / night", soon: true, photo: "22" },
+  { title: "Brickell Skyline Residence", meta: "3 BR · Downtown", rate: "Listed at $1.4M", soon: true, photo: "23" },
 ];
 
 // Agent contact info and inquiry inbox live in POINT_OF_CONTACT (used
@@ -1147,7 +1061,6 @@ export const PROPERTY = {
   siteName: "New Level Executive House",
   parentName: "New Level Associates",
   parentUrl: "https://newlevelassociates.com",
-  categories: ["luxury-short-term", "short-term", "events", "extended-stay"],
   // Static for now, same convention as LEGAL_LAST_UPDATED — this listing
   // isn't in a real database yet with its own edit-tracked timestamp
   // (see the `properties` table migration for where that's headed), so

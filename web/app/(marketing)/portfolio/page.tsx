@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/page-hero";
 import { CrossNav } from "@/components/cross-nav";
+import { GlowCard } from "@/components/ui/glow-card";
+import { ShineListItem } from "@/components/ui/shine-shape";
 import { PortfolioGrid } from "@/components/properties/portfolio-grid";
 import { getPortfolioListings } from "@/lib/properties-public";
+import { INVESTMENT_INFO } from "@/lib/content";
 import { getBreadcrumbTrail } from "@/lib/nav-hierarchy";
 
 export const metadata: Metadata = {
@@ -28,6 +31,29 @@ export default async function PortfolioPage() {
         sub="Current availability and past transactions, all in one place."
         breadcrumbs={getBreadcrumbTrail("/portfolio")}
       />
+
+      {/* The homepage search box's "Investment Properties" tab lands here
+          (lib/content.ts's SEARCH_CATEGORIES comment explains why there's
+          no separate database category for it) — this intro gives that
+          entry point real context instead of dropping a visitor straight
+          into a plain grid. */}
+      <section className="mx-auto max-w-3xl px-6 pb-16">
+        <GlowCard className="p-8">
+          <h2 className="font-heading text-lg font-semibold">Investing with New Level</h2>
+          <p className="text-foreground mt-3 text-balance">{INVESTMENT_INFO.whatToExpect}</p>
+        </GlowCard>
+        <div className="mt-6">
+          <h2 className="font-heading text-lg font-semibold">Ideal for</h2>
+          <ul className="mt-4 space-y-3">
+            {INVESTMENT_INFO.idealFor.map((item) => (
+              <ShineListItem key={item} className="border-border rounded-xl border p-4 text-sm">
+                {item}
+              </ShineListItem>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-7xl px-6 pb-24">
         <PortfolioGrid listings={listings} />
       </section>
